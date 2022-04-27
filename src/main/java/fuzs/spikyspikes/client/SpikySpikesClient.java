@@ -4,6 +4,7 @@ import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.client.renderer.blockentity.SpikeRenderer;
 import fuzs.spikyspikes.registry.ModRegistry;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,6 +15,6 @@ public class SpikySpikesClient {
 
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent evt) {
-        BlockEntityRenderers.register(ModRegistry.DIAMOND_SPIKE_BLOCK_ENTITY_TYPE.get(), SpikeRenderer::new);
+        BlockEntityRenderers.register(ModRegistry.DIAMOND_SPIKE_BLOCK_ENTITY_TYPE.get(), context -> new SpikeRenderer(new ResourceLocation("block/gold_block")));
     }
 }

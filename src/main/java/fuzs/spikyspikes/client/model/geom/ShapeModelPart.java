@@ -1,5 +1,7 @@
 package fuzs.spikyspikes.client.model.geom;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
@@ -10,8 +12,20 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 
 public class ShapeModelPart {
+
+    public static ModelPart pyramid(float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ) {
+        return pyramid(0, 0, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, 16.0F, 16.0F);
+    }
+
+    public static ModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float texWidthScaled, float texHeightScaled) {
+        return pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, 0.0F, 0.0F, 0.0F, false, texWidthScaled, texHeightScaled);
+    }
+
+    public static ModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texWidthScaled, float texHeightScaled) {
+        return new ModelPart(ImmutableList.of(new ShapeModelPart.Pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texWidthScaled, texHeightScaled)), ImmutableMap.of());
+    }
     
-    public static class Pyramid extends ModelPart.Cube {
+    static class Pyramid extends ModelPart.Cube {
         private final ShapeModelPart.Polygon[] polygons;
         public final float minX;
         public final float minY;
@@ -55,20 +69,11 @@ public class ShapeModelPart {
             ShapeModelPart.Vertex modelpart$vertex4 = new ShapeModelPart.Vertex(maxX, minY, maxZ, 0.0F, 8.0F);
             ShapeModelPart.Vertex modelpart$vertex5 = new ShapeModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 8.0F);
             ShapeModelPart.Vertex modelpart$vertex6 = new ShapeModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 0.0F);
-            float f4 = texCoordU;
-            float f5 = texCoordU + dimensionZ;
-            float f6 = texCoordU + dimensionZ + dimensionX;
-            float f7 = texCoordU + dimensionZ + dimensionX + dimensionX;
-            float f8 = texCoordU + dimensionZ + dimensionX + dimensionZ;
-            float f9 = texCoordU + dimensionZ + dimensionX + dimensionZ + dimensionX;
-            float f10 = texCoordV;
-            float f11 = texCoordV + dimensionZ;
-            float f12 = texCoordV + dimensionZ + dimensionY;
-            this.polygons[2] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex3, modelpart$vertex7, modelpart$vertex}, f5, f10, f6, f11, texWidthScaled, texHeightScaled, false, Direction.DOWN);
-            this.polygons[1] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex7, modelpart$vertex3, modelpart$vertex6, modelpart$vertex2}, f4, f11, f5, f12, texWidthScaled, texHeightScaled, false, Direction.WEST);
-            this.polygons[3] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex, modelpart$vertex7, modelpart$vertex2, modelpart$vertex1}, f5, f11, f6, f12, texWidthScaled, texHeightScaled, false, Direction.NORTH);
-            this.polygons[0] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex, modelpart$vertex1, modelpart$vertex5}, f6, f11, f8, f12, texWidthScaled, texHeightScaled, false, Direction.EAST);
-            this.polygons[4] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex3, modelpart$vertex4, modelpart$vertex5, modelpart$vertex6}, f8, f11, f9, f12, texWidthScaled, texHeightScaled, false, Direction.SOUTH);
+            this.polygons[2] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex3, modelpart$vertex7, modelpart$vertex}, texCoordU, texCoordV, texCoordU + dimensionX, texCoordV + dimensionZ, texWidthScaled, texHeightScaled, false, Direction.DOWN);
+            this.polygons[1] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex7, modelpart$vertex3, modelpart$vertex6, modelpart$vertex2}, texCoordU, texCoordV, texCoordU + dimensionX, texCoordV + dimensionZ, texWidthScaled, texHeightScaled, false, Direction.WEST);
+            this.polygons[3] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex, modelpart$vertex7, modelpart$vertex2, modelpart$vertex1}, texCoordU, texCoordV, texCoordU + dimensionX, texCoordV + dimensionZ, texWidthScaled, texHeightScaled, false, Direction.NORTH);
+            this.polygons[0] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex, modelpart$vertex1, modelpart$vertex5}, texCoordU, texCoordV, texCoordU + dimensionX, texCoordV + dimensionZ, texWidthScaled, texHeightScaled, false, Direction.EAST);
+            this.polygons[4] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex3, modelpart$vertex4, modelpart$vertex5, modelpart$vertex6}, texCoordU, texCoordV, texCoordU + dimensionX, texCoordV + dimensionZ, texWidthScaled, texHeightScaled, false, Direction.SOUTH);
         }
 
         @Override
@@ -95,7 +100,7 @@ public class ShapeModelPart {
         }
     }
     
-    public static class Polygon {
+    static class Polygon {
         public final ShapeModelPart.Vertex[] vertices;
         public final Vector3f normal;
 
@@ -125,7 +130,7 @@ public class ShapeModelPart {
         }
     }
 
-    public static class Vertex {
+    static class Vertex {
         public final Vector3f pos;
         public final float u;
         public final float v;

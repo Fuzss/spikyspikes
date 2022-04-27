@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.registry.ModRegistry;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
+import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.damagesource.DamageSource;
@@ -39,7 +40,9 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
-            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), SpikeBlock::makeDirectionShape));
+            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> makeShape(direction, true)));
+    private static final Map<Direction, VoxelShape> COLLISION_SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
+            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> makeShape(direction, false)));
 
     public final SpikeMaterial spikeMaterial;
 
@@ -49,10 +52,11 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, Boolean.FALSE).setValue(FACING, Direction.UP));
     }
 
-    private static VoxelShape makeDirectionShape(Direction direction) {
+    private static VoxelShape makeShape(Direction direction, boolean fullHeight) {
+        int height = fullHeight ? 8 : 7;
         VoxelShape fullShape = null;
         // one less so entities will be inside of shape when standing on top/pushing in from the side
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < height; i++) {
             int startX = startCoordinate(i, direction.getStepX(), direction.getAxisDirection());
             int startY = startCoordinate(i, direction.getStepY(), direction.getAxisDirection());
             int startZ = startCoordinate(i, direction.getStepZ(), direction.getAxisDirection());
@@ -68,6 +72,10 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         }
         return fullShape;
     }
+
+//    private static VoxelShape makeVisualShape(Direction direction, boolean fullHeight) {
+//        VoxelUtils.createVectorArray(0.0, 0.0, 0.0, 16.0, 0.0, 0.0, 0.0, 0.0, 16.0, 16.0, 0.0, 16.0, 8.0, 16.0, 8.0);
+//    }
 
     private static int startCoordinate(int i, int step, Direction.AxisDirection axisDirection) {
         int coordinate;
@@ -91,6 +99,11 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Override
     public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
         return SHAPE_BY_DIRECTION.get(p_60555_.getValue(FACING));
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState p_52357_, BlockGetter p_52358_, BlockPos p_52359_, CollisionContext p_52360_) {
+        return COLLISION_SHAPE_BY_DIRECTION.get(p_52357_.getValue(FACING));
     }
 
     @Override
