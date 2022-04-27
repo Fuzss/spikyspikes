@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "package": "fuzs.spikyspikes.mixin",
+  "refmap": "META-INF/spikyspikes.refmap.json",
+  "mixins": [
+    "accessor.LivingEntityAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
