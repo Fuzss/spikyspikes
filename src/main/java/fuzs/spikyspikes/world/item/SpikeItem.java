@@ -1,6 +1,7 @@
 package fuzs.spikyspikes.world.item;
 
 import fuzs.spikyspikes.client.renderer.ModBlockEntityWithoutLevelRenderer;
+import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.IItemRenderProperties;
@@ -13,7 +14,16 @@ public class SpikeItem extends BlockItem {
     }
 
     @Override
+    public SpikeBlock getBlock() {
+        return (SpikeBlock) super.getBlock();
+    }
+
+    @Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-        consumer.accept(ModBlockEntityWithoutLevelRenderer.createItemRenderProperties(this));
+        consumer.accept(ModBlockEntityWithoutLevelRenderer.createItemRenderProperties());
+    }
+
+    public boolean acceptsEnchantments() {
+        return this.getBlock().spikeMaterial.acceptsEnchantments();
     }
 }

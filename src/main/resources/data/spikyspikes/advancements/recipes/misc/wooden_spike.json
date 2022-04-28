@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "spikyspikes:wooden_spike"
+    ]
+  },
+  "criteria": {
+    "has_wooden_sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:wooden_sword"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "spikyspikes:wooden_spike"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_wooden_sword",
+      "has_the_recipe"
+    ]
+  ]
+}

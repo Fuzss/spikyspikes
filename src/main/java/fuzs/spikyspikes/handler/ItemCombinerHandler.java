@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.handler;
 
-import fuzs.spikyspikes.world.item.EnchantedSpikeItem;
+import fuzs.spikyspikes.world.item.SpikeItem;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -20,7 +20,7 @@ public class ItemCombinerHandler {
     public void onAnvilUpdate(final AnvilUpdateEvent evt) {
         ItemStack itemstack = evt.getLeft();
         ItemStack itemstack2 = evt.getRight();
-        if (itemstack.getItem() instanceof EnchantedSpikeItem && itemstack2.getItem() instanceof EnchantedBookItem) {
+        if (itemstack.getItem() instanceof SpikeItem spikeItem && spikeItem.acceptsEnchantments() && itemstack2.getItem() instanceof EnchantedBookItem) {
             if (!EnchantedBookItem.getEnchantments(itemstack2).isEmpty()) {
                 int i = 0;
                 int j = 0;
@@ -121,7 +121,6 @@ public class ItemCombinerHandler {
                 }
                 evt.setOutput(itemstack1);
                 evt.getPlayer().containerMenu.broadcastChanges();
-                evt.setCanceled(true);
             }
         }
     }

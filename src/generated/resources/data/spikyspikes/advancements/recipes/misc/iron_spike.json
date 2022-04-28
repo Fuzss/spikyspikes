@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "spikyspikes:iron_spike"
+    ]
+  },
+  "criteria": {
+    "has_iron_sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:iron_sword"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "spikyspikes:iron_spike"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_iron_sword",
+      "has_the_recipe"
+    ]
+  ]
+}
