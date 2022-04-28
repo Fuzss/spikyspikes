@@ -169,13 +169,15 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             } else {
                 damageSource = ModRegistry.SPIKE_DOWN_DAMAGE_SOURCE;
             }
-            int lastHurtByPlayerTime = ((LivingEntityAccessor) livingEntity).getLastHurtByPlayerTime();
-            livingEntity.hurt(damageSource, this.spikeMaterial.damageAmount());
-            if (this.spikeMaterial.dropsJustExperience() && lastHurtByPlayerTime <= 0) {
-                ((LivingEntityAccessor) livingEntity).setLastHurtByPlayerTime(100);
-                ((LivingEntityAccessor) livingEntity).callDropExperience();
-                ((LivingEntityAccessor) livingEntity).setLastHurtByPlayerTime(lastHurtByPlayerTime);
+            if (this.spikeMaterial.dropsJustExperience()) {
+                int lastHurtByPlayerTime = ((LivingEntityAccessor) livingEntity).getLastHurtByPlayerTime();
+                if (lastHurtByPlayerTime <= 0) {
+                    ((LivingEntityAccessor) livingEntity).setLastHurtByPlayerTime(100);
+                    ((LivingEntityAccessor) livingEntity).callDropExperience();
+                    ((LivingEntityAccessor) livingEntity).setLastHurtByPlayerTime(lastHurtByPlayerTime);
+                }
             }
+            livingEntity.hurt(damageSource, this.spikeMaterial.damageAmount());
         }
     }
 

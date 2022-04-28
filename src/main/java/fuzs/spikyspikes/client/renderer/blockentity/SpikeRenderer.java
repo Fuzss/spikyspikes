@@ -9,6 +9,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +31,7 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity> {
         poseStack.scale(0.9995F, 0.9995F, 0.9995F);
         poseStack.mulPose(direction.getOpposite().getRotation());
         poseStack.scale(1.0F, -1.0F, -1.0F);
-        VertexConsumer vertexconsumer = this.material.buffer(p_112310_, RenderType::entitySolid);
+        VertexConsumer vertexconsumer = this.material.sprite().wrap(ItemRenderer.getFoilBufferDirect(p_112310_, this.material.renderType(RenderType::entitySolid), true, false));;
         this.model.render(poseStack, vertexconsumer, p_112311_, p_112312_);
         poseStack.popPose();
     }

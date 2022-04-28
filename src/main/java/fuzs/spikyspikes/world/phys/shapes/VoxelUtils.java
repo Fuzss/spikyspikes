@@ -78,11 +78,11 @@ public class VoxelUtils {
                 corners[1], corners[3],
                 corners[3], corners[2],
                 corners[2], corners[0],
-                // connections between bottom and top
-                corners[0], corners[5],
-                corners[1], corners[5],
-                corners[3], corners[5],
-                corners[2], corners[5]
+                // connections between bottom and apex
+                corners[0], corners[4],
+                corners[1], corners[4],
+                corners[3], corners[4],
+                corners[2], corners[4]
         };
     }
 

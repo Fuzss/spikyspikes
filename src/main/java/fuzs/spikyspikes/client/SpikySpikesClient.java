@@ -15,6 +15,6 @@ public class SpikySpikesClient {
 
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent evt) {
-        BlockEntityRenderers.register(ModRegistry.DIAMOND_SPIKE_BLOCK_ENTITY_TYPE.get(), context -> new SpikeRenderer(new ResourceLocation("block/gold_block")));
+        BlockEntityRenderers.register(ModRegistry.DIAMOND_SPIKE_BLOCK_ENTITY_TYPE.get(), context -> new SpikeRenderer(new ResourceLocation("block/diamond_block")));
     }
 }

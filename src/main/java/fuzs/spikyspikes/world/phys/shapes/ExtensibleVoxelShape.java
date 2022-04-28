@@ -14,18 +14,15 @@ import java.lang.reflect.Method;
 
 public abstract class ExtensibleVoxelShape extends SliceShape {
 
-    private final Field partField;
-    private final Method getValuesMethod;
+    private final Field partField = ObfuscationReflectionHelper.findField(VoxelShape.class, "f_83211_");
+    private final Method getValuesMethod = ObfuscationReflectionHelper.findMethod(VoxelShape.class, "m_7700_", Direction.Axis.class);
 
     public ExtensibleVoxelShape(VoxelShape voxelProvider) {
 
         super(voxelProvider, Direction.Axis.X, 0);
-        this.partField = ObfuscationReflectionHelper.findField(VoxelShape.class, "f_83211_");
-        this.getValuesMethod = ObfuscationReflectionHelper.findMethod(VoxelShape.class, "m_7700_", Direction.Axis.class);
         this.setVoxelPart(this, this.getVoxelPart(voxelProvider));
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     protected abstract DoubleList getCoords(Direction.Axis axis);
 
