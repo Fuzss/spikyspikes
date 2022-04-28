@@ -1,15 +1,22 @@
 package fuzs.spikyspikes.world.level.block;
 
 import com.google.common.collect.Maps;
+import fuzs.puzzleslib.proxy.IProxy;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
-import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
-import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -27,16 +34,24 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
 @SuppressWarnings("deprecation")
 public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("#.0"), (p_41704_) -> {
+        p_41704_.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+    });
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
@@ -103,7 +118,11 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     public VoxelShape getCollisionShape(BlockState p_52357_, BlockGetter p_52358_, BlockPos p_52359_, CollisionContext p_52360_) {
-        return COLLISION_SHAPE_BY_DIRECTION.get(p_52357_.getValue(FACING));
+        // items and xp shouldn't get stuck inside, good enough for all non-living entities
+        if (p_52360_ instanceof EntityCollisionContext context && context.getEntity() instanceof LivingEntity) {
+            return COLLISION_SHAPE_BY_DIRECTION.get(p_52357_.getValue(FACING));
+        }
+        return Shapes.block();
     }
 
     @Override
@@ -162,13 +181,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     public void entityInside(BlockState p_51148_, Level p_51149_, BlockPos p_51150_, Entity p_51151_) {
-        if (p_51151_ instanceof LivingEntity livingEntity && (this.spikeMaterial.dealsFinalBlow() || livingEntity.getHealth() > this.spikeMaterial.damageAmount())) {
-            DamageSource damageSource;
-            if (p_51148_.getValue(FACING) != Direction.DOWN) {
-                damageSource = ModRegistry.SPIKE_DAMAGE_SOURCE;
-            } else {
-                damageSource = ModRegistry.SPIKE_DOWN_DAMAGE_SOURCE;
-            }
+        if (p_51151_ instanceof LivingEntity livingEntity && (this.spikeMaterial.dealsFinalBlow() || livingEntity.getHealth() > this.spikeMaterial.damageAmount)) {
+            DamageSource damageSource = this.spikeMaterial.damageSource(p_51148_.getValue(FACING) == Direction.DOWN);
             if (this.spikeMaterial.dropsJustExperience()) {
                 int lastHurtByPlayerTime = ((LivingEntityAccessor) livingEntity).getLastHurtByPlayerTime();
                 if (lastHurtByPlayerTime <= 0) {
@@ -177,7 +191,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                     ((LivingEntityAccessor) livingEntity).setLastHurtByPlayerTime(lastHurtByPlayerTime);
                 }
             }
-            livingEntity.hurt(damageSource, this.spikeMaterial.damageAmount());
+            livingEntity.hurt(damageSource, this.spikeMaterial.damageAmount);
         }
     }
 
@@ -187,27 +201,54 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         return new SpikeBlockEntity(p_153215_, p_153216_);
     }
 
+    @Override
+    public void appendHoverText(ItemStack p_56193_, @javax.annotation.Nullable BlockGetter p_56194_, List<Component> tooltip, TooltipFlag p_56196_) {
+        super.appendHoverText(p_56193_, p_56194_, tooltip, p_56196_);
+        if (p_56194_ == null) return;
+        if (!IProxy.INSTANCE.hasShiftDown()) {
+            tooltip.add(new TranslatableComponent("item.spikyspikes.spike.tooltip.more", new TranslatableComponent("item.spikyspikes.spike.tooltip.shift").withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY));
+        } else {
+            tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("item.spikyspikes.spike.tooltip.damage", new TranslatableComponent("item.spikyspikes.spike.tooltip.hearts", new TextComponent(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(this.spikeMaterial.damageAmount / 2.0F)))).withStyle(this.spikeMaterial.tooltipStyle())).withStyle(ChatFormatting.GRAY));
+        }
+    }
+
     public enum SpikeMaterial {
-        STONE(0, 1.0F),
-        IRON(1, 4.0F),
-        GOLD(2, 6.0F),
-        DIAMOND(3, 8.0F),
-        NETHERITE(4, 10.0F);
+        WOOD(0, "wooden_spike", 1.0F),
+        STONE(1, "stone_spike", 2.0F),
+        IRON(2, "iron_spike", 4.0F),
+        GOLD(3, "golden_spike", 6.0F),
+        DIAMOND(4, "diamond_spike", 8.0F),
+        NETHERITE(5, "netherite_spike", 12.0F);
 
         private final int materialTier;
-        private final float damageAmount;
+        private final String translationKey;
+        public final float damageAmount;
 
-        SpikeMaterial(int materialTier, float damageAmount) {
+        SpikeMaterial(int materialTier, String translationKey, float damageAmount) {
             this.materialTier = materialTier;
+            this.translationKey = translationKey;
             this.damageAmount = damageAmount;
         }
 
-        public float damageAmount() {
-            return this.damageAmount;
+        public DamageSource damageSource(boolean facingDown) {
+            SpikeDamageSource source = new SpikeDamageSource(this.translationKey, this);
+            if (facingDown) source.damageHelmet();
+            return source;
+        }
+
+        public ChatFormatting tooltipStyle() {
+            if (this.isAtLeast(DIAMOND)) return ChatFormatting.GREEN;
+            if (this.isAtLeast(IRON)) return ChatFormatting.GOLD;
+            return ChatFormatting.RED;
         }
 
         public boolean dealsFinalBlow() {
-            return this.isAtLeast(IRON);
+            return this.isAtLeast(STONE);
+        }
+
+        public boolean dropsLoot() {
+            return this != STONE;
         }
 
         public boolean dropsJustExperience() {
@@ -219,7 +260,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         }
 
         public boolean acceptsEnchantments() {
-            return this.isAtLeast(NETHERITE);
+            return this.isAtLeast(DIAMOND);
         }
 
         private boolean isAtLeast(SpikeMaterial material) {

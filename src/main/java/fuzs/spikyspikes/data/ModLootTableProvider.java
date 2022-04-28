@@ -7,6 +7,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -48,9 +49,16 @@ public class ModLootTableProvider extends LootTableProvider {
     private class ModBlockLoot extends BlockLoot {
         @Override
         protected void addTables() {
-//            this.add(ModRegistry.MOB_HEAD_BLOCK.get(), (p_124114_) -> {
-//                return LootTable.lootTable().withPool(applyExplosionCondition(p_124114_, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(p_124114_).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(ModSkullBlockEntity.SKULL_TYPE_KEY, ModSkullBlockEntity.SKULL_TYPE_KEY)))));
-//            });
+            this.dropSelf(ModRegistry.WOODEN_SPIKE_BLOCK.get());
+            this.dropSelf(ModRegistry.STONE_SPIKE_BLOCK.get());
+            this.dropSelf(ModRegistry.IRON_SPIKE_BLOCK.get());
+            this.dropSelf(ModRegistry.GOLDEN_SPIKE_BLOCK.get());
+            this.add(ModRegistry.DIAMOND_SPIKE_BLOCK.get(), (p_124114_) -> {
+                return LootTable.lootTable().withPool(applyExplosionCondition(p_124114_, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(p_124114_).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(ItemStack.TAG_ENCH, "BlockEntityTag." + ItemStack.TAG_ENCH)))));
+            });
+            this.add(ModRegistry.NETHERITE_SPIKE_BLOCK.get(), (p_124114_) -> {
+                return LootTable.lootTable().withPool(applyExplosionCondition(p_124114_, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(p_124114_).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(ItemStack.TAG_ENCH, "BlockEntityTag." + ItemStack.TAG_ENCH)))));
+            });
         }
 
         @Override

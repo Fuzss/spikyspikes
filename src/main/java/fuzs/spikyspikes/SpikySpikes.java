@@ -2,8 +2,10 @@ package fuzs.spikyspikes;
 
 import fuzs.spikyspikes.data.ModLanguageProvider;
 import fuzs.spikyspikes.data.ModLootTableProvider;
+import fuzs.spikyspikes.handler.ItemCombinerHandler;
 import fuzs.spikyspikes.registry.ModRegistry;
 import net.minecraft.data.DataGenerator;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -26,7 +28,8 @@ public class SpikySpikes {
     }
 
     private static void registerHandlers() {
-
+        ItemCombinerHandler itemCombinerHandler = new ItemCombinerHandler();
+        MinecraftForge.EVENT_BUS.addListener(itemCombinerHandler::onAnvilUpdate);
     }
 
     @SubscribeEvent
