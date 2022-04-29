@@ -9,6 +9,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.List;
 
+/**
+ * this voxel shape allows for defining a separate shape when the shape (block) is highlighted (when the crosshair is being pointed at it)
+ * this allows for any form of shape (not restricted to cuboids) as individual lines can be fed to the consumer
+ */
 public class CustomOutlineShape extends ExtensibleVoxelShape {
     private final VoxelShape mainShape;
     private final List<Vec3[]> outlineShapeEdges;

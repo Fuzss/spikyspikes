@@ -5,7 +5,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -15,6 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
+/**
+ * copied from {@link AnvilMenu#createResult()} for our case, unfortunately this does not allow using /enchant
+ * intentionally done this way so that enchantments cannot be applied at the enchanting table
+ * otherwise alternative would be using {@link net.minecraftforge.common.extensions.IForgeItem#canApplyAtEnchantingTable}
+ * or a mixin for {@link EnchantmentCategory#WEAPON}
+ */
 public class ItemCombinerHandler {
 
     @SubscribeEvent

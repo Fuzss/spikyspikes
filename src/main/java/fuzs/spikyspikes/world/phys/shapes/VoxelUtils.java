@@ -40,6 +40,9 @@ public class VoxelUtils {
         return Stream.of(edges).map(edge -> new Vec3(edge.x, edge.z, edge.y)).toArray(Vec3[]::new);
     }
 
+    /**
+     * similar to {@link Direction#getRotation()}
+     */
     public static Vec3[] rotate(Direction direction, Vec3[] edges) {
         return switch (direction) {
             case DOWN -> mirrorY(edges);

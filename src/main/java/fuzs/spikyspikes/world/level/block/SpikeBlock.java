@@ -2,8 +2,9 @@ package fuzs.spikyspikes.world.level.block;
 
 import com.google.common.collect.Maps;
 import fuzs.puzzleslib.proxy.IProxy;
+import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
-import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
+import fuzs.spikyspikes.world.damagesource.SpikeEntityDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import fuzs.spikyspikes.world.phys.shapes.CustomOutlineShape;
 import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
@@ -14,21 +15,19 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,12 +38,12 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
@@ -53,8 +52,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
+/**
+ * code for facing copied from {@link AmethystClusterBlock}
+ */
 @SuppressWarnings("deprecation")
 public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("0.0"), (p_41704_) -> {
@@ -91,7 +94,9 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     private static VoxelShape makeCollisionShape(Direction direction) {
-        Vec3[] vectors = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 12.0, 15.0);
+        // less than full block since entity needs to be inside to receive damage
+        // height of 11 is just enough for items and xp to fit through this and a block above, but does not allow the player to walk up the block
+        Vec3[] vectors = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
         return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, vectors));
     }
 
@@ -172,24 +177,32 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity p_51151_) {
         if (!level.isClientSide && p_51151_ instanceof LivingEntity entity && entity.isAlive()) {
-            if ((!(entity instanceof Player playerTarget) || !playerTarget.getAbilities().instabuild && !playerTarget.getAbilities().invulnerable) && (this.spikeMaterial.dealsFinalBlow() || entity.getHealth() > this.spikeMaterial.damageAmount)) {
-                if (this.spikeMaterial.dropsPlayerLoot()) {
-                    if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                        blockEntity.attack((ServerLevel) level, entity);
-                    }
-                } else {
-                    ResourceLocation location = ForgeRegistries.BLOCKS.getKey(this);
-                    DamageSource damageSource = new SpikeDamageSource(location.getPath(), this.spikeMaterial);
-                    if (state.getValue(FACING) == Direction.DOWN) {
-                        damageSource.damageHelmet();
-                    }
-                    entity.hurt(damageSource, this.spikeMaterial.damageAmount);
-                    if (!entity.isAlive() && this.spikeMaterial.dropsJustExperience()) {
-                        int lastHurtByPlayerTime = ((LivingEntityAccessor) entity).getLastHurtByPlayerTime();
-                        if (lastHurtByPlayerTime <= 0) {
-                            ((LivingEntityAccessor) entity).setLastHurtByPlayerTime(100);
-                            ((LivingEntityAccessor) entity).callDropExperience();
-                            ((LivingEntityAccessor) entity).setLastHurtByPlayerTime(lastHurtByPlayerTime);
+            if (!(entity instanceof Player player) || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
+                SpikeMaterial material = this.spikeMaterial;
+                if ((material.dealsFinalBlow() || entity.getHealth() > material.damageAmount()) && (material.hurtsPlayers() || !(entity instanceof Player))) {
+                    if (material.dropsPlayerLoot()) {
+                        // this is handled by the block entity so we can have one player per placed spike
+                        if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
+                            blockEntity.attack((ServerLevel) level, entity, material.damageAmount());
+                        }
+                    } else {
+                        // cancelling drops via forge event works too, but also cancels equipment drops (e.g. saddles, not spawned equipment) which is not good
+                        boolean doMobLoot = level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT);
+                        if (!material.dropsLoot()) {
+                            level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(false, level.getServer());
+                        }
+                        entity.hurt(SpikeEntityDamageSource.SPIKE_DAMAGE_SOURCE, material.damageAmount());
+                        if (!material.dropsLoot()) {
+                            level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(doMobLoot, level.getServer());
+                        }
+                        // similar to zombified piglins, so we don't have to use a fake player just to get xp
+                        if (!entity.isAlive() && material.dropsJustExperience()) {
+                            int lastHurtByPlayerTime = ((LivingEntityAccessor) entity).getLastHurtByPlayerTime();
+                            if (lastHurtByPlayerTime <= 0) {
+                                ((LivingEntityAccessor) entity).setLastHurtByPlayerTime(100);
+                                ((LivingEntityAccessor) entity).callDropExperience();
+                                ((LivingEntityAccessor) entity).setLastHurtByPlayerTime(lastHurtByPlayerTime);
+                            }
                         }
                     }
                 }
@@ -207,7 +220,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     public void setPlacedBy(Level p_55179_, BlockPos p_55180_, BlockState p_55181_, @javax.annotation.Nullable LivingEntity p_55182_, ItemStack stack) {
         super.setPlacedBy(p_55179_, p_55180_, p_55181_, p_55182_, stack);
         if (p_55179_.getBlockEntity(p_55180_) instanceof SpikeBlockEntity blockEntity) {
-            blockEntity.setEnchantmentData(stack.getEnchantmentTags(), stack.getBaseRepairCost());
+            Map<Enchantment, Integer> enchantments = EnchantmentHelper.deserializeEnchantments(stack.getEnchantmentTags());
+            blockEntity.setEnchantmentData(enchantments, stack.getBaseRepairCost());
         }
     }
 
@@ -219,24 +233,34 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             tooltip.add(new TranslatableComponent("item.spikyspikes.spike.tooltip.more", new TranslatableComponent("item.spikyspikes.spike.tooltip.shift").withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY));
         } else {
             tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY));
-            tooltip.add(new TranslatableComponent("item.spikyspikes.spike.tooltip.damage", new TranslatableComponent("item.spikyspikes.spike.tooltip.hearts", new TextComponent(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(this.spikeMaterial.damageAmount / 2.0F)))).withStyle(this.spikeMaterial.tooltipStyle())).withStyle(ChatFormatting.GOLD));
+            tooltip.add(new TranslatableComponent("item.spikyspikes.spike.tooltip.damage", new TranslatableComponent("item.spikyspikes.spike.tooltip.hearts", new TextComponent(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(this.spikeMaterial.damageAmount() / 2.0F)))).withStyle(this.spikeMaterial.tooltipStyle())).withStyle(ChatFormatting.GOLD));
         }
     }
 
+    @Nullable
+    @Override
+    public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob entity) {
+        return BlockPathTypes.DAMAGE_CACTUS;
+    }
+
     public enum SpikeMaterial {
-        WOOD(0, 1.0F),
-        STONE(1, 2.0F),
-        IRON(2, 4.0F),
-        GOLD(3, 6.0F),
-        DIAMOND(4, 8.0F),
-        NETHERITE(5, 12.0F);
+        WOOD(0, () -> SpikySpikes.CONFIG.server().woodenSpikeDamage),
+        STONE(1, () -> SpikySpikes.CONFIG.server().stoneSpikeDamage),
+        IRON(2, () -> SpikySpikes.CONFIG.server().ironSpikeDamage),
+        GOLD(3, () -> SpikySpikes.CONFIG.server().goldenSpikeDamage),
+        DIAMOND(4, () -> SpikySpikes.CONFIG.server().diamondSpikeDamage),
+        NETHERITE(5, () -> SpikySpikes.CONFIG.server().netheriteSpikeDamage);
 
         private final int materialTier;
-        public final float damageAmount;
+        private final DoubleSupplier damageAmount;
 
-        SpikeMaterial(int materialTier, float damageAmount) {
+        SpikeMaterial(int materialTier, DoubleSupplier damageAmount) {
             this.materialTier = materialTier;
             this.damageAmount = damageAmount;
+        }
+
+        public float damageAmount() {
+            return (float) this.damageAmount.getAsDouble();
         }
 
         public ChatFormatting tooltipStyle() {
@@ -274,6 +298,10 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
         public boolean acceptsEnchantments() {
             return this.isAtLeast(DIAMOND);
+        }
+
+        public boolean hurtsPlayers() {
+            return this != NETHERITE;
         }
 
         private boolean isAtLeast(SpikeMaterial material) {

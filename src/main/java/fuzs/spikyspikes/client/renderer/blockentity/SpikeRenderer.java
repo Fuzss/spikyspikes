@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity> {
     private static final Map<SpikeBlock.SpikeMaterial, Material> MATERIAL_BY_TYPE = Util.make(Maps.<SpikeBlock.SpikeMaterial, ResourceLocation>newHashMap(), (p_112552_) -> {
-        p_112552_.put(SpikeBlock.SpikeMaterial.WOOD, new ResourceLocation("block/oak_planks"));
+        p_112552_.put(SpikeBlock.SpikeMaterial.WOOD, new ResourceLocation("block/stripped_oak_log"));
         p_112552_.put(SpikeBlock.SpikeMaterial.STONE, new ResourceLocation("block/smooth_stone"));
         p_112552_.put(SpikeBlock.SpikeMaterial.IRON, new ResourceLocation("block/iron_block"));
         p_112552_.put(SpikeBlock.SpikeMaterial.GOLD, new ResourceLocation("block/gold_block"));
@@ -36,7 +36,7 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity> {
     public void render(SpikeBlockEntity p_112307_, float p_112308_, PoseStack poseStack, MultiBufferSource p_112310_, int p_112311_, int p_112312_) {
         Direction direction = p_112307_.getBlockState().getValue(SpikeBlock.FACING);
         SpikeBlock.SpikeMaterial spikeMaterial = ((SpikeBlock) p_112307_.getBlockState().getBlock()).spikeMaterial;
-        renderSpike(direction, spikeMaterial, poseStack, p_112310_, p_112311_, p_112312_, false, p_112307_.hasEnchantments());
+        renderSpike(direction, spikeMaterial, poseStack, p_112310_, p_112311_, p_112312_, false, p_112307_.hasFoil());
     }
 
     public static void renderSpike(Direction direction, SpikeBlock.SpikeMaterial spikeMaterial, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int overlay, boolean inventoryRendering, boolean withFoil) {

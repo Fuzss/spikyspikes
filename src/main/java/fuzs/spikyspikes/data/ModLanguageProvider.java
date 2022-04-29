@@ -2,7 +2,6 @@ package fuzs.spikyspikes.data;
 
 import fuzs.spikyspikes.registry.ModRegistry;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.LanguageProvider;
 
@@ -27,8 +26,10 @@ public class ModLanguageProvider extends LanguageProvider {
         this.addAdditional(ModRegistry.STONE_SPIKE_BLOCK.get(), "description", "Damages and kills mobs, but does not drop any loot or experience.");
         this.addAdditional(ModRegistry.IRON_SPIKE_BLOCK.get(), "description", "Damages and kills mobs, only drops normal loot without experience.");
         this.addAdditional(ModRegistry.GOLDEN_SPIKE_BLOCK.get(), "description", "Damages and kills mobs, only drops experience without any loot.");
-        this.addAdditional(ModRegistry.DIAMOND_SPIKE_BLOCK.get(), "description", "Deals a lot of damage, mobs drop all loot like when killed by a player. Accepts all sword enchantments in an anvil.");
-        this.addAdditional(ModRegistry.NETHERITE_SPIKE_BLOCK.get(), "description", "Deals a lot of damage, mobs drop all loot like when killed by a player. Accepts all sword enchantments in an anvil. Is resistant to explosions and cannot be destroyed by the wither boss.");
+        this.addAdditional(ModRegistry.DIAMOND_SPIKE_BLOCK.get(), "description", "Deals a lot of damage, mobs drop all loot like when killed by a player. Can use most sword enchantments, apply via an anvil.");
+        this.addAdditional(ModRegistry.NETHERITE_SPIKE_BLOCK.get(), "description", "Deals a lot of damage, mobs drop all loot like when killed by a player. Can use most sword enchantments, apply via an anvil. Is resistant to explosions and cannot be destroyed by the wither boss. Deals no damage to players.");
+        this.add("death.attack.spike", "%1$s now rests in a less spiky world");
+        this.add("death.attack.spike.player", "%1$s oversaw a spike trying to flee from %2$s");
     }
 
     public void addAdditional(Block key, String additional, String name) {

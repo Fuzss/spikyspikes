@@ -71,6 +71,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     protected void netheriteSmithing2(Consumer<FinishedRecipe> p_125995_, Item p_125996_, Item p_125997_) {
+        // custom mod id path, otherwise same as vanilla method
         UpgradeRecipeBuilder.smithing(Ingredient.of(p_125996_), Ingredient.of(Items.NETHERITE_INGOT), p_125997_).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(p_125995_, new ResourceLocation(this.modId, getItemName(p_125997_) + "_smithing"));
     }
 }

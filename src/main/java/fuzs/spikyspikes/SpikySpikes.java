@@ -1,6 +1,10 @@
 package fuzs.spikyspikes;
 
+import fuzs.puzzleslib.config.AbstractConfig;
+import fuzs.puzzleslib.config.ConfigHolder;
+import fuzs.puzzleslib.config.ConfigHolderImpl;
 import fuzs.puzzleslib.registry.FuelManager;
+import fuzs.spikyspikes.config.ServerConfig;
 import fuzs.spikyspikes.data.*;
 import fuzs.spikyspikes.handler.ItemCombinerHandler;
 import fuzs.spikyspikes.handler.SpikeLootHandler;
@@ -23,21 +27,25 @@ public class SpikySpikes {
     public static final String MOD_NAME = "Spiky Spikes";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
+    @SuppressWarnings("Convert2MethodRef")
+    public static final ConfigHolder<AbstractConfig, ServerConfig> CONFIG = ConfigHolder.server(() -> new ServerConfig());
+
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
+        ((ConfigHolderImpl<?, ?>) CONFIG).addConfigs(MOD_ID);
         ModRegistry.touch();
         registerHandlers();
     }
 
     private static void registerHandlers() {
         SpikeLootHandler spikeLootHandler = new SpikeLootHandler();
-        MinecraftForge.EVENT_BUS.addListener(spikeLootHandler::onLivingDrops);
+        MinecraftForge.EVENT_BUS.addListener(spikeLootHandler::onLootingLevel);
         ItemCombinerHandler itemCombinerHandler = new ItemCombinerHandler();
         MinecraftForge.EVENT_BUS.addListener(itemCombinerHandler::onAnvilUpdate);
     }
 
     @SubscribeEvent
-    public static void onFMLCommonSetup(final FMLCommonSetupEvent evt) {
+    public static void onCommonSetup(final FMLCommonSetupEvent evt) {
         FuelManager.INSTANCE.addWoodenBlock(ModRegistry.WOODEN_SPIKE_BLOCK.get());
     }
 
