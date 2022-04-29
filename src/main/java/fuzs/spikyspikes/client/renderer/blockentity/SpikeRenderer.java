@@ -36,10 +36,11 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity> {
     public void render(SpikeBlockEntity p_112307_, float p_112308_, PoseStack poseStack, MultiBufferSource p_112310_, int p_112311_, int p_112312_) {
         Direction direction = p_112307_.getBlockState().getValue(SpikeBlock.FACING);
         SpikeBlock.SpikeMaterial spikeMaterial = ((SpikeBlock) p_112307_.getBlockState().getBlock()).spikeMaterial;
-        renderSpike(direction, spikeMaterial, poseStack, p_112310_, p_112311_, p_112312_, false, p_112307_.hasFoil());
+        renderSpike(direction, spikeMaterial, poseStack, p_112310_, p_112311_, p_112312_, false, p_112307_.hasEnchantments());
     }
 
     public static void renderSpike(Direction direction, SpikeBlock.SpikeMaterial spikeMaterial, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int overlay, boolean inventoryRendering, boolean withFoil) {
+        // from shulker box renderer
         poseStack.pushPose();
         poseStack.translate(0.5D, 0.5D, 0.5D);
         poseStack.scale(0.9995F, 0.9995F, 0.9995F);

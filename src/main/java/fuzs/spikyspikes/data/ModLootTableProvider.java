@@ -3,11 +3,11 @@ package fuzs.spikyspikes.data;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -54,10 +54,10 @@ public class ModLootTableProvider extends LootTableProvider {
             this.dropSelf(ModRegistry.IRON_SPIKE_BLOCK.get());
             this.dropSelf(ModRegistry.GOLDEN_SPIKE_BLOCK.get());
             this.add(ModRegistry.DIAMOND_SPIKE_BLOCK.get(), (p_124114_) -> {
-                return LootTable.lootTable().withPool(applyExplosionCondition(p_124114_, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(p_124114_).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(ItemStack.TAG_ENCH, "BlockEntityTag." + ItemStack.TAG_ENCH)))));
+                return LootTable.lootTable().withPool(applyExplosionCondition(p_124114_, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(p_124114_).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(SpikeBlockEntity.ENCHANTMENTS_TAG, SpikeBlockEntity.ENCHANTMENTS_TAG).copy(SpikeBlockEntity.REPAIR_COST_TAG, SpikeBlockEntity.REPAIR_COST_TAG)))));
             });
             this.add(ModRegistry.NETHERITE_SPIKE_BLOCK.get(), (p_124114_) -> {
-                return LootTable.lootTable().withPool(applyExplosionCondition(p_124114_, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(p_124114_).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(ItemStack.TAG_ENCH, "BlockEntityTag." + ItemStack.TAG_ENCH)))));
+                return LootTable.lootTable().withPool(applyExplosionCondition(p_124114_, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(p_124114_).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(SpikeBlockEntity.ENCHANTMENTS_TAG, SpikeBlockEntity.ENCHANTMENTS_TAG).copy(SpikeBlockEntity.REPAIR_COST_TAG, SpikeBlockEntity.REPAIR_COST_TAG)))));
             });
         }
 

@@ -7,6 +7,7 @@ import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,13 +35,12 @@ public class ItemCombinerHandler {
                 boolean flag2 = false;
                 boolean enchantingDisallowed = false;
 
-                ItemStack swordStack = new ItemStack(Items.DIAMOND_SWORD);
                 for (Enchantment enchantment1 : map1.keySet()) {
                     if (enchantment1 != null) {
                         int i2 = map.getOrDefault(enchantment1, 0);
                         int j2 = map1.get(enchantment1);
                         j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
-                        boolean canEnchant = enchantment1.canEnchant(swordStack);
+                        boolean canEnchant = enchantment1.category == EnchantmentCategory.WEAPON;
                         if (evt.getPlayer().getAbilities().instabuild) {
                             canEnchant = true;
                         }

@@ -1,11 +1,12 @@
 package fuzs.spikyspikes.world.level.block;
 
 import com.google.common.collect.Maps;
-import com.mojang.authlib.GameProfile;
 import fuzs.puzzleslib.proxy.IProxy;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
+import fuzs.spikyspikes.world.phys.shapes.CustomOutlineShape;
+import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -19,7 +20,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -37,17 +40,19 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.Function;
 
 @SuppressWarnings("deprecation")
@@ -58,12 +63,11 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
-            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> makeShape(direction, true)));
+            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), SpikeBlock::makeVisualShape));
     private static final Map<Direction, VoxelShape> COLLISION_SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
-            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> makeShape(direction, false)));
+            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), SpikeBlock::makeCollisionShape));
 
     public final SpikeMaterial spikeMaterial;
-    private final UUID fakePlayerUUID = UUID.randomUUID();
 
     public SpikeBlock(SpikeMaterial spikeMaterial, Properties p_49795_) {
         super(p_49795_);
@@ -71,48 +75,24 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, Boolean.FALSE).setValue(FACING, Direction.UP));
     }
 
-    private static VoxelShape makeShape(Direction direction, boolean fullHeight) {
-        int height = fullHeight ? 8 : 7;
-        VoxelShape fullShape = null;
-        // one less so entities will be inside of shape when standing on top/pushing in from the side
-        for (int i = 0; i < height; i++) {
-            int startX = startCoordinate(i, direction.getStepX(), direction.getAxisDirection());
-            int startY = startCoordinate(i, direction.getStepY(), direction.getAxisDirection());
-            int startZ = startCoordinate(i, direction.getStepZ(), direction.getAxisDirection());
-            int endX = endCoordinate(i, direction.getStepX(), direction.getAxisDirection());
-            int endY = endCoordinate(i, direction.getStepY(), direction.getAxisDirection());
-            int endZ = endCoordinate(i, direction.getStepZ(), direction.getAxisDirection());
-            VoxelShape layer = Block.box(Math.min(startX, endX), Math.min(startY, endY), Math.min(startZ, endZ), Math.max(startX, endX), Math.max(startY, endY), Math.max(startZ, endZ));
-            if (i == 0) {
-                fullShape = layer;
-            } else {
-                fullShape = Shapes.or(fullShape, layer);
-            }
-        }
-        return fullShape;
+    private static VoxelShape makeVisualShape(Direction direction) {
+        VoxelShape shape = makeStaircasePyramid(direction, 8, 2.0);
+        Vec3[] outlineVectors = VoxelUtils.makePyramidEdges(VoxelUtils.makeVectors(0.0, 0.0, 0.0, 16.0, 0.0, 0.0, 16.0, 0.0, 16.0, 0.0, 0.0, 16.0, 8.0, 16.0, 8.0));
+        return new CustomOutlineShape(shape, VoxelUtils.scale(VoxelUtils.rotate(direction, outlineVectors)));
     }
 
-//    private static VoxelShape makeVisualShape(Direction direction, boolean fullHeight) {
-//        VoxelUtils.createVectorArray(0.0, 0.0, 0.0, 16.0, 0.0, 0.0, 0.0, 0.0, 16.0, 16.0, 0.0, 16.0, 8.0, 16.0, 8.0);
-//    }
-
-    private static int startCoordinate(int i, int step, Direction.AxisDirection axisDirection) {
-        int coordinate;
-        if (step != 0) {
-            coordinate = 2 * i * step;
-        } else {
-            coordinate = i * axisDirection.getStep();
+    private static VoxelShape makeStaircasePyramid(Direction direction, int layers, double layerHeight) {
+        Vec3[] vectors = new Vec3[layers * 2];
+        for (int i = 0, j = layers; i < layers; i++, j--) {
+            vectors[2 * i] = new Vec3(8.0 - j, i * layerHeight, 8.0 - j);
+            vectors[2 * i + 1] = new Vec3(8.0 + j, (i + 1) * layerHeight, 8.0 + j);
         }
-        // addition as value will be negative
-        return axisDirection == Direction.AxisDirection.NEGATIVE ? 16 + coordinate : coordinate;
+        return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, vectors));
     }
 
-    private static int endCoordinate(int i, int step, Direction.AxisDirection axisDirection) {
-        if (step != 0) {
-            return startCoordinate(i + 1, step, axisDirection);
-        } else {
-            return startCoordinate(i, 0, axisDirection.opposite());
-        }
+    private static VoxelShape makeCollisionShape(Direction direction) {
+        Vec3[] vectors = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 12.0, 15.0);
+        return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, vectors));
     }
 
     @Override
@@ -122,11 +102,17 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     public VoxelShape getCollisionShape(BlockState p_52357_, BlockGetter p_52358_, BlockPos p_52359_, CollisionContext p_52360_) {
-        // items and xp shouldn't get stuck inside, good enough for all non-living entities
-        if (p_52360_ instanceof EntityCollisionContext context && !(context.getEntity() instanceof LivingEntity)) {
-            return Shapes.block();
-        }
         return COLLISION_SHAPE_BY_DIRECTION.get(p_52357_.getValue(FACING));
+    }
+
+    @Override
+    public VoxelShape getVisualShape(BlockState p_60479_, BlockGetter p_60480_, BlockPos p_60481_, CollisionContext p_60482_) {
+        return this.getShape(p_60479_, p_60480_, p_60481_, p_60482_);
+    }
+
+    @Override
+    public VoxelShape getBlockSupportShape(BlockState p_60581_, BlockGetter p_60582_, BlockPos p_60583_) {
+        return Shapes.empty();
     }
 
     @Override
@@ -184,20 +170,17 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public void entityInside(BlockState p_51148_, Level p_51149_, BlockPos p_51150_, Entity p_51151_) {
-        if (!p_51151_.level.isClientSide && p_51151_ instanceof LivingEntity entity && entity.isAlive()) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity p_51151_) {
+        if (!level.isClientSide && p_51151_ instanceof LivingEntity entity && entity.isAlive()) {
             if ((!(entity instanceof Player playerTarget) || !playerTarget.getAbilities().instabuild && !playerTarget.getAbilities().invulnerable) && (this.spikeMaterial.dealsFinalBlow() || entity.getHealth() > this.spikeMaterial.damageAmount)) {
                 if (this.spikeMaterial.dropsPlayerLoot()) {
-                    GameProfile profile = new GameProfile(this.fakePlayerUUID, this.getName().getString());
-                    Player player = FakePlayerFactory.get((ServerLevel) entity.level, profile);
-                    player.setSilent(true);
-                    if (player.getAttackStrengthScale(0.5F) > 0.9F) {
-                        player.attack(entity);
+                    if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
+                        blockEntity.attack((ServerLevel) level, entity);
                     }
                 } else {
                     ResourceLocation location = ForgeRegistries.BLOCKS.getKey(this);
                     DamageSource damageSource = new SpikeDamageSource(location.getPath(), this.spikeMaterial);
-                    if (p_51148_.getValue(FACING) == Direction.DOWN) {
+                    if (state.getValue(FACING) == Direction.DOWN) {
                         damageSource.damageHelmet();
                     }
                     entity.hurt(damageSource, this.spikeMaterial.damageAmount);
@@ -218,6 +201,14 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Override
     public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
         return new SpikeBlockEntity(p_153215_, p_153216_);
+    }
+
+    @Override
+    public void setPlacedBy(Level p_55179_, BlockPos p_55180_, BlockState p_55181_, @javax.annotation.Nullable LivingEntity p_55182_, ItemStack stack) {
+        super.setPlacedBy(p_55179_, p_55180_, p_55181_, p_55182_, stack);
+        if (p_55179_.getBlockEntity(p_55180_) instanceof SpikeBlockEntity blockEntity) {
+            blockEntity.setEnchantmentData(stack.getEnchantmentTags(), stack.getBaseRepairCost());
+        }
     }
 
     @Override
@@ -252,6 +243,17 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             if (this.isAtLeast(DIAMOND)) return ChatFormatting.GREEN;
             if (this.isAtLeast(IRON)) return ChatFormatting.AQUA;
             return ChatFormatting.RED;
+        }
+
+        public Item swordItem() {
+            return switch (this) {
+                case WOOD -> Items.WOODEN_SWORD;
+                case STONE -> Items.STONE_SWORD;
+                case IRON -> Items.IRON_SWORD;
+                case GOLD -> Items.GOLDEN_SWORD;
+                case DIAMOND -> Items.DIAMOND_SWORD;
+                case NETHERITE -> Items.NETHERITE_SWORD;
+            };
         }
 
         public boolean dealsFinalBlow() {

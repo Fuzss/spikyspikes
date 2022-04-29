@@ -14,7 +14,12 @@
               "ops": [
                 {
                   "source": "Enchantments",
-                  "target": "BlockEntityTag.Enchantments",
+                  "target": "Enchantments",
+                  "op": "replace"
+                },
+                {
+                  "source": "RepairCost",
+                  "target": "RepairCost",
                   "op": "replace"
                 }
               ]
