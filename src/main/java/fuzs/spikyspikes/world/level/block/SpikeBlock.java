@@ -116,6 +116,11 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
+    public VoxelShape getInteractionShape(BlockState p_60547_, BlockGetter p_60548_, BlockPos p_60549_) {
+        return COLLISION_SHAPE_BY_DIRECTION.get(p_60547_.getValue(FACING));
+    }
+
+    @Override
     public VoxelShape getBlockSupportShape(BlockState p_60581_, BlockGetter p_60582_, BlockPos p_60583_) {
         return Shapes.empty();
     }
