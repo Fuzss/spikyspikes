@@ -3,6 +3,7 @@ package fuzs.spikyspikes.world.level.block;
 import com.google.common.collect.Maps;
 import fuzs.puzzleslib.proxy.IProxy;
 import fuzs.spikyspikes.SpikySpikes;
+import fuzs.spikyspikes.config.ServerConfig;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikeEntityDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
@@ -15,7 +16,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -52,8 +52,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.DoubleSupplier;
 import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 /**
  * code for facing copied from {@link AmethystClusterBlock}
@@ -95,7 +95,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     private static VoxelShape makeCollisionShape(Direction direction) {
         // less than full block since entity needs to be inside to receive damage
-        // height of 11 is just enough for items and xp to fit through this and a block above, but does not allow the player to walk up the block
+        // height of 11 is just enough for items to fit through this and a block above, but does not allow the player to walk up the block
         Vec3[] vectors = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
         return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, vectors));
     }
@@ -183,7 +183,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                     if (material.dropsPlayerLoot()) {
                         // this is handled by the block entity so we can have one player per placed spike
                         if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                            blockEntity.attack((ServerLevel) level, entity, material.damageAmount());
+                            blockEntity.attack(entity, material.damageAmount());
                         }
                     } else {
                         // cancelling drops via forge event works too, but also cancels equipment drops (e.g. saddles, not spawned equipment) which is not good
@@ -244,23 +244,23 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     public enum SpikeMaterial {
-        WOOD(0, () -> SpikySpikes.CONFIG.server().woodenSpikeDamage),
-        STONE(1, () -> SpikySpikes.CONFIG.server().stoneSpikeDamage),
-        IRON(2, () -> SpikySpikes.CONFIG.server().ironSpikeDamage),
-        GOLD(3, () -> SpikySpikes.CONFIG.server().goldenSpikeDamage),
-        DIAMOND(4, () -> SpikySpikes.CONFIG.server().diamondSpikeDamage),
-        NETHERITE(5, () -> SpikySpikes.CONFIG.server().netheriteSpikeDamage);
+        WOOD(0, config -> config.woodenSpikeDamage),
+        STONE(1, config -> config.stoneSpikeDamage),
+        IRON(2, config -> config.ironSpikeDamage),
+        GOLD(3, config -> config.goldenSpikeDamage),
+        DIAMOND(4, config -> config.diamondSpikeDamage),
+        NETHERITE(5, config -> config.netheriteSpikeDamage);
 
         private final int materialTier;
-        private final DoubleSupplier damageAmount;
+        private final ToDoubleFunction<ServerConfig> damageAmount;
 
-        SpikeMaterial(int materialTier, DoubleSupplier damageAmount) {
+        SpikeMaterial(int materialTier, ToDoubleFunction<ServerConfig> damageAmount) {
             this.materialTier = materialTier;
             this.damageAmount = damageAmount;
         }
 
         public float damageAmount() {
-            return (float) this.damageAmount.getAsDouble();
+            return (float) this.damageAmount.applyAsDouble(SpikySpikes.CONFIG.server());
         }
 
         public ChatFormatting tooltipStyle() {
