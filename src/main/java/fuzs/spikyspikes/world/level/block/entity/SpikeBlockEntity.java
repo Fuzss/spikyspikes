@@ -1,9 +1,9 @@
 package fuzs.spikyspikes.world.level.block.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.authlib.GameProfile;
+import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.registry.ModRegistry;
-import fuzs.spikyspikes.world.damagesource.SpikeEntityDamageSource;
+import fuzs.spikyspikes.world.damagesource.SpikePlayerDamageSource;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,11 +29,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayerFactory;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
 public class SpikeBlockEntity extends BlockEntity {
     public static final String ENCHANTMENTS_TAG = "Enchantments";
@@ -41,7 +39,6 @@ public class SpikeBlockEntity extends BlockEntity {
 
     private Map<Enchantment, Integer> enchantments;
     private int repairCost;
-    private final UUID uuid = UUID.randomUUID();
 
     public SpikeBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(ModRegistry.SPIKE_BLOCK_ENTITY_TYPE.get(), p_155229_, p_155230_);
@@ -97,10 +94,7 @@ public class SpikeBlockEntity extends BlockEntity {
 
     public void attack(Entity target, float attackDamage) {
         if (!this.getLevel().isClientSide) {
-            GameProfile profile = new GameProfile(this.uuid, this.getBlockState().getBlock().getName().getString());
-            Player player = FakePlayerFactory.get((ServerLevel) this.getLevel(), profile);
-            player.moveTo(this.getBlockPos(), 0.0F, 0.0F);
-            attack(player, target, attackDamage, this.getLevel(), this.getBlockPos(), this.getBlockState().getValue(SpikeBlock.FACING), this.enchantments);
+            attack(target, attackDamage, this.getLevel(), this.getBlockPos(), this.getBlockState().getValue(SpikeBlock.FACING), this.enchantments);
             if (target instanceof Mob mob) {
                 mob.setLastHurtByMob(null);
                 mob.setLastHurtByPlayer(null);
@@ -112,74 +106,71 @@ public class SpikeBlockEntity extends BlockEntity {
     /**
      * adapted from {@link Player#attack}, most importantly removing all the knockback and sounds, also most particles
      */
-    private static void attack(Player player, Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, Map<Enchantment, Integer> enchantments) {
-        // not sure how well other mods will handle a fake player here
-//        if (!ForgeHooks.onPlayerAttackTarget(player, target)) return;
+    private static void attack(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, Map<Enchantment, Integer> enchantments) {
         if (target.isAttackable()) {
 
-            if (!target.skipAttackInteraction(player)) {
+            MobType mobType = target instanceof LivingEntity ? ((LivingEntity) target).getMobType() : MobType.UNDEFINED;
 
-                MobType mobType = target instanceof LivingEntity ? ((LivingEntity) target).getMobType() : MobType.UNDEFINED;
+            float damageBonus = 0.0F;
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                damageBonus += entry.getKey().getDamageBonus(entry.getValue(), mobType);
+            }
 
-                float damageBonus = 0.0F;
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    damageBonus += entry.getKey().getDamageBonus(entry.getValue(), mobType);
+            if (attackDamage > 0.0F || damageBonus > 0.0F) {
+
+                attackDamage += damageBonus;
+
+                int fireAspect = enchantments.getOrDefault(Enchantments.FIRE_ASPECT, 0);
+                boolean setOnFire = false;
+                if (target instanceof LivingEntity) {
+
+                    if (fireAspect > 0 && !target.isOnFire()) {
+
+                        setOnFire = true;
+                        target.setSecondsOnFire(1);
+                    }
                 }
 
-                if (attackDamage > 0.0F || damageBonus > 0.0F) {
+                int looting = enchantments.getOrDefault(Enchantments.MOB_LOOTING, 0);
+                Vec3 oldMovement = target.getDeltaMovement();
+                ((LivingEntityAccessor) target).setLastHurtByPlayerTime(100);
+                boolean hurtTarget = target.hurt(SpikePlayerDamageSource.spikePlayer(looting), attackDamage);
+                if (hurtTarget) {
 
-                    attackDamage += damageBonus;
+                    // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
+                    target.setDeltaMovement(oldMovement);
+                    int knockback = enchantments.getOrDefault(Enchantments.KNOCKBACK, 0);
+                    if (knockback > 0) {
+                        applyLivingKnockback(direction, target, knockback * 0.5F, level.getRandom());
+                    }
 
-                    int fireAspect = enchantments.getOrDefault(Enchantments.FIRE_ASPECT, 0);
-                    boolean setOnFire = false;
+                    int sweeping = enchantments.getOrDefault(Enchantments.SWEEPING_EDGE, 0);
+                    if (sweeping > 0) {
+                        applySweepingDamage(target, attackDamage, level, pos, direction, looting, knockback, sweeping);
+                    }
+
+                    if (damageBonus > 0.0F && level instanceof ServerLevel) {
+                        ((ServerLevel) level).getChunkSource().broadcastAndSend(target, new ClientboundAnimatePacket(target, ClientboundAnimatePacket.MAGIC_CRITICAL_HIT));
+                    }
+
+                    // not possible without a player
+//                    if (target instanceof LivingEntity) {
+//                        for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+//                            entry.getKey().doPostHurt((LivingEntity) target, player, entry.getValue());
+//                        }
+//                    }
+//
+//                    for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+//                        entry.getKey().doPostAttack(player, target, entry.getValue());
+//                    }
+
                     if (target instanceof LivingEntity) {
-
-                        if (fireAspect > 0 && !target.isOnFire()) {
-
-                            setOnFire = true;
-                            target.setSecondsOnFire(1);
+                        if (fireAspect > 0) {
+                            target.setSecondsOnFire(fireAspect * 4);
                         }
                     }
-
-                    int looting = enchantments.getOrDefault(Enchantments.MOB_LOOTING, 0);
-                    Vec3 oldMovement = target.getDeltaMovement();
-                    boolean hurtTarget = target.hurt(SpikeEntityDamageSource.spikeEntity(player, looting), attackDamage);
-                    if (hurtTarget) {
-
-                        // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
-                        target.setDeltaMovement(oldMovement);
-                        int knockback = enchantments.getOrDefault(Enchantments.KNOCKBACK, 0);
-                        if (knockback > 0) {
-                            applyLivingKnockback(direction, target, knockback * 0.5F, player.getRandom());
-                        }
-
-                        int sweeping = enchantments.getOrDefault(Enchantments.SWEEPING_EDGE, 0);
-                        if (sweeping > 0) {
-                            applySweepingDamage(player, target, attackDamage, level, pos, direction, looting, knockback, sweeping);
-                        }
-
-                        if (damageBonus > 0.0F && level instanceof ServerLevel) {
-                            ((ServerLevel) level).getChunkSource().broadcastAndSend(target, new ClientboundAnimatePacket(target, ClientboundAnimatePacket.MAGIC_CRITICAL_HIT));
-                        }
-
-                        if (target instanceof LivingEntity) {
-                            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                                entry.getKey().doPostHurt((LivingEntity) target, player, entry.getValue());
-                            }
-                        }
-
-                        for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                            entry.getKey().doPostAttack(player, target, entry.getValue());
-                        }
-
-                        if (target instanceof LivingEntity) {
-                            if (fireAspect > 0) {
-                                target.setSecondsOnFire(fireAspect * 4);
-                            }
-                        }
-                    } else if (setOnFire) {
-                        target.clearFire();
-                    }
+                } else if (setOnFire) {
+                    target.clearFire();
                 }
             }
         }
@@ -200,15 +191,15 @@ public class SpikeBlockEntity extends BlockEntity {
         }
     }
 
-    private static void applySweepingDamage(Player player, Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, int looting, int knockback, int sweeping) {
+    private static void applySweepingDamage(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, int looting, int knockback, int sweeping) {
         float f3 = 1.0F + SweepingEdgeEnchantment.getSweepingDamageRatio(sweeping) * attackDamage;
 
         for(LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
-            if (livingentity != player && livingentity != target && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && pos.distToCenterSqr(livingentity.position()) < 9.0D) {
+            if (livingentity != target && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && pos.distToCenterSqr(livingentity.position()) < 9.0D) {
                 if (knockback > 0) {
-                    applyLivingKnockback(direction, livingentity, 0.4F, player.getRandom());
+                    applyLivingKnockback(direction, livingentity, 0.4F, level.getRandom());
                 }
-                livingentity.hurt(SpikeEntityDamageSource.spikeEntity(player, looting), f3);
+                livingentity.hurt(SpikePlayerDamageSource.spikePlayer(looting), f3);
             }
         }
         if (level instanceof ServerLevel) {

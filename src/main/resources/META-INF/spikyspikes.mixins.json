@@ -5,6 +5,9 @@
   "package": "fuzs.spikyspikes.mixin",
   "refmap": "META-INF/spikyspikes.refmap.json",
   "mixins": [
+    "LootingEnchantFunctionMixin",
+    "LootItemKilledByPlayerConditionMixin",
+    "LootItemRandomChanceWithLootingConditionMixin",
     "accessor.LivingEntityAccessor"
   ],
   "client": [

@@ -1,4 +1,4 @@
-package fuzs.spikyspikes.world.phys.shapes;
+package fuzs.spikyspikes.core.world.phys.shapes;
 
 import fuzs.spikyspikes.SpikySpikes;
 import it.unimi.dsi.fastutil.doubles.DoubleList;

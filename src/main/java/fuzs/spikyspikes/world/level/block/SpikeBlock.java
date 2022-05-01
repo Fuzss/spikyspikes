@@ -4,11 +4,11 @@ import com.google.common.collect.Maps;
 import fuzs.puzzleslib.proxy.IProxy;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.config.ServerConfig;
+import fuzs.spikyspikes.core.world.phys.shapes.CustomOutlineShape;
+import fuzs.spikyspikes.core.world.phys.shapes.VoxelUtils;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
-import fuzs.spikyspikes.world.damagesource.SpikeEntityDamageSource;
+import fuzs.spikyspikes.world.damagesource.SpikePlayerDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
-import fuzs.spikyspikes.world.phys.shapes.CustomOutlineShape;
-import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -196,7 +196,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(false, level.getServer());
                         }
-                        entity.hurt(SpikeEntityDamageSource.SPIKE_DAMAGE_SOURCE, material.damageAmount());
+                        entity.hurt(SpikePlayerDamageSource.SPIKE_DAMAGE_SOURCE, material.damageAmount());
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(doMobLoot, level.getServer());
                         }
@@ -246,6 +246,17 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Override
     public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob entity) {
         return BlockPathTypes.DAMAGE_CACTUS;
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState p_49825_) {
+        ItemStack stack = super.getCloneItemStack(level, pos, p_49825_);
+        if (this.spikeMaterial.acceptsEnchantments()) {
+            if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
+                stack.setTag(blockEntity.saveWithoutMetadata());
+            }
+        }
+        return stack;
     }
 
     public enum SpikeMaterial {
