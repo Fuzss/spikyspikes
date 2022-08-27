@@ -20,10 +20,11 @@ public interface LootingLevelCallback {
 
     /**
      * allows modifying used looting level for calculating bonus drops when an entity is killed
-     * @param entity the target entity
-     * @param damageSource the damage source the target is killed by, contains killer
-     * @param lootingLevel vanilla looting level
-     * @return new looting level or <code>lootingLevel</code> if nothing changed
+     *
+     * @param entity                the target entity
+     * @param damageSource          the damage source the target is killed by, contains killer
+     * @param lootingLevel          vanilla looting level
+     * @return                      new looting level
      */
     OptionalInt onLootingLevel(LivingEntity entity, @Nullable DamageSource damageSource, int lootingLevel);
 }
