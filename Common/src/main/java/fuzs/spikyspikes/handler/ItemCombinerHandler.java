@@ -1,0 +1,135 @@
+package fuzs.spikyspikes.handler;
+
+import fuzs.spikyspikes.core.ModServices;
+import fuzs.spikyspikes.world.item.SpikeItem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Unit;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableObject;
+
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * copied from {@link AnvilMenu#createResult()} for our case, unfortunately this does not allow using /enchant
+ *
+ * <p>intentionally done this way so that enchantments cannot be applied at the enchanting table,
+ * otherwise alternative would be using <code>net.minecraftforge.common.extensions.IForgeItem#canApplyAtEnchantingTable</code>
+ * or a mixin for {@link EnchantmentCategory#WEAPON}
+ */
+public class ItemCombinerHandler {
+
+    public Optional<Unit> onAnvilUpdate(ItemStack left, ItemStack right, MutableObject<ItemStack> output, String name, MutableInt cost, MutableInt materialCost, Player player) {
+        if (right.isEmpty()) return Optional.empty();
+        if (left.getItem() instanceof SpikeItem spikeItem && spikeItem.acceptsEnchantments() && right.getItem() instanceof EnchantedBookItem) {
+            if (!EnchantedBookItem.getEnchantments(right).isEmpty()) {
+                int i = 0;
+                int j = 0;
+                int k = 0;
+                ItemStack itemstack1 = left.copy();
+                Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
+                j += left.getBaseRepairCost() + (right.isEmpty() ? 0 : right.getBaseRepairCost());
+                materialCost.setValue(0);
+
+                Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(right);
+                boolean flag2 = false;
+                boolean enchantingDisallowed = false;
+
+                for (Enchantment enchantment1 : map1.keySet()) {
+                    if (enchantment1 != null) {
+                        int i2 = map.getOrDefault(enchantment1, 0);
+                        int j2 = map1.get(enchantment1);
+                        j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+                        boolean canEnchant = enchantment1.category == EnchantmentCategory.WEAPON;
+                        if (player.getAbilities().instabuild) {
+                            canEnchant = true;
+                        }
+
+                        for(Enchantment enchantment : map.keySet()) {
+                            if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
+                                canEnchant = false;
+                                ++i;
+                            }
+                        }
+
+                        if (!canEnchant) {
+                            enchantingDisallowed = true;
+                        } else {
+                            flag2 = true;
+                            if (j2 > enchantment1.getMaxLevel()) {
+                                j2 = enchantment1.getMaxLevel();
+                            }
+
+                            map.put(enchantment1, j2);
+                            int k3 = switch (enchantment1.getRarity()) {
+                                case COMMON -> 1;
+                                case UNCOMMON -> 2;
+                                case RARE -> 4;
+                                case VERY_RARE -> 8;
+                            };
+
+                            k3 = Math.max(1, k3 / 2);
+
+                            i += k3 * j2;
+                        }
+                    }
+                }
+
+                if (enchantingDisallowed && !flag2) {
+                    return Optional.empty();
+                }
+
+                if (StringUtils.isBlank(name)) {
+                    if (left.hasCustomHoverName()) {
+                        k = 1;
+                        i += k;
+                        itemstack1.resetHoverName();
+                    }
+                } else if (!name.equals(left.getHoverName().getString())) {
+                    k = 1;
+                    i += k;
+                    itemstack1.setHoverName(Component.literal(name));
+                }
+                if (!ModServices.ABSTRACTIONS.isStackBookEnchantable(itemstack1, right)) itemstack1 = ItemStack.EMPTY;
+
+                cost.setValue(j + i);
+                if (i <= 0) {
+                    itemstack1 = ItemStack.EMPTY;
+                }
+
+                if (k == i && k > 0 && cost.intValue() >= 40) {
+                    cost.setValue(39);
+                }
+
+                if (cost.intValue() >= 40 && !player.getAbilities().instabuild) {
+                    itemstack1 = ItemStack.EMPTY;
+                }
+
+                if (!itemstack1.isEmpty()) {
+                    int k2 = itemstack1.getBaseRepairCost();
+                    if (!right.isEmpty() && k2 < right.getBaseRepairCost()) {
+                        k2 = right.getBaseRepairCost();
+                    }
+
+                    if (k != i || k == 0) {
+                        k2 = AnvilMenu.calculateIncreasedRepairCost(k2);
+                    }
+
+                    itemstack1.setRepairCost(k2);
+                    EnchantmentHelper.setEnchantments(map, itemstack1);
+                }
+                output.setValue(itemstack1);
+                player.containerMenu.broadcastChanges();
+            }
+        }
+        return Optional.empty();
+    }
+}

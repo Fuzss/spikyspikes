@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_nbt",
+              "ops": [
+                {
+                  "op": "replace",
+                  "source": "Enchantments",
+                  "target": "Enchantments"
+                },
+                {
+                  "op": "replace",
+                  "source": "RepairCost",
+                  "target": "RepairCost"
+                }
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "spikyspikes:netherite_spike"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:gold_ingot"
+    },
+    "@": {
+      "item": "minecraft:gold_block"
+    },
+    "S": {
+      "item": "minecraft:golden_sword"
+    }
+  },
+  "pattern": [
+    " S ",
+    "S#S",
+    "#@#"
+  ],
+  "result": {
+    "count": 3,
+    "item": "spikyspikes:golden_spike"
+  }
+}

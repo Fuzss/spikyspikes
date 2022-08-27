@@ -1,0 +1,68 @@
+package fuzs.spikyspikes;
+
+import fuzs.puzzleslib.core.CoreServices;
+import fuzs.spikyspikes.data.*;
+import fuzs.spikyspikes.handler.ItemCombinerHandler;
+import fuzs.spikyspikes.handler.SpikeLootHandler;
+import fuzs.spikyspikes.init.ForgeModRegistry;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.util.Unit;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.AnvilUpdateEvent;
+import net.minecraftforge.event.entity.living.LootingLevelEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableObject;
+
+import java.util.Optional;
+
+@Mod(SpikySpikes.MOD_ID)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+public class SpikySpikesForge {
+
+    @SubscribeEvent
+    public static void onConstructMod(final FMLConstructModEvent evt) {
+        // following suit with Fabric
+        ForgeModRegistry.touch();
+        CoreServices.FACTORIES.modConstructor(SpikySpikes.MOD_ID).accept(new SpikySpikes());
+        registerHandlers();
+    }
+
+    private static void registerHandlers() {
+        SpikeLootHandler spikeLootHandler = new SpikeLootHandler();
+        MinecraftForge.EVENT_BUS.addListener((final LootingLevelEvent evt) -> {
+            spikeLootHandler.onLootingLevel(evt.getEntity(), evt.getDamageSource(), evt.getLootingLevel()).ifPresent(evt::setLootingLevel);
+        });
+        ItemCombinerHandler itemCombinerHandler = new ItemCombinerHandler();
+        MinecraftForge.EVENT_BUS.addListener((final AnvilUpdateEvent evt) -> {
+            MutableObject<ItemStack> output = new MutableObject<>(evt.getOutput());
+            MutableInt cost = new MutableInt(evt.getCost());
+            MutableInt materialCost = new MutableInt(evt.getMaterialCost());
+            Optional<Unit> result = itemCombinerHandler.onAnvilUpdate(evt.getLeft(), evt.getRight(), output, evt.getName(), cost, materialCost, evt.getPlayer());
+            if (result.isPresent()) {
+                evt.setCanceled(true);
+            } else {
+                evt.setOutput(output.getValue());
+                evt.setCost(cost.intValue());
+                evt.setMaterialCost(materialCost.intValue());
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void onGatherData(final GatherDataEvent evt) {
+        DataGenerator generator = evt.getGenerator();
+        final ExistingFileHelper existingFileHelper = evt.getExistingFileHelper();
+        generator.addProvider(true, new ModLootTableProvider(generator, SpikySpikes.MOD_ID));
+        generator.addProvider(true, new ModRecipeProvider(generator, SpikySpikes.MOD_ID));
+        generator.addProvider(true, new ModBlockTagsProvider(generator, SpikySpikes.MOD_ID, existingFileHelper));
+        generator.addProvider(true, new ModLanguageProvider(generator, SpikySpikes.MOD_ID));
+        generator.addProvider(true, new ModBlockStateProvider(generator, SpikySpikes.MOD_ID, existingFileHelper));
+        generator.addProvider(true, new ModItemModelProvider(generator, SpikySpikes.MOD_ID, existingFileHelper));
+    }
+}
