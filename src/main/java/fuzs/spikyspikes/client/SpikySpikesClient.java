@@ -2,7 +2,7 @@ package fuzs.spikyspikes.client;
 
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.client.renderer.blockentity.SpikeRenderer;
-import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

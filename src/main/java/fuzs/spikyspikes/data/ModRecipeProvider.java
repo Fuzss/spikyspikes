@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.data;
 
-import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;

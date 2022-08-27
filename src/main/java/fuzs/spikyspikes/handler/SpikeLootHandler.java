@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.handler;
 
-import fuzs.spikyspikes.core.world.damagesource.PlayerDamageSource;
+import fuzs.spikyspikes.api.world.damagesource.PlayerDamageSource;
 import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 

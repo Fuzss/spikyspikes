@@ -1,4 +1,4 @@
-package fuzs.spikyspikes.core.world.phys.shapes;
+package fuzs.spikyspikes.world.phys.shapes;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;

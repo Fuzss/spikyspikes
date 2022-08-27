@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.data;
 
-import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -53,15 +53,15 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .scale(0.4F, 0.4F, 0.4F)
                 .end()
                 .end();
-        this.buildInItem(ModRegistry.WOODEN_SPIKE_ITEM.get(), Blocks.OAK_PLANKS);
-        this.buildInItem(ModRegistry.STONE_SPIKE_ITEM.get(), Blocks.SMOOTH_STONE);
-        this.buildInItem(ModRegistry.IRON_SPIKE_ITEM.get(), Blocks.IRON_BLOCK);
-        this.buildInItem(ModRegistry.GOLDEN_SPIKE_ITEM.get(), Blocks.GOLD_BLOCK);
-        this.buildInItem(ModRegistry.DIAMOND_SPIKE_ITEM.get(), Blocks.DIAMOND_BLOCK);
-        this.buildInItem(ModRegistry.NETHERITE_SPIKE_ITEM.get(), Blocks.NETHERITE_BLOCK);
+        this.builtInItem(ModRegistry.WOODEN_SPIKE_ITEM.get(), Blocks.OAK_PLANKS);
+        this.builtInItem(ModRegistry.STONE_SPIKE_ITEM.get(), Blocks.SMOOTH_STONE);
+        this.builtInItem(ModRegistry.IRON_SPIKE_ITEM.get(), Blocks.IRON_BLOCK);
+        this.builtInItem(ModRegistry.GOLDEN_SPIKE_ITEM.get(), Blocks.GOLD_BLOCK);
+        this.builtInItem(ModRegistry.DIAMOND_SPIKE_ITEM.get(), Blocks.DIAMOND_BLOCK);
+        this.builtInItem(ModRegistry.NETHERITE_SPIKE_ITEM.get(), Blocks.NETHERITE_BLOCK);
     }
 
-    private void buildInItem(Item item, Block texture) {
+    private void builtInItem(Item item, Block texture) {
         this.getBuilder(this.name(item))
                 .parent(this.getExistingFile(this.modLoc("template_spike")))
                 .texture("particle", this.blockTexture(texture));

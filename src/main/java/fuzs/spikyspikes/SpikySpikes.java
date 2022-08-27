@@ -8,7 +8,7 @@ import fuzs.spikyspikes.config.ServerConfig;
 import fuzs.spikyspikes.data.*;
 import fuzs.spikyspikes.handler.ItemCombinerHandler;
 import fuzs.spikyspikes.handler.SpikeLootHandler;
-import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;

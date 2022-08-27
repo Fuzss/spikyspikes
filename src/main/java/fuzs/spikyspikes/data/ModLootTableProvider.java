@@ -2,7 +2,7 @@ package fuzs.spikyspikes.data;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;

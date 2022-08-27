@@ -2,7 +2,7 @@ package fuzs.spikyspikes.world.level.block.entity;
 
 import com.google.common.collect.Maps;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
-import fuzs.spikyspikes.registry.ModRegistry;
+import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.world.damagesource.SpikePlayerDamageSource;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.core.BlockPos;
@@ -61,9 +61,12 @@ public class SpikeBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        ListTag enchantments = serializeEnchantments(this.enchantments);
-        if (!enchantments.isEmpty()) {
-            tag.put(ENCHANTMENTS_TAG, enchantments);
+        // crashes with WAILA otherwise...
+        if (this.enchantments != null) {
+            ListTag enchantments = serializeEnchantments(this.enchantments);
+            if (!enchantments.isEmpty()) {
+                tag.put(ENCHANTMENTS_TAG, enchantments);
+            }
         }
         if (this.repairCost != 0) {
             tag.putInt(REPAIR_COST_TAG, this.repairCost);

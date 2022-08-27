@@ -1,4 +1,4 @@
-package fuzs.spikyspikes.core.world.damagesource;
+package fuzs.spikyspikes.api.world.damagesource;
 
 import net.minecraft.world.level.storage.loot.LootContext;
 

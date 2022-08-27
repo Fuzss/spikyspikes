@@ -13,16 +13,16 @@ import net.minecraft.core.Direction;
 
 public class ShapeModelPart {
 
-    public static ModelPart pyramid(float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, boolean fullBrightness) {
+    public static PureModelPart pyramid(float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, boolean fullBrightness) {
         return pyramid(0, 0, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, 16.0F, 16.0F, fullBrightness);
     }
 
-    public static ModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
+    public static PureModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
         return pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, 0.0F, 0.0F, 0.0F, false, texWidthScaled, texHeightScaled, fullBrightness);
     }
 
-    public static ModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
-        return new ModelPart(ImmutableList.of(new ShapeModelPart.Pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texWidthScaled, texHeightScaled, fullBrightness)), ImmutableMap.of());
+    public static PureModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
+        return new PureModelPart(ImmutableList.of(new ShapeModelPart.Pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texWidthScaled, texHeightScaled, fullBrightness)), ImmutableMap.of());
     }
     
     static class Pyramid extends ModelPart.Cube {

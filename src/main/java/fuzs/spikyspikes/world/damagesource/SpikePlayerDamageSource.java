@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.world.damagesource;
 
-import fuzs.spikyspikes.core.world.damagesource.PlayerDamageSource;
+import fuzs.spikyspikes.api.world.damagesource.PlayerDamageSource;
 import net.minecraft.world.damagesource.DamageSource;
 
 public class SpikePlayerDamageSource extends DamageSource implements PlayerDamageSource {
