@@ -49,6 +49,7 @@ import java.util.function.Function;
 /**
  * code for facing copied from {@link AmethystClusterBlock}
  */
+@SuppressWarnings("deprecation")
 public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("0.0"), (p_41704_) -> {
         p_41704_.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));

@@ -20,7 +20,7 @@ public class SpikySpikesClient implements ClientModConstructor {
     }
 
     @Override
-    public void onRegisterBuiltinModelItemRenderer(BuiltinModelItemRendererContext context) {
+    public void onRegisterBuiltinModelItemRenderers(BuiltinModelItemRendererContext context) {
         registerBuiltinModelSpikeRenderer(context, ModRegistry.WOODEN_SPIKE_ITEM.get());
         registerBuiltinModelSpikeRenderer(context, ModRegistry.STONE_SPIKE_ITEM.get());
         registerBuiltinModelSpikeRenderer(context, ModRegistry.IRON_SPIKE_ITEM.get());
