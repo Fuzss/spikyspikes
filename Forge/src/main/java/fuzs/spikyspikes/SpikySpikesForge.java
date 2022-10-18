@@ -27,23 +27,20 @@ public class SpikySpikesForge {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        // following suit with Fabric
-        ForgeModRegistry.touch();
         CoreServices.FACTORIES.modConstructor(SpikySpikes.MOD_ID).accept(new SpikySpikes());
+        ForgeModRegistry.touch();
         registerHandlers();
     }
 
     private static void registerHandlers() {
-        SpikeLootHandler spikeLootHandler = new SpikeLootHandler();
         MinecraftForge.EVENT_BUS.addListener((final LootingLevelEvent evt) -> {
-            spikeLootHandler.onLootingLevel(evt.getEntity(), evt.getDamageSource(), evt.getLootingLevel()).ifPresent(evt::setLootingLevel);
+            SpikeLootHandler.onLootingLevel(evt.getEntity(), evt.getDamageSource(), evt.getLootingLevel()).ifPresent(evt::setLootingLevel);
         });
-        ItemCombinerHandler itemCombinerHandler = new ItemCombinerHandler();
         MinecraftForge.EVENT_BUS.addListener((final AnvilUpdateEvent evt) -> {
             MutableObject<ItemStack> output = new MutableObject<>(evt.getOutput());
             MutableInt cost = new MutableInt(evt.getCost());
             MutableInt materialCost = new MutableInt(evt.getMaterialCost());
-            Optional<Unit> result = itemCombinerHandler.onAnvilUpdate(evt.getLeft(), evt.getRight(), output, evt.getName(), cost, materialCost, evt.getPlayer());
+            Optional<Unit> result = ItemCombinerHandler.onAnvilUpdate(evt.getLeft(), evt.getRight(), output, evt.getName(), cost, materialCost, evt.getPlayer());
             if (result.isPresent()) {
                 evt.setCanceled(true);
             } else {

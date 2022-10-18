@@ -27,7 +27,7 @@ public interface AnvilUpdateCallback {
      * @param left              the item stack placed in the left anvil input slot
      * @param right             the item stack placed in the right anvil input slot
      * @param output            access to the item that will be placed in the result slot, always empty by default, vanilla logic will be cancelled when this is no longer empty
-     * @param name              item name entered in the anvil name text box
+     * @param name              item name entered into the anvil name text box
      * @param cost              level cost for this operation
      * @param materialCost      material repair cost for this operation
      * @param player            the player interacting with the menu

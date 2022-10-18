@@ -9,7 +9,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * only necessary for setting custom {@link BlockPathTypes}, not possible on Fabric this easily so we just skip it
+ * only necessary for setting custom {@link BlockPathTypes}, not possible on Fabric this easily, so we just skip it
  */
 public class ForgeSpikeBlock extends SpikeBlock {
 

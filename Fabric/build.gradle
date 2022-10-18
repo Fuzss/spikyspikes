@@ -52,6 +52,7 @@ dependencies {
 
     // Puzzles Lib
     modImplementation "fuzs.puzzleslib:puzzleslib-fabric:${puzzlesVersion}"
+    modImplementation "fuzs.easyanvils:easyanvils-fabric:4.0.4"
 }
 
 loom {

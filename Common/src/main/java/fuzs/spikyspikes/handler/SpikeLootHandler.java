@@ -9,7 +9,7 @@ import java.util.OptionalInt;
 
 public class SpikeLootHandler {
 
-    public OptionalInt onLootingLevel(LivingEntity entity, @Nullable DamageSource damageSource, int lootingLevel) {
+    public static OptionalInt onLootingLevel(LivingEntity entity, @Nullable DamageSource damageSource, int lootingLevel) {
         if (damageSource instanceof PlayerDamageSource source && source.lootingLevel() > 0) {
             // our fake player does not use an item for killing, so this needs to be set manually
             return OptionalInt.of(source.lootingLevel());

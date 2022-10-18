@@ -27,7 +27,7 @@ import java.util.Optional;
  */
 public class ItemCombinerHandler {
 
-    public Optional<Unit> onAnvilUpdate(ItemStack left, ItemStack right, MutableObject<ItemStack> output, String name, MutableInt cost, MutableInt materialCost, Player player) {
+    public static Optional<Unit> onAnvilUpdate(ItemStack left, ItemStack right, MutableObject<ItemStack> output, String name, MutableInt cost, MutableInt materialCost, Player player) {
         if (right.isEmpty()) return Optional.empty();
         if (left.getItem() instanceof SpikeItem spikeItem && spikeItem.acceptsEnchantments() && right.getItem() instanceof EnchantedBookItem) {
             if (!EnchantedBookItem.getEnchantments(right).isEmpty()) {
@@ -98,7 +98,10 @@ public class ItemCombinerHandler {
                     i += k;
                     itemstack1.setHoverName(Component.literal(name));
                 }
-                if (!ModServices.ABSTRACTIONS.isStackBookEnchantable(itemstack1, right)) itemstack1 = ItemStack.EMPTY;
+
+                if (!ModServices.ABSTRACTIONS.isStackBookEnchantable(itemstack1, right)) {
+                    itemstack1 = ItemStack.EMPTY;
+                }
 
                 cost.setValue(j + i);
                 if (i <= 0) {
