@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -48,7 +49,10 @@ public class ItemCombinerHandler {
                         int i2 = map.getOrDefault(enchantment1, 0);
                         int j2 = map1.get(enchantment1);
                         j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
-                        boolean canEnchant = enchantment1.category == EnchantmentCategory.WEAPON;
+                        // this is meant to be a check for just the WEAPON enchantment category, but my Universal Enchants mod breaks this as it replaces all enchantment categories
+                        // so we attempt to filter out all weapon enchantments with the following line
+                        // (use elytra as it excludes mending, unbreaking and vanishing curse, and enchantments from other mods aren't likely compatible with swords)
+                        boolean canEnchant = enchantment1.category.canEnchant(Items.DIAMOND_SWORD) && !enchantment1.category.canEnchant(Items.ELYTRA);
                         if (player.getAbilities().instabuild) {
                             canEnchant = true;
                         }

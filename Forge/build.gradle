@@ -121,6 +121,7 @@ dependencies {
 
     // Puzzles Lib
     implementation fg.deobf("fuzs.puzzleslib:puzzleslib-forge:${puzzlesVersion}")
+    implementation fg.deobf("fuzs.easyanvils:easyanvils-forge:4.0.4")
 }
 
 mixin {

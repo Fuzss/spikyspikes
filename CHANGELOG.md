@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.3-1.19.2] - 2022-10-24
+### Fixed
+- Compatible with [Universal Enchants] mod
+
 ## [v4.0.2-1.19.2] - 2022-10-18
 ### Fixed
 - Now works with [Easy Anvils] mod on Fabric
@@ -16,3 +20,4 @@ The format is based on [Keep a Changelog].
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
 [Easy Anvils]: https://www.curseforge.com/minecraft/mc-mods/easy-anvils
+[Universal Enchants]: https://www.curseforge.com/minecraft/mc-mods/universal-enchants-forge
