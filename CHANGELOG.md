@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.4-1.19.2] - 2022-10-24
+### Fixed
+- Fixed crash related to the enchantments stored on a spike
+
 ## [v4.0.3-1.19.2] - 2022-10-24
 ### Fixed
 - Compatible with [Universal Enchants] mod

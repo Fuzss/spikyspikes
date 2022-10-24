@@ -37,7 +37,7 @@ public class SpikeBlockEntity extends BlockEntity {
     public static final String ENCHANTMENTS_TAG = "Enchantments";
     public static final String REPAIR_COST_TAG = "RepairCost";
 
-    private Map<Enchantment, Integer> enchantments;
+    private Map<Enchantment, Integer> enchantments = Maps.newHashMap();
     private int repairCost;
 
     public SpikeBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
@@ -61,12 +61,9 @@ public class SpikeBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        // crashes with WAILA otherwise...
-        if (this.enchantments != null) {
-            ListTag enchantments = serializeEnchantments(this.enchantments);
-            if (!enchantments.isEmpty()) {
-                tag.put(ENCHANTMENTS_TAG, enchantments);
-            }
+        ListTag enchantments = serializeEnchantments(this.enchantments);
+        if (!enchantments.isEmpty()) {
+            tag.put(ENCHANTMENTS_TAG, enchantments);
         }
         if (this.repairCost != 0) {
             tag.putInt(REPAIR_COST_TAG, this.repairCost);
@@ -96,13 +93,12 @@ public class SpikeBlockEntity extends BlockEntity {
     }
 
     public void attack(Entity target, float attackDamage) {
-        if (!this.getLevel().isClientSide) {
-            attack(target, attackDamage, this.getLevel(), this.getBlockPos(), this.getBlockState().getValue(SpikeBlock.FACING), this.enchantments);
-            if (target instanceof Mob mob) {
-                mob.setLastHurtByMob(null);
-                mob.setLastHurtByPlayer(null);
-                mob.setTarget(null);
-            }
+        if (this.getLevel().isClientSide) return;
+        attack(target, attackDamage, this.getLevel(), this.getBlockPos(), this.getBlockState().getValue(SpikeBlock.FACING), this.enchantments);
+        if (target instanceof Mob mob) {
+            mob.setLastHurtByMob(null);
+            mob.setLastHurtByPlayer(null);
+            mob.setTarget(null);
         }
     }
 

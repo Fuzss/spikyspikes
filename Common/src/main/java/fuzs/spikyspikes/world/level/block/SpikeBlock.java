@@ -177,7 +177,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                 SpikeMaterial material = this.spikeMaterial;
                 if ((material.dealsFinalBlow() || entity.getHealth() > material.damageAmount()) && (material.hurtsPlayers() || !(entity instanceof Player))) {
                     if (material.dropsPlayerLoot()) {
-                        // this is handled by the block entity so we can have one player per placed spike
+                        // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
                             blockEntity.attack(entity, material.damageAmount());
                         }
