@@ -47,8 +47,8 @@ public class ItemCombinerHandler {
                 for (Enchantment enchantment1 : map1.keySet()) {
                     if (enchantment1 != null) {
                         int i2 = map.getOrDefault(enchantment1, 0);
-                        int j2 = map1.get(enchantment1);
-                        j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+                        int j22 = map1.get(enchantment1);
+                        int j2 = i2 == j22 ? j22 + 1 : Math.max(j22, i2);
                         // this is meant to be a check for just the WEAPON enchantment category, but my Universal Enchants mod breaks this as it replaces all enchantment categories
                         // so we attempt to filter out all weapon enchantments with the following line
                         // (use elytra as it excludes mending, unbreaking and vanishing curse, and enchantments from other mods aren't likely compatible with swords)
@@ -68,8 +68,11 @@ public class ItemCombinerHandler {
                             enchantingDisallowed = true;
                         } else {
                             flag2 = true;
-                            if (j2 > enchantment1.getMaxLevel()) {
-                                j2 = enchantment1.getMaxLevel();
+                            // different from vanilla to not reset levels above max, useful for semi-Apotheosis mod support
+                            // at least kind of, since combining levels for values above vanilla doesn't work (would require using Apotheosis' custom max level hook,
+                            // but don't want to constantly drag the whole mod around in dev), but at least higher levels won't be downgraded
+                            if (i2 == j22 && j2 > enchantment1.getMaxLevel()) {
+                                j2 = j22;
                             }
 
                             map.put(enchantment1, j2);
