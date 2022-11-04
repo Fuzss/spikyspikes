@@ -14,7 +14,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -32,6 +31,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
+import java.util.Random;
 
 public class SpikeBlockEntity extends BlockEntity {
     public static final String ENCHANTMENTS_TAG = "Enchantments";
@@ -175,7 +175,7 @@ public class SpikeBlockEntity extends BlockEntity {
         }
     }
 
-    private static void applyLivingKnockback(Direction direction, Entity target, float strength, RandomSource random) {
+    private static void applyLivingKnockback(Direction direction, Entity target, float strength, Random random) {
         if (target instanceof LivingEntity) {
             strength *= 1.0 - ((LivingEntity) target).getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
         }

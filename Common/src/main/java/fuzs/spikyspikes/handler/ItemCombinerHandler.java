@@ -2,7 +2,7 @@ package fuzs.spikyspikes.handler;
 
 import fuzs.spikyspikes.core.ModServices;
 import fuzs.spikyspikes.world.item.SpikeItem;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -103,7 +103,7 @@ public class ItemCombinerHandler {
                 } else if (!name.equals(left.getHoverName().getString())) {
                     k = 1;
                     i += k;
-                    itemstack1.setHoverName(Component.literal(name));
+                    itemstack1.setHoverName(new TextComponent(name));
                 }
 
                 if (!ModServices.ABSTRACTIONS.isStackBookEnchantable(itemstack1, right)) {

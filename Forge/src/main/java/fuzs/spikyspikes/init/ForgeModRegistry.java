@@ -11,13 +11,8 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
-
-import java.util.Locale;
 
 public class ForgeModRegistry {
-    public static final BlockPathTypes SPIKE_BLOCK_PATH_TYPE = BlockPathTypes.create(SpikySpikes.MOD_ID.toUpperCase(Locale.ROOT) + "_SPIKE", -1.0F);
-
     private static final RegistryManager REGISTRY = CoreServices.FACTORIES.registration(SpikySpikes.MOD_ID);
     public static final RegistryReference<Block> WOODEN_SPIKE_BLOCK = REGISTRY.registerBlock("wooden_spike", () -> new ForgeSpikeBlock(SpikeMaterial.WOOD, BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD)));
     public static final RegistryReference<Block> STONE_SPIKE_BLOCK = REGISTRY.registerBlock("stone_spike", () -> new ForgeSpikeBlock(SpikeMaterial.STONE, BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(2.0F, 6.0F)));

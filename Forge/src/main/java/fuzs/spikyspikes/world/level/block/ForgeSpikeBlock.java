@@ -1,6 +1,5 @@
 package fuzs.spikyspikes.world.level.block;
 
-import fuzs.spikyspikes.init.ForgeModRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.BlockGetter;
@@ -18,7 +17,7 @@ public class ForgeSpikeBlock extends SpikeBlock {
     }
 
     @Override
-    public @Nullable BlockPathTypes getAdjacentBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType) {
-        return ForgeModRegistry.SPIKE_BLOCK_PATH_TYPE;
+    public @Nullable BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+        return BlockPathTypes.DAMAGE_CACTUS;
     }
 }
