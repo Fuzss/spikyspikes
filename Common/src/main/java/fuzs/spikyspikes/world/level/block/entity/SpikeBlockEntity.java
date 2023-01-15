@@ -2,7 +2,6 @@ package fuzs.spikyspikes.world.level.block.entity;
 
 import com.google.common.collect.Maps;
 import fuzs.spikyspikes.init.ModRegistry;
-import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikePlayerDamageSource;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.core.BlockPos;
@@ -44,32 +43,6 @@ public class SpikeBlockEntity extends BlockEntity {
         super(ModRegistry.SPIKE_BLOCK_ENTITY_TYPE.get(), p_155229_, p_155230_);
     }
 
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains(ENCHANTMENTS_TAG, Tag.TAG_LIST)) {
-            ListTag enchantments = tag.getList(ENCHANTMENTS_TAG, Tag.TAG_COMPOUND);
-            this.enchantments = EnchantmentHelper.deserializeEnchantments(enchantments);
-        } else {
-            this.enchantments = Maps.newHashMap();
-        }
-        if (tag.contains(REPAIR_COST_TAG, Tag.TAG_INT)) {
-            this.repairCost = tag.getInt(REPAIR_COST_TAG);
-        }
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        ListTag enchantments = serializeEnchantments(this.enchantments);
-        if (!enchantments.isEmpty()) {
-            tag.put(ENCHANTMENTS_TAG, enchantments);
-        }
-        if (this.repairCost != 0) {
-            tag.putInt(REPAIR_COST_TAG, this.repairCost);
-        }
-    }
-
     public static ListTag serializeEnchantments(Map<Enchantment, Integer> p_44866_) {
         ListTag listtag = new ListTag();
         for (Map.Entry<Enchantment, Integer> entry : p_44866_.entrySet()) {
@@ -82,30 +55,17 @@ public class SpikeBlockEntity extends BlockEntity {
         return listtag;
     }
 
-    @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return this.saveWithoutMetadata();
-    }
-
-    public void attack(Entity target, float attackDamage) {
-        if (this.getLevel().isClientSide) return;
-        attack(target, attackDamage, this.getLevel(), this.getBlockPos(), this.getBlockState().getValue(SpikeBlock.FACING), this.enchantments);
-        if (target instanceof Mob mob) {
-            mob.setLastHurtByMob(null);
-            mob.setLastHurtByPlayer(null);
-            mob.setTarget(null);
+    public static void attackPlayerLike(Level level, BlockPos pos, BlockState state, SpikeBlockEntity blockEntity, LivingEntity entity, float attackDamage) {
+        if (!level.isClientSide) {
+            attackPlayerLike(entity, attackDamage, level, pos, state.getValue(SpikeBlock.FACING), blockEntity.enchantments);
+            attackPlayerLikePost(entity);
         }
     }
 
     /**
      * adapted from {@link Player#attack}, most importantly removing all the knockback and sounds, also most particles
      */
-    private static void attack(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, Map<Enchantment, Integer> enchantments) {
+    private static void attackPlayerLike(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, Map<Enchantment, Integer> enchantments) {
         if (target.isAttackable()) {
 
             MobType mobType = target instanceof LivingEntity ? ((LivingEntity) target).getMobType() : MobType.UNDEFINED;
@@ -132,7 +92,6 @@ public class SpikeBlockEntity extends BlockEntity {
 
                 int looting = enchantments.getOrDefault(Enchantments.MOB_LOOTING, 0);
                 Vec3 oldMovement = target.getDeltaMovement();
-                ((LivingEntityAccessor) target).setLastHurtByPlayerTime(100);
                 boolean hurtTarget = target.hurt(SpikePlayerDamageSource.spikePlayer(looting), attackDamage);
                 if (hurtTarget) {
 
@@ -193,8 +152,8 @@ public class SpikeBlockEntity extends BlockEntity {
     private static void applySweepingDamage(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, int looting, int knockback, int sweeping) {
         float f3 = 1.0F + SweepingEdgeEnchantment.getSweepingDamageRatio(sweeping) * attackDamage;
 
-        for(LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
-            if (livingentity != target && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && pos.distToCenterSqr(livingentity.position()) < 9.0D) {
+        for (LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
+            if (livingentity != target && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker()) && pos.distToCenterSqr(livingentity.position()) < 9.0D) {
                 if (knockback > 0) {
                     applyLivingKnockback(direction, livingentity, 0.4F, level.getRandom());
                 }
@@ -205,6 +164,50 @@ public class SpikeBlockEntity extends BlockEntity {
             BlockPos offsetPos = pos.relative(direction);
             ((ServerLevel) level).sendParticles(ParticleTypes.SWEEP_ATTACK, offsetPos.getX() + 0.5, offsetPos.getY() + 0.5, offsetPos.getZ() + 0.5, 0, 0.0, 0.0, 0.0, 0.0);
         }
+    }
+
+    private static void attackPlayerLikePost(Entity target) {
+        if (target instanceof Mob mob) {
+            mob.setLastHurtByMob(null);
+            mob.setLastHurtByPlayer(null);
+            mob.setTarget(null);
+        }
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        if (tag.contains(ENCHANTMENTS_TAG, Tag.TAG_LIST)) {
+            ListTag enchantments = tag.getList(ENCHANTMENTS_TAG, Tag.TAG_COMPOUND);
+            this.enchantments = EnchantmentHelper.deserializeEnchantments(enchantments);
+        } else {
+            this.enchantments = Maps.newHashMap();
+        }
+        if (tag.contains(REPAIR_COST_TAG, Tag.TAG_INT)) {
+            this.repairCost = tag.getInt(REPAIR_COST_TAG);
+        }
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        ListTag enchantments = serializeEnchantments(this.enchantments);
+        if (!enchantments.isEmpty()) {
+            tag.put(ENCHANTMENTS_TAG, enchantments);
+        }
+        if (this.repairCost != 0) {
+            tag.putInt(REPAIR_COST_TAG, this.repairCost);
+        }
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     public void setEnchantmentData(Map<Enchantment, Integer> enchantments, int repairCost) {

@@ -37,7 +37,7 @@ public class CustomOutlineShape extends ExtensibleVoxelShape {
 
     @Override
     protected DoubleList getCoords(Direction.Axis axis) {
-        return ((VoxelShapeAccessor) this.collisionShape).callGetCoords(axis);
+        return ((VoxelShapeAccessor) this.collisionShape).spikyspikes$getCoords(axis);
     }
 
     @Override

@@ -117,10 +117,14 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public boolean canSurvive(BlockState p_152026_, LevelReader p_152027_, BlockPos p_152028_) {
-        Direction direction = p_152026_.getValue(FACING);
-        BlockPos blockpos = p_152028_.relative(direction.getOpposite());
-        return p_152027_.getBlockState(blockpos).isFaceSturdy(p_152027_, blockpos, direction);
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        Direction direction = state.getValue(FACING);
+        BlockPos otherPos = pos.relative(direction.getOpposite());
+        if (direction == Direction.UP) {
+            return canSupportRigidBlock(level, otherPos);
+        } else {
+            return level.getBlockState(otherPos).isFaceSturdy(level, otherPos, direction);
+        }
     }
 
     @Override
@@ -179,7 +183,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                     if (material.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                            blockEntity.attack(entity, material.damageAmount());
+                            SpikeBlockEntity.attackPlayerLike(level, pos, level.getBlockState(pos), blockEntity, entity, material.damageAmount());
                         }
                     } else {
                         // cancelling drops via forge event works too, but also cancels equipment drops (e.g. saddles, not spawned equipment) which is not good
@@ -193,12 +197,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         }
                         // similar to zombified piglins, so we don't have to use a fake player just to get xp
                         if (!entity.isAlive() && material.dropsJustExperience()) {
-                            int lastHurtByPlayerTime = ((LivingEntityAccessor) entity).getLastHurtByPlayerTime();
-                            if (lastHurtByPlayerTime <= 0) {
-                                ((LivingEntityAccessor) entity).setLastHurtByPlayerTime(100);
-                                ((LivingEntityAccessor) entity).callDropExperience();
-                                ((LivingEntityAccessor) entity).setLastHurtByPlayerTime(lastHurtByPlayerTime);
-                            }
+                            entity.setLastHurtByPlayer(null);
+                            ((LivingEntityAccessor) entity).spikyspikes$dropExperience();
                         }
                     }
                 }
@@ -208,8 +208,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        return new SpikeBlockEntity(p_153215_, p_153216_);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new SpikeBlockEntity(pos, state);
     }
 
     @Override
