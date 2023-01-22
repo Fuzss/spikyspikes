@@ -9,6 +9,7 @@ import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -31,7 +32,7 @@ public class SpikySpikesClient implements ClientModConstructor {
 
     private static void registerBuiltinModelSpikeRenderer(BuiltinModelItemRendererContext context, Item item) {
         context.register(item, (ItemStack stack, ItemTransforms.TransformType mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) -> {
-            SpikeBlock block = ((SpikeItem) stack.getItem()).getBlock();
+            SpikeBlock block = (SpikeBlock) ((BlockItem) stack.getItem()).getBlock();
             SpikeRenderer.renderSpike(Direction.UP, block.spikeMaterial, matrices, vertexConsumers, light, overlay, true, stack.hasFoil());
         });
     }

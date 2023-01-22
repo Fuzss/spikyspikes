@@ -56,10 +56,9 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     });
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
-            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), SpikeBlock::makeVisualShape));
-    private static final Map<Direction, VoxelShape> COLLISION_SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
-            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), SpikeBlock::makeCollisionShape));
+    private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values()).collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), SpikeBlock::makeVisualShape));
+    private static final Map<Direction, VoxelShape> COLLISION_SHAPE_BY_DIRECTION = Arrays.stream(Direction.values()).collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> makeCollisionShape(direction, false)));
+    private static final Map<Direction, VoxelShape> INTERACTION_SHAPE_BY_DIRECTION = Arrays.stream(Direction.values()).collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> makeCollisionShape(direction, true)));
 
     public final SpikeMaterial spikeMaterial;
 
@@ -84,10 +83,10 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, vectors));
     }
 
-    private static VoxelShape makeCollisionShape(Direction direction) {
+    private static VoxelShape makeCollisionShape(Direction direction, boolean fullHeight) {
         // less than full block since entity needs to be inside to receive damage
         // height of 11 is just enough for items to fit through this and a block above, but does not allow the player to walk up the block
-        Vec3[] vectors = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
+        Vec3[] vectors = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, fullHeight ? 16.0 : 11.0, 15.0);
         return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, vectors));
     }
 
@@ -108,7 +107,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     public VoxelShape getInteractionShape(BlockState p_60547_, BlockGetter p_60548_, BlockPos p_60549_) {
-        return COLLISION_SHAPE_BY_DIRECTION.get(p_60547_.getValue(FACING));
+        return INTERACTION_SHAPE_BY_DIRECTION.get(p_60547_.getValue(FACING));
     }
 
     @Override
@@ -132,16 +131,23 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         if (p_152036_.getValue(WATERLOGGED)) {
             p_152039_.scheduleTick(p_152040_, Fluids.WATER, Fluids.WATER.getTickDelay(p_152039_));
         }
-
         return p_152037_ == p_152036_.getValue(FACING).getOpposite() && !p_152036_.canSurvive(p_152039_, p_152040_) ? Blocks.AIR.defaultBlockState() : super.updateShape(p_152036_, p_152037_, p_152038_, p_152039_, p_152040_, p_152041_);
     }
 
     @Override
     @Nullable
-    public BlockState getStateForPlacement(BlockPlaceContext p_152019_) {
-        LevelAccessor levelaccessor = p_152019_.getLevel();
-        BlockPos blockpos = p_152019_.getClickedPos();
-        return this.defaultBlockState().setValue(WATERLOGGED, levelaccessor.getFluidState(blockpos).getType() == Fluids.WATER).setValue(FACING, p_152019_.getClickedFace());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        BlockState state = this.defaultBlockState().setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
+        for (Direction direction : context.getNearestLookingDirections()) {
+            Direction opposite = direction.getOpposite();
+            state = state.setValue(FACING, opposite);
+            if (state.canSurvive(level, pos)) {
+                return state;
+            }
+        }
+        return null;
     }
 
     @Override

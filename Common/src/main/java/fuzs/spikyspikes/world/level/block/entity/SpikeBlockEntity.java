@@ -56,10 +56,7 @@ public class SpikeBlockEntity extends BlockEntity {
     }
 
     public static void attackPlayerLike(Level level, BlockPos pos, BlockState state, SpikeBlockEntity blockEntity, LivingEntity entity, float attackDamage) {
-        if (!level.isClientSide) {
-            attackPlayerLike(entity, attackDamage, level, pos, state.getValue(SpikeBlock.FACING), blockEntity.enchantments);
-            attackPlayerLikePost(entity);
-        }
+        attackPlayerLike(entity, attackDamage, level, pos, state.getValue(SpikeBlock.FACING), blockEntity.enchantments);
     }
 
     /**
@@ -92,8 +89,7 @@ public class SpikeBlockEntity extends BlockEntity {
 
                 int looting = enchantments.getOrDefault(Enchantments.MOB_LOOTING, 0);
                 Vec3 oldMovement = target.getDeltaMovement();
-                boolean hurtTarget = target.hurt(SpikePlayerDamageSource.spikePlayer(looting), attackDamage);
-                if (hurtTarget) {
+                if (hurtPlayerLike(target, attackDamage, looting)) {
 
                     // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
                     target.setDeltaMovement(oldMovement);
@@ -134,6 +130,15 @@ public class SpikeBlockEntity extends BlockEntity {
         }
     }
 
+    private static boolean hurtPlayerLike(Entity target, float attackDamage, int looting) {
+        if (target instanceof Mob mob) {
+            mob.setLastHurtByMob(null);
+            mob.setLastHurtByPlayer(null);
+            mob.setTarget(null);
+        }
+        return target.hurt(SpikePlayerDamageSource.spikePlayer(looting), attackDamage);
+    }
+
     private static void applyLivingKnockback(Direction direction, Entity target, float strength, RandomSource random) {
         if (target instanceof LivingEntity) {
             strength *= 1.0 - ((LivingEntity) target).getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
@@ -163,14 +168,6 @@ public class SpikeBlockEntity extends BlockEntity {
         if (level instanceof ServerLevel) {
             BlockPos offsetPos = pos.relative(direction);
             ((ServerLevel) level).sendParticles(ParticleTypes.SWEEP_ATTACK, offsetPos.getX() + 0.5, offsetPos.getY() + 0.5, offsetPos.getZ() + 0.5, 0, 0.0, 0.0, 0.0, 0.0);
-        }
-    }
-
-    private static void attackPlayerLikePost(Entity target) {
-        if (target instanceof Mob mob) {
-            mob.setLastHurtByMob(null);
-            mob.setLastHurtByPlayer(null);
-            mob.setTarget(null);
         }
     }
 
