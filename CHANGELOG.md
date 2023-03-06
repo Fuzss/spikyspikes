@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.8-1.19.2] - 2023-03-06
+### Removed
+- Removed built-in integration for the [Easy Anvils](https://www.curseforge.com/minecraft/mc-mods/easy-anvils) mod, it's no longer necessary
+
 ## [v4.0.7-1.19.2] - 2023-01-22
 ### Changed
 - Improved placement logic of spikes
