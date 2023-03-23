@@ -1,0 +1,20 @@
+{
+  "block.spikyspikes.diamond_spike": "Діамантові шипи",
+  "block.spikyspikes.diamond_spike.description": "Завдає багато шкоди, з мобів випадає уся здобич, як коли їх вбиває гравець. Можна використовувати більшість зачарувань меча, застосовуються через ковадло.",
+  "block.spikyspikes.golden_spike": "Золоті шипи",
+  "block.spikyspikes.golden_spike.description": "Завдає шкоди та вбиває мобів, здобич не випадає, тільки досвід.",
+  "block.spikyspikes.iron_spike": "Залізні шипи",
+  "block.spikyspikes.iron_spike.description": "Завдає шкоди та вбиває мобів, досвід не випадає, тільки здобич.",
+  "block.spikyspikes.netherite_spike": "Незеритові шипи",
+  "block.spikyspikes.netherite_spike.description": "Завдає багато шкоди, з мобів випадає уся здобич, як коли їх вбиває гравець. Можна використовувати більшість зачарувань меча, застосовуються через ковадло. Має стійкість до вибухів і не може бути зламаним візером. Не завдає шкоди гравцям.",
+  "block.spikyspikes.stone_spike": "Кам'яні шипи",
+  "block.spikyspikes.stone_spike.description": "Завдає шкоди та вбиває мобів, but does not drop any loot or experience.",
+  "block.spikyspikes.wooden_spike": "Дерев'яні шипи",
+  "block.spikyspikes.wooden_spike.description": "Повільно завдають шкоди мобам, але не призводить до смерті.",
+  "death.attack.spike": "%1$s тепер перебуває в менш колючому світі",
+  "death.attack.spike.player": "%1$s не побачив шипи при спробі втекти від %2$s",
+  "item.spikyspikes.spike.tooltip.damage": "Шкода: %s",
+  "item.spikyspikes.spike.tooltip.hearts": "%s здоров'я",
+  "item.spikyspikes.spike.tooltip.more": "Утримуйте %s для отримання додаткової інформації",
+  "item.spikyspikes.spike.tooltip.shift": "Shift"
+}
