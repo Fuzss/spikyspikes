@@ -2,15 +2,11 @@ package fuzs.spikyspikes.client.model.geom;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Random;
-import java.util.stream.Stream;
 
 /**
  * just a copy of {@link ModelPart} to bypass OptiFine/Sodium screwing with the vanilla class
@@ -56,15 +52,15 @@ public final class PureModelPart {
     public void translateAndRotate(PoseStack p_104300_) {
         p_104300_.translate(this.x / 16.0F, this.y / 16.0F, this.z / 16.0F);
         if (this.zRot != 0.0F) {
-            p_104300_.mulPose(Vector3f.ZP.rotation(this.zRot));
+            p_104300_.mulPose(Axis.ZP.rotation(this.zRot));
         }
 
         if (this.yRot != 0.0F) {
-            p_104300_.mulPose(Vector3f.YP.rotation(this.yRot));
+            p_104300_.mulPose(Axis.YP.rotation(this.yRot));
         }
 
         if (this.xRot != 0.0F) {
-            p_104300_.mulPose(Vector3f.XP.rotation(this.xRot));
+            p_104300_.mulPose(Axis.XP.rotation(this.xRot));
         }
 
     }

@@ -1,13 +1,16 @@
 package fuzs.spikyspikes.data;
 
+import fuzs.puzzleslib.api.data.v1.AbstractLanguageProvider;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.LanguageProvider;
 
-public class ModLanguageProvider extends LanguageProvider {
-    public ModLanguageProvider(DataGenerator gen, String modid) {
-        super(gen, modid, "en_us");
+public class ModLanguageProvider extends AbstractLanguageProvider {
+
+    public ModLanguageProvider(PackOutput packOutput, String modId) {
+        super(packOutput, modId);
     }
 
     @Override

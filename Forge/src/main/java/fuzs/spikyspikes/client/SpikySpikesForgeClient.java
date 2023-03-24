@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.client;
 
-import fuzs.puzzleslib.client.core.ClientCoreServices;
+import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import fuzs.spikyspikes.SpikySpikes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -12,6 +12,6 @@ public class SpikySpikesForgeClient {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        ClientCoreServices.FACTORIES.clientModConstructor(SpikySpikes.MOD_ID).accept(new SpikySpikesClient());
+        ClientModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikesClient::new);
     }
 }

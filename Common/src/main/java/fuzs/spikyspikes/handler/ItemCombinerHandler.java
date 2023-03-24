@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.handler;
 
-import fuzs.spikyspikes.core.ModServices;
+import fuzs.spikyspikes.core.CommonAbstractions;
 import fuzs.spikyspikes.world.item.SpikeItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Unit;
@@ -106,7 +106,7 @@ public class ItemCombinerHandler {
                     itemstack1.setHoverName(Component.literal(name));
                 }
 
-                if (!ModServices.ABSTRACTIONS.isStackBookEnchantable(itemstack1, right)) {
+                if (!CommonAbstractions.INSTANCE.isStackBookEnchantable(itemstack1, right)) {
                     itemstack1 = ItemStack.EMPTY;
                 }
 

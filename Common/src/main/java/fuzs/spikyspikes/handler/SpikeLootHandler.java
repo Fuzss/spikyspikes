@@ -3,8 +3,8 @@ package fuzs.spikyspikes.handler;
 import fuzs.spikyspikes.api.world.damagesource.PlayerDamageSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.OptionalInt;
 
 public class SpikeLootHandler {

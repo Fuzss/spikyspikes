@@ -1,7 +1,7 @@
 package fuzs.spikyspikes.world.level.block;
 
 import com.google.common.collect.Maps;
-import fuzs.puzzleslib.proxy.Proxy;
+import fuzs.puzzleslib.api.core.v1.Proxy;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikePlayerDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
@@ -219,7 +219,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public void setPlacedBy(Level p_55179_, BlockPos p_55180_, BlockState p_55181_, @javax.annotation.Nullable LivingEntity p_55182_, ItemStack stack) {
+    public void setPlacedBy(Level p_55179_, BlockPos p_55180_, BlockState p_55181_, @Nullable LivingEntity p_55182_, ItemStack stack) {
         super.setPlacedBy(p_55179_, p_55180_, p_55181_, p_55182_, stack);
         if (p_55179_.getBlockEntity(p_55180_) instanceof SpikeBlockEntity blockEntity) {
             Map<Enchantment, Integer> enchantments = EnchantmentHelper.deserializeEnchantments(stack.getEnchantmentTags());

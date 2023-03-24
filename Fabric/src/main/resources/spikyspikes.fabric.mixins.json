@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "package": "fuzs.spikyspikes.mixin",
   "refmap": "spikyspikes.refmap.json",
+  "plugin": "fuzs.spikyspikes.mixin.ModMixinConfigPlugin",
   "mixins": [
     "FabricAnvilMenuMixin",
     "FabricLivingEntityMixin",

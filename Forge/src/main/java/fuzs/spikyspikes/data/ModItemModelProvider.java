@@ -1,27 +1,29 @@
 package fuzs.spikyspikes.data;
 
+import fuzs.puzzleslib.api.data.v1.AbstractModelProvider;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.client.model.generators.ModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
-public class ModItemModelProvider extends ItemModelProvider {
-    public ModItemModelProvider(DataGenerator generator, String modid, ExistingFileHelper existingFileHelper) {
-        super(generator, modid, existingFileHelper);
+public class ModItemModelProvider extends AbstractModelProvider {
+
+    public ModItemModelProvider(PackOutput packOutput, String modId, ExistingFileHelper fileHelper) {
+        super(packOutput, modId, fileHelper);
     }
 
     @Override
-    protected void registerModels() {
-        this.getBuilder("template_spike")
+    protected void registerStatesAndModels() {
+        this.itemModels().getBuilder("template_spike")
                 .parent(new ModelFile.UncheckedModelFile("builtin/entity"))
                 .transforms()
                 .transform(ItemTransforms.TransformType.GUI)
@@ -64,17 +66,12 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
 
     private void builtInItem(Item item, Block texture) {
-        this.getBuilder(this.name(item))
-                .parent(this.getExistingFile(this.modLoc("template_spike")))
+        this.itemModels().getBuilder(this.itemName(item))
+                .parent(this.itemModels().getExistingFile(this.modLoc("template_spike")))
                 .texture("particle", this.blockTexture(texture));
     }
 
-    public String name(Item item) {
-        return Registry.ITEM.getKey(item).getPath();
-    }
-
-    public ResourceLocation blockTexture(Block block) {
-        ResourceLocation name = Registry.BLOCK.getKey(block);
-        return new ResourceLocation(name.getNamespace(), BLOCK_FOLDER + "/" + name.getPath());
+    public String itemName(Item item) {
+        return ForgeRegistries.ITEMS.getKey(item).getPath();
     }
 }

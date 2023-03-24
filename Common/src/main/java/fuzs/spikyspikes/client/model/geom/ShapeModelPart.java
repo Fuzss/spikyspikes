@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class ShapeModelPart {
 
@@ -82,8 +82,7 @@ public class ShapeModelPart {
             Matrix3f matrix3f = p_171333_.normal();
             
             for (Polygon modelpart$polygon : this.polygons) {
-                Vector3f vector3f = modelpart$polygon.normal.copy();
-                vector3f.transform(matrix3f);
+                Vector3f vector3f = matrix3f.transform(new Vector3f(modelpart$polygon.normal));
                 float f = vector3f.x();
                 float f1 = vector3f.y();
                 float f2 = vector3f.z();
@@ -92,8 +91,7 @@ public class ShapeModelPart {
                     float f3 = modelpart$vertex.pos.x() / 16.0F;
                     float f4 = modelpart$vertex.pos.y() / 16.0F;
                     float f5 = modelpart$vertex.pos.z() / 16.0F;
-                    Vector4f vector4f = new Vector4f(f3, f4, f5, 1.0F);
-                    vector4f.transform(matrix4f);
+                    Vector4f vector4f = matrix4f.transform(new Vector4f(f3, f4, f5, 1.0F));
                     p_171334_.vertex(vector4f.x(), vector4f.y(), vector4f.z(), p_171337_, p_171338_, p_171339_, p_171340_, modelpart$vertex.u, modelpart$vertex.v, p_171336_, p_171335_, f, f1, f2);
                 }
             }

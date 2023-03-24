@@ -1,11 +1,13 @@
 package fuzs.spikyspikes;
 
-import fuzs.puzzleslib.core.CoreServices;
+import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.spikyspikes.data.*;
 import fuzs.spikyspikes.handler.ItemCombinerHandler;
 import fuzs.spikyspikes.handler.SpikeLootHandler;
 import fuzs.spikyspikes.init.ForgeModRegistry;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Mod(SpikySpikes.MOD_ID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -27,7 +30,7 @@ public class SpikySpikesForge {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        CoreServices.FACTORIES.modConstructor(SpikySpikes.MOD_ID).accept(new SpikySpikes());
+        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new);
         ForgeModRegistry.touch();
         registerHandlers();
     }
@@ -53,13 +56,15 @@ public class SpikySpikesForge {
 
     @SubscribeEvent
     public static void onGatherData(final GatherDataEvent evt) {
-        DataGenerator generator = evt.getGenerator();
-        final ExistingFileHelper existingFileHelper = evt.getExistingFileHelper();
-        generator.addProvider(true, new ModLootTableProvider(generator, SpikySpikes.MOD_ID));
-        generator.addProvider(true, new ModRecipeProvider(generator, SpikySpikes.MOD_ID));
-        generator.addProvider(true, new ModBlockTagsProvider(generator, SpikySpikes.MOD_ID, existingFileHelper));
-        generator.addProvider(true, new ModLanguageProvider(generator, SpikySpikes.MOD_ID));
-        generator.addProvider(true, new ModBlockStateProvider(generator, SpikySpikes.MOD_ID, existingFileHelper));
-        generator.addProvider(true, new ModItemModelProvider(generator, SpikySpikes.MOD_ID, existingFileHelper));
+        final DataGenerator dataGenerator = evt.getGenerator();
+        final PackOutput packOutput = dataGenerator.getPackOutput();
+        final CompletableFuture<HolderLookup.Provider> lookupProvider = evt.getLookupProvider();
+        final ExistingFileHelper fileHelper = evt.getExistingFileHelper();
+        dataGenerator.addProvider(true, new ModBlockLootProvider(packOutput, SpikySpikes.MOD_ID));
+        dataGenerator.addProvider(true, new ModRecipeProvider(packOutput));
+        dataGenerator.addProvider(true, new ModBlockTagsProvider(packOutput, lookupProvider, SpikySpikes.MOD_ID, fileHelper));
+        dataGenerator.addProvider(true, new ModLanguageProvider(packOutput, SpikySpikes.MOD_ID));
+        dataGenerator.addProvider(true, new ModModelProvider(packOutput, SpikySpikes.MOD_ID, fileHelper));
+        dataGenerator.addProvider(true, new ModItemModelProvider(packOutput, SpikySpikes.MOD_ID, fileHelper));
     }
 }

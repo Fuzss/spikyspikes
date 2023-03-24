@@ -1,6 +1,6 @@
 package fuzs.spikyspikes;
 
-import fuzs.puzzleslib.core.CoreServices;
+import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.spikyspikes.api.event.AnvilUpdateCallback;
 import fuzs.spikyspikes.api.event.entity.living.LootingLevelCallback;
 import fuzs.spikyspikes.handler.ItemCombinerHandler;
@@ -11,7 +11,7 @@ public class SpikySpikesFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CoreServices.FACTORIES.modConstructor(SpikySpikes.MOD_ID).accept(new SpikySpikes());
+        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new);
         registerHandlers();
     }
 
