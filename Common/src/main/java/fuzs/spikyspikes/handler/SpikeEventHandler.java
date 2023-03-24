@@ -1,9 +1,14 @@
 package fuzs.spikyspikes.handler;
 
+import fuzs.puzzleslib.api.event.v1.core.EventResult;
+import fuzs.puzzleslib.api.event.v1.data.MutableInt;
+import fuzs.puzzleslib.api.event.v1.data.MutableValue;
+import fuzs.spikyspikes.api.world.damagesource.PlayerDamageSource;
 import fuzs.spikyspikes.core.CommonAbstractions;
 import fuzs.spikyspikes.world.item.SpikeItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Unit;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -13,11 +18,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.mutable.MutableInt;
-import org.apache.commons.lang3.mutable.MutableObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * copied from {@link AnvilMenu#createResult()} for our case, unfortunately this does not allow using /enchant
@@ -26,10 +29,9 @@ import java.util.Optional;
  * otherwise alternative would be using <code>net.minecraftforge.common.extensions.IForgeItem#canApplyAtEnchantingTable</code>
  * or a mixin for {@link EnchantmentCategory#WEAPON}
  */
-public class ItemCombinerHandler {
+public class SpikeEventHandler {
 
-    public static Optional<Unit> onAnvilUpdate(ItemStack left, ItemStack right, MutableObject<ItemStack> output, String name, MutableInt cost, MutableInt materialCost, Player player) {
-        if (right.isEmpty()) return Optional.empty();
+    public static EventResult onAnvilUpdate(ItemStack left, ItemStack right, MutableValue<ItemStack> output, String name, MutableInt cost, MutableInt materialCost, Player player) {
         if (left.getItem() instanceof SpikeItem spikeItem && spikeItem.acceptsEnchantments() && right.getItem() instanceof EnchantedBookItem) {
             if (!EnchantedBookItem.getEnchantments(right).isEmpty()) {
                 int i = 0;
@@ -38,7 +40,7 @@ public class ItemCombinerHandler {
                 ItemStack itemstack1 = left.copy();
                 Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
                 j += left.getBaseRepairCost() + (right.isEmpty() ? 0 : right.getBaseRepairCost());
-                materialCost.setValue(0);
+                materialCost.accept(0);
 
                 Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(right);
                 boolean flag2 = false;
@@ -91,7 +93,7 @@ public class ItemCombinerHandler {
                 }
 
                 if (enchantingDisallowed && !flag2) {
-                    return Optional.empty();
+                    return EventResult.PASS;
                 }
 
                 if (StringUtils.isBlank(name)) {
@@ -110,16 +112,16 @@ public class ItemCombinerHandler {
                     itemstack1 = ItemStack.EMPTY;
                 }
 
-                cost.setValue(j + i);
+                cost.accept(j + i);
                 if (i <= 0) {
                     itemstack1 = ItemStack.EMPTY;
                 }
 
-                if (k == i && k > 0 && cost.intValue() >= 40) {
-                    cost.setValue(39);
+                if (k == i && k > 0 && cost.getAsInt() >= 40) {
+                    cost.accept(39);
                 }
 
-                if (cost.intValue() >= 40 && !player.getAbilities().instabuild) {
+                if (cost.getAsInt() >= 40 && !player.getAbilities().instabuild) {
                     itemstack1 = ItemStack.EMPTY;
                 }
 
@@ -136,10 +138,15 @@ public class ItemCombinerHandler {
                     itemstack1.setRepairCost(k2);
                     EnchantmentHelper.setEnchantments(map, itemstack1);
                 }
-                output.setValue(itemstack1);
+                output.accept(itemstack1);
                 player.containerMenu.broadcastChanges();
+                return EventResult.ALLOW;
             }
         }
-        return Optional.empty();
+        return EventResult.PASS;
+    }
+
+    public static void onLootingLevel(LivingEntity entity, @Nullable DamageSource damageSource, fuzs.puzzleslib.api.event.v1.data.MutableInt lootingLevel) {
+        if (damageSource instanceof PlayerDamageSource source) lootingLevel.accept(source.lootingLevel());
     }
 }

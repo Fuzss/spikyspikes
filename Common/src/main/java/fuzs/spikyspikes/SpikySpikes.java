@@ -4,8 +4,11 @@ import fuzs.puzzleslib.api.config.v3.ConfigHolder;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.api.core.v1.context.CreativeModeTabContext;
 import fuzs.puzzleslib.api.core.v1.context.FuelBurnTimesContext;
+import fuzs.puzzleslib.api.event.v1.AnvilUpdateCallback;
+import fuzs.puzzleslib.api.event.v1.entity.living.LootingLevelCallback;
 import fuzs.puzzleslib.api.item.v2.CreativeModeTabConfigurator;
 import fuzs.spikyspikes.config.ServerConfig;
+import fuzs.spikyspikes.handler.SpikeEventHandler;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +25,12 @@ public class SpikySpikes implements ModConstructor {
     @Override
     public void onConstructMod() {
         ModRegistry.touch();
+        registerHandlers();
+    }
+
+    private static void registerHandlers() {
+        LootingLevelCallback.EVENT.register(SpikeEventHandler::onLootingLevel);
+        AnvilUpdateCallback.EVENT.register(SpikeEventHandler::onAnvilUpdate);
     }
 
     @Override
@@ -31,14 +40,7 @@ public class SpikySpikes implements ModConstructor {
 
     @Override
     public void onRegisterCreativeModeTabs(CreativeModeTabContext context) {
-        context.registerCreativeModeTab(CreativeModeTabConfigurator.of(MOD_ID).icon(() -> new ItemStack(ModRegistry.DIAMOND_SPIKE_ITEM.get())).displayItems((featureFlagSet, output, bl) -> {
-            output.accept(ModRegistry.WOODEN_SPIKE_ITEM.get());
-            output.accept(ModRegistry.STONE_SPIKE_ITEM.get());
-            output.accept(ModRegistry.IRON_SPIKE_ITEM.get());
-            output.accept(ModRegistry.GOLDEN_SPIKE_ITEM.get());
-            output.accept(ModRegistry.DIAMOND_SPIKE_ITEM.get());
-            output.accept(ModRegistry.NETHERITE_SPIKE_ITEM.get());
-        }));
+        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(ModRegistry.DIAMOND_SPIKE_ITEM.get())));
     }
 
     public static ResourceLocation id(String path) {

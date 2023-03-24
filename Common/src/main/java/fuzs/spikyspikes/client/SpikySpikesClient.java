@@ -33,12 +33,12 @@ public class SpikySpikesClient implements ClientModConstructor {
     @Override
     public void onBuildCreativeModeTabContents(BuildCreativeModeTabContentsContext context) {
         context.registerBuildListener(SpikySpikes.MOD_ID, (featureFlagSet, output, bl) -> {
-//            output.accept(ModRegistry.WOODEN_SPIKE_ITEM.get());
-//            output.accept(ModRegistry.STONE_SPIKE_ITEM.get());
-//            output.accept(ModRegistry.IRON_SPIKE_ITEM.get());
-//            output.accept(ModRegistry.GOLDEN_SPIKE_ITEM.get());
-//            output.accept(ModRegistry.DIAMOND_SPIKE_ITEM.get());
-//            output.accept(ModRegistry.NETHERITE_SPIKE_ITEM.get());
+            output.accept(ModRegistry.WOODEN_SPIKE_ITEM.get());
+            output.accept(ModRegistry.STONE_SPIKE_ITEM.get());
+            output.accept(ModRegistry.IRON_SPIKE_ITEM.get());
+            output.accept(ModRegistry.GOLDEN_SPIKE_ITEM.get());
+            output.accept(ModRegistry.DIAMOND_SPIKE_ITEM.get());
+            output.accept(ModRegistry.NETHERITE_SPIKE_ITEM.get());
         });
     }
 }
