@@ -18,7 +18,7 @@ public interface PlayerDamageSource {
     /**
      * @return looting level this damage source kills entities with
      */
-    default int lootingLevel() {
+    default int getLootingLevel() {
         return 0;
     }
 }

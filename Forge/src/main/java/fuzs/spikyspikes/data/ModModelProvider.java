@@ -2,8 +2,8 @@ package fuzs.spikyspikes.data;
 
 import fuzs.puzzleslib.api.data.v1.AbstractModelProvider;
 import fuzs.spikyspikes.init.ModRegistry;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -25,32 +25,32 @@ public class ModModelProvider extends AbstractModelProvider {
         this.itemModels().getBuilder("template_spike")
                 .parent(new ModelFile.UncheckedModelFile("builtin/entity"))
                 .transforms()
-                .transform(ItemTransforms.TransformType.GUI)
+                .transform(ItemDisplayContext.GUI)
                 .rotation(30, 45, 0)
                 .translation(0, 0, 0)
                 .scale(0.625F, 0.625F, 0.625F)
                 .end()
-                .transform(ItemTransforms.TransformType.GROUND)
+                .transform(ItemDisplayContext.GROUND)
                 .rotation(0, 0, 0)
                 .translation(0, 3, 0)
                 .scale(0.25F, 0.25F, 0.25F)
                 .end()
-                .transform(ItemTransforms.TransformType.HEAD)
+                .transform(ItemDisplayContext.HEAD)
                 .rotation(0, 180, 0)
                 .translation(0, 0, 0)
                 .scale(1, 1, 1)
                 .end()
-                .transform(ItemTransforms.TransformType.FIXED)
+                .transform(ItemDisplayContext.FIXED)
                 .rotation(0, 180, 0)
                 .translation(0, 0, 0)
                 .scale(0.5F, 0.5F, 0.5F)
                 .end()
-                .transform(ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)
+                .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
                 .rotation(75, 315, 0)
                 .translation(0, 2.5F, 0)
                 .scale(0.375F, 0.375F, 0.375F)
                 .end()
-                .transform(ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND)
+                .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
                 .rotation(0, 315, 0)
                 .translation(0, 0, 0)
                 .scale(0.4F, 0.4F, 0.4F)

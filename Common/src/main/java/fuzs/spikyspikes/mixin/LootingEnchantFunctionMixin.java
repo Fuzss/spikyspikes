@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.mixin;
 
-import fuzs.spikyspikes.api.world.damagesource.PlayerDamageSource;
+import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
@@ -31,8 +31,8 @@ public abstract class LootingEnchantFunctionMixin extends LootItemConditionalFun
     @Inject(method = "run", at = @At("HEAD"), cancellable = true)
     public void run$inject$head(ItemStack stack, LootContext context, CallbackInfoReturnable<ItemStack> callback) {
         // forge has a hook here as well, but it only triggers if a killer entity is present, which is not the case, so we need this custom hook
-        if (context != null && context.hasParam(LootContextParams.DAMAGE_SOURCE) && context.getParam(LootContextParams.DAMAGE_SOURCE) instanceof PlayerDamageSource source) {
-            int i = source.lootingLevel();
+        if (context != null && context.hasParam(LootContextParams.DAMAGE_SOURCE) && context.getParam(LootContextParams.DAMAGE_SOURCE) instanceof LootingDamageSource source) {
+            int i = source.getLootingLevel();
             if (i == 0) {
                 callback.setReturnValue(stack);
                 return;

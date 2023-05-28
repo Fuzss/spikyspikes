@@ -2,7 +2,7 @@ package fuzs.spikyspikes.world.level.block.entity;
 
 import com.google.common.collect.Maps;
 import fuzs.spikyspikes.init.ModRegistry;
-import fuzs.spikyspikes.world.damagesource.SpikePlayerDamageSource;
+import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -89,7 +89,7 @@ public class SpikeBlockEntity extends BlockEntity {
 
                 int looting = enchantments.getOrDefault(Enchantments.MOB_LOOTING, 0);
                 Vec3 oldMovement = target.getDeltaMovement();
-                if (hurtPlayerLike(target, attackDamage, looting)) {
+                if (hurtPlayerLike(level, target, attackDamage, looting)) {
 
                     // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
                     target.setDeltaMovement(oldMovement);
@@ -130,13 +130,13 @@ public class SpikeBlockEntity extends BlockEntity {
         }
     }
 
-    private static boolean hurtPlayerLike(Entity target, float attackDamage, int looting) {
-        if (target instanceof Mob mob) {
+    private static boolean hurtPlayerLike(Level level, Entity entity, float attackDamage, int looting) {
+        if (entity instanceof Mob mob) {
             mob.setLastHurtByMob(null);
             mob.setLastHurtByPlayer(null);
             mob.setTarget(null);
         }
-        return target.hurt(SpikePlayerDamageSource.spikePlayer(looting), attackDamage);
+        return entity.hurt(LootingDamageSource.source(level, ModRegistry.SPIKE_DAMAGE_TYPE, looting), attackDamage);
     }
 
     private static void applyLivingKnockback(Direction direction, Entity target, float strength, RandomSource random) {
@@ -162,7 +162,7 @@ public class SpikeBlockEntity extends BlockEntity {
                 if (knockback > 0) {
                     applyLivingKnockback(direction, livingentity, 0.4F, level.getRandom());
                 }
-                livingentity.hurt(SpikePlayerDamageSource.spikePlayer(looting), f3);
+                livingentity.hurt(LootingDamageSource.source(level, ModRegistry.SPIKE_DAMAGE_TYPE, looting), f3);
             }
         }
         if (level instanceof ServerLevel) {

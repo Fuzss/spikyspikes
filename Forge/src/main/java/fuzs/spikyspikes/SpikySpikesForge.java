@@ -31,9 +31,10 @@ public class SpikySpikesForge {
         final CompletableFuture<HolderLookup.Provider> lookupProvider = evt.getLookupProvider();
         final ExistingFileHelper fileHelper = evt.getExistingFileHelper();
         dataGenerator.addProvider(true, new ModBlockLootProvider(packOutput, SpikySpikes.MOD_ID));
-        dataGenerator.addProvider(true, new ModRecipeProvider(packOutput));
         dataGenerator.addProvider(true, new ModBlockTagsProvider(packOutput, lookupProvider, SpikySpikes.MOD_ID, fileHelper));
+        dataGenerator.addProvider(true, new ModDamageTypeProvider(packOutput, SpikySpikes.MOD_ID, fileHelper));
         dataGenerator.addProvider(true, new ModLanguageProvider(packOutput, SpikySpikes.MOD_ID));
         dataGenerator.addProvider(true, new ModModelProvider(packOutput, SpikySpikes.MOD_ID, fileHelper));
+        dataGenerator.addProvider(true, new ModRecipeProvider(packOutput));
     }
 }

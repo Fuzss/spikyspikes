@@ -1,0 +1,13 @@
+{
+  "type": "spikyspikes:legacy_smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "base": {
+    "item": "spikyspikes:diamond_spike"
+  },
+  "result": {
+    "item": "spikyspikes:netherite_spike"
+  },
+  "template": []
+}

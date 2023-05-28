@@ -3,8 +3,8 @@ package fuzs.spikyspikes.handler;
 import fuzs.puzzleslib.api.event.v1.core.EventResult;
 import fuzs.puzzleslib.api.event.v1.data.MutableInt;
 import fuzs.puzzleslib.api.event.v1.data.MutableValue;
-import fuzs.spikyspikes.api.world.damagesource.PlayerDamageSource;
 import fuzs.spikyspikes.core.CommonAbstractions;
+import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
 import fuzs.spikyspikes.world.item.SpikeItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
@@ -147,6 +147,6 @@ public class SpikeEventHandler {
     }
 
     public static void onLootingLevel(LivingEntity entity, @Nullable DamageSource damageSource, fuzs.puzzleslib.api.event.v1.data.MutableInt lootingLevel) {
-        if (damageSource instanceof PlayerDamageSource source) lootingLevel.accept(source.lootingLevel());
+        if (damageSource instanceof LootingDamageSource source) lootingLevel.accept(source.getLootingLevel());
     }
 }

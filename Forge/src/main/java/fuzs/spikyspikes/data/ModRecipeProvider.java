@@ -4,10 +4,7 @@ import fuzs.puzzleslib.api.data.v1.AbstractRecipeProvider;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.UpgradeRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
@@ -67,11 +64,15 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern("#@#")
                 .unlockedBy("has_diamond_sword", has(Items.DIAMOND_SWORD))
                 .save(exporter);
-        netheriteSmithing(exporter, ModRegistry.DIAMOND_SPIKE_ITEM.get(), RecipeCategory.DECORATIONS, ModRegistry.NETHERITE_SPIKE_ITEM.get());
+        legacyNetheriteSmithing(SpikySpikes.MOD_ID, exporter, ModRegistry.DIAMOND_SPIKE_ITEM.get(), RecipeCategory.DECORATIONS, ModRegistry.NETHERITE_SPIKE_ITEM.get());
     }
 
-    protected static void netheriteSmithing(Consumer<FinishedRecipe> finishedRecipeConsumer, Item ingredientItem, RecipeCategory category, Item resultItem) {
-        // custom mod id path, otherwise same as vanilla method
-        UpgradeRecipeBuilder.smithing(Ingredient.of(ingredientItem), Ingredient.of(Items.NETHERITE_INGOT), category, resultItem).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(finishedRecipeConsumer, new ResourceLocation(SpikySpikes.MOD_ID, getItemName(resultItem) + "_smithing"));
+    protected static void legacyNetheriteSmithing(String modId, Consumer<FinishedRecipe> exporter, Item base, RecipeCategory category, Item result) {
+        LegacyUpgradeRecipeBuilder.smithing(Ingredient.of(base), Ingredient.of(Items.NETHERITE_INGOT), category, result)
+                .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))
+                .save(exporter, new ResourceLocation(modId, getItemName(result) + "_smithing"));
+        new SmithingTransformRecipeBuilder(ModRegistry.LEGACY_SMITHING_TRANSFORM_RECIPE_SERIALIZER.get(), Ingredient.of(), Ingredient.of(base), Ingredient.of(Items.NETHERITE_INGOT), category, result)
+                .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))
+                .save(exporter, new ResourceLocation(modId, getItemName(result) + "_smithing_transform"));
     }
 }

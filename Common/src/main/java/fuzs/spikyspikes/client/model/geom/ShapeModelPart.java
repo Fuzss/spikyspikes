@@ -11,6 +11,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.EnumSet;
+
 public class ShapeModelPart {
 
     public static PureModelPart pyramid(float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, boolean fullBrightness) {
@@ -35,7 +37,7 @@ public class ShapeModelPart {
         public final float maxZ;
 
         public Pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
-            super(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texWidthScaled, texHeightScaled);
+            super(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texWidthScaled, texHeightScaled, EnumSet.allOf(Direction.class));
             this.minX = minX;
             this.minY = minY;
             this.minZ = minZ;

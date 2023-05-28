@@ -4,8 +4,8 @@ import fuzs.puzzleslib.api.config.v3.ConfigHolder;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.api.core.v1.context.CreativeModeTabContext;
 import fuzs.puzzleslib.api.core.v1.context.FuelBurnTimesContext;
-import fuzs.puzzleslib.api.event.v1.AnvilUpdateCallback;
 import fuzs.puzzleslib.api.event.v1.entity.living.LootingLevelCallback;
+import fuzs.puzzleslib.api.event.v1.entity.player.AnvilUpdateCallback;
 import fuzs.puzzleslib.api.item.v2.CreativeModeTabConfigurator;
 import fuzs.spikyspikes.config.ServerConfig;
 import fuzs.spikyspikes.handler.SpikeEventHandler;
@@ -40,7 +40,14 @@ public class SpikySpikes implements ModConstructor {
 
     @Override
     public void onRegisterCreativeModeTabs(CreativeModeTabContext context) {
-        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(ModRegistry.DIAMOND_SPIKE_ITEM.get())));
+        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(ModRegistry.DIAMOND_SPIKE_ITEM.get())).displayItems((itemDisplayParameters, output) -> {
+            output.accept(ModRegistry.WOODEN_SPIKE_ITEM.get());
+            output.accept(ModRegistry.STONE_SPIKE_ITEM.get());
+            output.accept(ModRegistry.IRON_SPIKE_ITEM.get());
+            output.accept(ModRegistry.GOLDEN_SPIKE_ITEM.get());
+            output.accept(ModRegistry.DIAMOND_SPIKE_ITEM.get());
+            output.accept(ModRegistry.NETHERITE_SPIKE_ITEM.get());
+        }));
     }
 
     public static ResourceLocation id(String path) {
