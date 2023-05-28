@@ -1,5 +1,6 @@
 package fuzs.spikyspikes;
 
+import fuzs.puzzleslib.api.core.v1.ContentRegistrationFlags;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.spikyspikes.data.*;
 import fuzs.spikyspikes.init.ForgeModRegistry;
@@ -20,7 +21,7 @@ public class SpikySpikesForge {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new);
+        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new, ContentRegistrationFlags.LEGACY_SMITHING);
         ForgeModRegistry.touch();
     }
 

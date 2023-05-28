@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ForgeSpikeBlock extends SpikeBlock {
 
-    public ForgeSpikeBlock(SpikeMaterial spikeMaterial, Properties p_49795_) {
-        super(spikeMaterial, p_49795_);
+    public ForgeSpikeBlock(SpikeMaterial spikeMaterial, Properties properties) {
+        super(spikeMaterial, properties);
     }
 
     @Override

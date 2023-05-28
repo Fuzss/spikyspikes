@@ -5,15 +5,12 @@ import fuzs.puzzleslib.api.init.v2.RegistryManager;
 import fuzs.puzzleslib.api.init.v2.RegistryReference;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.world.item.SpikeItem;
-import fuzs.spikyspikes.world.item.crafting.LegacySmithingTransformRecipe;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import fuzs.spikyspikes.world.level.block.SpikeMaterial;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -36,7 +33,6 @@ public class ModRegistry {
     public static final RegistryReference<Item> DIAMOND_SPIKE_ITEM = REGISTRY.registerItem("diamond_spike", () -> new SpikeItem(DIAMOND_SPIKE_BLOCK.get(), new Item.Properties()));
     public static final RegistryReference<Item> NETHERITE_SPIKE_ITEM = REGISTRY.registerItem("netherite_spike", () -> new SpikeItem(NETHERITE_SPIKE_BLOCK.get(), new Item.Properties()));
     public static final RegistryReference<BlockEntityType<SpikeBlockEntity>> SPIKE_BLOCK_ENTITY_TYPE = REGISTRY.registerBlockEntityType("spike", () -> BlockEntityType.Builder.of(SpikeBlockEntity::new, WOODEN_SPIKE_BLOCK.get(), STONE_SPIKE_BLOCK.get(), IRON_SPIKE_BLOCK.get(), GOLDEN_SPIKE_BLOCK.get(), DIAMOND_SPIKE_BLOCK.get(), NETHERITE_SPIKE_BLOCK.get()));
-    public static final RegistryReference<RecipeSerializer<LegacySmithingTransformRecipe>> LEGACY_SMITHING_TRANSFORM_RECIPE_SERIALIZER = REGISTRY.register(Registries.RECIPE_SERIALIZER, "legacy_smithing_transform", () -> new LegacySmithingTransformRecipe.Serializer());
 
     public static final ResourceKey<DamageType> SPIKE_DAMAGE_TYPE = REGISTRY.registerDamageType("spike");
 

@@ -30,7 +30,7 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         this.addAdditional(ModRegistry.GOLDEN_SPIKE_BLOCK.get(), "description", "Killed mobs only drop experience without any loot.");
         this.addAdditional(ModRegistry.DIAMOND_SPIKE_BLOCK.get(), "description", "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil.");
         this.addAdditional(ModRegistry.NETHERITE_SPIKE_BLOCK.get(), "description", "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil. Resistant to explosions and the wither boss. Does not damage players.");
-        this.addDamageSource("spike", "%1$s now rests in a less spiky world");
-        this.addDamageSource("spike.player", "%1$s oversaw a spike trying to flee from %2$s");
+        this.addDamageType(ModRegistry.SPIKE_DAMAGE_TYPE, "%1$s now rests in a less spiky world");
+        this.addPlayerDamageType(ModRegistry.SPIKE_DAMAGE_TYPE, "%1$s oversaw a spike trying to flee from %2$s");
     }
 }

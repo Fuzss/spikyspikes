@@ -1,5 +1,6 @@
 package fuzs.spikyspikes;
 
+import fuzs.puzzleslib.api.core.v1.ContentRegistrationFlags;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.fabricmc.api.ModInitializer;
@@ -11,7 +12,7 @@ public class SpikySpikesFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new);
+        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new, ContentRegistrationFlags.LEGACY_SMITHING);
         registerBlockPathTypes();
     }
 
