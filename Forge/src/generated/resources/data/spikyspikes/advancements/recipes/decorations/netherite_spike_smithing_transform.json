@@ -30,5 +30,6 @@
     "recipes": [
       "spikyspikes:netherite_spike_smithing_transform"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

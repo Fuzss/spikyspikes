@@ -30,5 +30,6 @@
     "recipes": [
       "spikyspikes:stone_spike"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

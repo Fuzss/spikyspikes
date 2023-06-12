@@ -1,7 +1,7 @@
-// 1.19.4	2023-05-28T01:14:34.627618	Block Loot Tables
-1fbee1608336f6f1c41e7e46a1d85eca24a4817f data/spikyspikes/loot_tables/blocks/diamond_spike.json
-c068ec6230f634a0ce60eb330f688d1c16d63602 data/spikyspikes/loot_tables/blocks/golden_spike.json
-35fb5816988c0279b5ca924f53faa96323ef8c70 data/spikyspikes/loot_tables/blocks/iron_spike.json
-92b033f1fec08cfbf597e1a0ed5f27fdf8493b42 data/spikyspikes/loot_tables/blocks/netherite_spike.json
-023aaecdecb011a7eb8209b54d38e89e109f4812 data/spikyspikes/loot_tables/blocks/stone_spike.json
-601544384860f76073bd18abbc0775168ea1124e data/spikyspikes/loot_tables/blocks/wooden_spike.json
+// 1.20	2023-06-12T10:46:42.583096	Block Loot Tables
+c7910f777ec74a8fdad54a4d92f6edb0206471a9 data/spikyspikes/loot_tables/blocks/diamond_spike.json
+e1e05fae5f1a9b08b276731d19742cee05e4059f data/spikyspikes/loot_tables/blocks/golden_spike.json
+cb93b654c1355218568dca39f7dc8f9090f5742a data/spikyspikes/loot_tables/blocks/iron_spike.json
+e8972d56fb24a9cfeae483fd06bd677f286c74f1 data/spikyspikes/loot_tables/blocks/netherite_spike.json
+f600e3da7c30102ae99d2ea244f062cbf92d0ef6 data/spikyspikes/loot_tables/blocks/stone_spike.json
+b5adc5ea295031c21d2d586c15f8d99c82f22915 data/spikyspikes/loot_tables/blocks/wooden_spike.json
