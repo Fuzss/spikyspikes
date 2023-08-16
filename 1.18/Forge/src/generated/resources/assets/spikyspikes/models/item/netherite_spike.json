@@ -1,0 +1,6 @@
+{
+  "parent": "spikyspikes:item/template_spike",
+  "textures": {
+    "particle": "minecraft:block/netherite_block"
+  }
+}

@@ -1,7 +1,7 @@
 package fuzs.spikyspikes.data;
 
 import fuzs.puzzleslib.api.data.v1.AbstractRecipeProvider;
-import fuzs.spikyspikes.SpikySpikes;
+import fuzs.puzzleslib.api.data.v1.recipes.CopyTagShapelessRecipeBuilder;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -26,7 +26,7 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern(" S ")
                 .pattern("S#S")
                 .pattern("###")
-                .unlockedBy("has_wooden_sword", has(Items.WOODEN_SWORD))
+                .unlockedBy(getHasName(Items.WOODEN_SWORD), has(Items.WOODEN_SWORD))
                 .save(exporter);
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModRegistry.STONE_SPIKE_ITEM.get(), 3)
                 .define('S', Items.STONE_SWORD)
@@ -34,7 +34,7 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern(" S ")
                 .pattern("S#S")
                 .pattern("###")
-                .unlockedBy("has_stone_sword", has(Items.STONE_SWORD))
+                .unlockedBy(getHasName(Items.STONE_SWORD), has(Items.STONE_SWORD))
                 .save(exporter);
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModRegistry.IRON_SPIKE_ITEM.get(), 3)
                 .define('S', Items.IRON_SWORD)
@@ -43,7 +43,7 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern(" S ")
                 .pattern("S#S")
                 .pattern("#@#")
-                .unlockedBy("has_iron_sword", has(Items.IRON_SWORD))
+                .unlockedBy(getHasName(Items.IRON_SWORD), has(Items.IRON_SWORD))
                 .save(exporter);
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModRegistry.GOLDEN_SPIKE_ITEM.get(), 3)
                 .define('S', Items.GOLDEN_SWORD)
@@ -52,7 +52,7 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern(" S ")
                 .pattern("S#S")
                 .pattern("#@#")
-                .unlockedBy("has_golden_sword", has(Items.GOLDEN_SWORD))
+                .unlockedBy(getHasName(Items.GOLDEN_SWORD), has(Items.GOLDEN_SWORD))
                 .save(exporter);
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModRegistry.DIAMOND_SPIKE_ITEM.get(), 3)
                 .define('S', Items.DIAMOND_SWORD)
@@ -61,8 +61,13 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern(" S ")
                 .pattern("S#S")
                 .pattern("#@#")
-                .unlockedBy("has_diamond_sword", has(Items.DIAMOND_SWORD))
+                .unlockedBy(getHasName(Items.DIAMOND_SWORD), has(Items.DIAMOND_SWORD))
                 .save(exporter);
-        legacyNetheriteSmithing(SpikySpikes.MOD_ID, exporter, ModRegistry.DIAMOND_SPIKE_ITEM.get(), RecipeCategory.DECORATIONS, ModRegistry.NETHERITE_SPIKE_ITEM.get());
+        CopyTagShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, ModRegistry.NETHERITE_SPIKE_ITEM.get())
+                .requires(ModRegistry.DIAMOND_SPIKE_ITEM.get())
+                .requires(Items.NETHERITE_INGOT)
+                .copyFrom(ModRegistry.DIAMOND_SPIKE_ITEM.get())
+                .unlockedBy(getHasName(Items.NETHERITE_INGOT), has(Items.NETHERITE_INGOT))
+                .save(exporter);
     }
 }

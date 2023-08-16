@@ -1,0 +1,17 @@
+{
+  "type": "spikyspikes:copy_tag_shapeless_recipe",
+  "ingredients": [
+    {
+      "item": "spikyspikes:diamond_spike"
+    },
+    {
+      "item": "minecraft:netherite_ingot"
+    }
+  ],
+  "result": {
+    "item": "spikyspikes:netherite_spike"
+  },
+  "copy_from": {
+    "item": "spikyspikes:diamond_spike"
+  }
+}

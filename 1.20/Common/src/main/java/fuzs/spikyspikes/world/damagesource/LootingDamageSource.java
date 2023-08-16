@@ -7,6 +7,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.level.LevelReader;
 
+import java.util.OptionalInt;
+
 public class LootingDamageSource extends DamageSource {
     private final int lootingLevel;
 
@@ -15,8 +17,8 @@ public class LootingDamageSource extends DamageSource {
         this.lootingLevel = lootingLevel;
     }
 
-    public int getLootingLevel() {
-        return this.lootingLevel;
+    public OptionalInt getLootingLevel() {
+        return this.lootingLevel == 0 ? OptionalInt.empty() : OptionalInt.of(this.lootingLevel);
     }
 
     public static DamageSource source(LevelReader level, ResourceKey<DamageType> resourceKey, int lootingLevel) {

@@ -12,7 +12,7 @@ public class SpikySpikesFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new, ContentRegistrationFlags.LEGACY_SMITHING);
+        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new, ContentRegistrationFlags.COPY_TAG_RECIPES);
         registerBlockPathTypes();
     }
 

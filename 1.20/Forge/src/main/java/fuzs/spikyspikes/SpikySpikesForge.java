@@ -21,7 +21,7 @@ public class SpikySpikesForge {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new, ContentRegistrationFlags.LEGACY_SMITHING);
+        ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new, ContentRegistrationFlags.COPY_TAG_RECIPES);
         ForgeModRegistry.touch();
     }
 

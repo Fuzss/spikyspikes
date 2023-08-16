@@ -24,13 +24,13 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         this.add("item.spikyspikes.spike.tooltip.shift", "Shift");
         this.add("item.spikyspikes.spike.tooltip.damage", "Damage: %s");
         this.add("item.spikyspikes.spike.tooltip.hearts", "%s Heart(s)");
-        this.addAdditional(ModRegistry.WOODEN_SPIKE_BLOCK.get(), "description", "Slowly damages mobs, but does not deal a killing blow.");
-        this.addAdditional(ModRegistry.STONE_SPIKE_BLOCK.get(), "description", "Killed mobs do not drop any loot or experience.");
-        this.addAdditional(ModRegistry.IRON_SPIKE_BLOCK.get(), "description", "Killed mobs only drop normal loot without experience.");
-        this.addAdditional(ModRegistry.GOLDEN_SPIKE_BLOCK.get(), "description", "Killed mobs only drop experience without any loot.");
-        this.addAdditional(ModRegistry.DIAMOND_SPIKE_BLOCK.get(), "description", "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil.");
-        this.addAdditional(ModRegistry.NETHERITE_SPIKE_BLOCK.get(), "description", "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil. Resistant to explosions and the wither boss. Does not damage players.");
-        this.addDamageType(ModRegistry.SPIKE_DAMAGE_TYPE, "%1$s now rests in a less spiky world");
+        this.add(ModRegistry.WOODEN_SPIKE_BLOCK.get(), "description", "Slowly damages mobs, but does not deal a killing blow.");
+        this.add(ModRegistry.STONE_SPIKE_BLOCK.get(), "description", "Killed mobs do not drop any loot or experience.");
+        this.add(ModRegistry.IRON_SPIKE_BLOCK.get(), "description", "Killed mobs only drop normal loot without experience.");
+        this.add(ModRegistry.GOLDEN_SPIKE_BLOCK.get(), "description", "Killed mobs only drop experience without any loot.");
+        this.add(ModRegistry.DIAMOND_SPIKE_BLOCK.get(), "description", "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil.");
+        this.add(ModRegistry.NETHERITE_SPIKE_BLOCK.get(), "description", "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil. Resistant to explosions and the wither boss. Does not damage players.");
+        this.addGenericDamageType(ModRegistry.SPIKE_DAMAGE_TYPE, "%1$s now rests in a less spiky world");
         this.addPlayerDamageType(ModRegistry.SPIKE_DAMAGE_TYPE, "%1$s oversaw a spike trying to flee from %2$s");
     }
 }

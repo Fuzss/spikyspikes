@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "Enchantments",
+                  "target": "Enchantments",
+                  "op": "replace"
+                },
+                {
+                  "source": "RepairCost",
+                  "target": "RepairCost",
+                  "op": "replace"
+                }
+              ]
+            }
+          ],
+          "name": "spikyspikes:diamond_spike"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

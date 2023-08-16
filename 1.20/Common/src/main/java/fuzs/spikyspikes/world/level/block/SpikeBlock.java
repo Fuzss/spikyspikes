@@ -2,9 +2,9 @@ package fuzs.spikyspikes.world.level.block;
 
 import com.google.common.collect.Maps;
 import fuzs.puzzleslib.api.core.v1.Proxy;
-import fuzs.puzzleslib.api.entity.v1.DamageSourcesHelper;
 import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
+import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import fuzs.spikyspikes.world.phys.shapes.CustomOutlineShape;
 import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
@@ -192,7 +192,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(false, level.getServer());
                         }
-                        entity.hurt(DamageSourcesHelper.source(level, ModRegistry.SPIKE_DAMAGE_TYPE), material.damageAmount());
+                        entity.hurt(LootingDamageSource.source(level, ModRegistry.SPIKE_DAMAGE_TYPE, 0), material.damageAmount());
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(doMobLoot, level.getServer());
                         }
