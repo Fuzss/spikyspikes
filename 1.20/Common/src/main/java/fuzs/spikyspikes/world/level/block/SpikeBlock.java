@@ -184,7 +184,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                     if (material.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                            SpikeBlockEntity.attackPlayerLike(level, pos, level.getBlockState(pos), blockEntity, entity, material.damageAmount());
+                            SpikeBlockEntity.attackPlayerLike(level, pos, level.getBlockState(pos), blockEntity, entity, material);
                         }
                     } else {
                         // cancelling drops via forge event works too, but also cancels equipment drops (e.g. saddles, not spawned equipment) which is not good

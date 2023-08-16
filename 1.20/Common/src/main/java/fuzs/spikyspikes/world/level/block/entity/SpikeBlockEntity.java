@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
+import fuzs.spikyspikes.world.level.block.SpikeMaterial;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -14,10 +15,7 @@ import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
@@ -55,14 +53,14 @@ public class SpikeBlockEntity extends BlockEntity {
         return listtag;
     }
 
-    public static void attackPlayerLike(Level level, BlockPos pos, BlockState state, SpikeBlockEntity blockEntity, LivingEntity entity, float attackDamage) {
-        attackPlayerLike(entity, attackDamage, level, pos, state.getValue(SpikeBlock.FACING), blockEntity.enchantments);
+    public static void attackPlayerLike(Level level, BlockPos pos, BlockState state, SpikeBlockEntity blockEntity, LivingEntity entity, SpikeMaterial material) {
+        attackPlayerLike(entity, material.damageAmount(), level, pos, state.getValue(SpikeBlock.FACING), blockEntity.enchantments, material.hurtsPlayers());
     }
 
     /**
      * adapted from {@link Player#attack}, most importantly removing all the knockback and sounds, also most particles
      */
-    private static void attackPlayerLike(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, Map<Enchantment, Integer> enchantments) {
+    private static void attackPlayerLike(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, Map<Enchantment, Integer> enchantments, boolean hurtPlayers) {
         if (target.isAttackable()) {
 
             MobType mobType = target instanceof LivingEntity ? ((LivingEntity) target).getMobType() : MobType.UNDEFINED;
@@ -100,7 +98,7 @@ public class SpikeBlockEntity extends BlockEntity {
 
                     int sweeping = enchantments.getOrDefault(Enchantments.SWEEPING_EDGE, 0);
                     if (sweeping > 0) {
-                        applySweepingDamage(target, attackDamage, level, pos, direction, looting, knockback, sweeping);
+                        applySweepingDamage(target, attackDamage, level, pos, direction, looting, knockback, sweeping, hurtPlayers);
                     }
 
                     if (damageBonus > 0.0F && level instanceof ServerLevel) {
@@ -154,10 +152,10 @@ public class SpikeBlockEntity extends BlockEntity {
         }
     }
 
-    private static void applySweepingDamage(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, int looting, int knockback, int sweeping) {
+    private static void applySweepingDamage(Entity target, float attackDamage, Level level, BlockPos pos, Direction direction, int looting, int knockback, int sweeping, boolean hurtPlayers) {
         float f3 = 1.0F + SweepingEdgeEnchantment.getSweepingDamageRatio(sweeping) * attackDamage;
 
-        for (LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
+        for (LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D), hurtPlayers ? EntitySelector.NO_SPECTATORS : entity -> !(entity instanceof Player))) {
             if (livingentity != target && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker()) && pos.distToCenterSqr(livingentity.position()) < 9.0D) {
                 if (knockback > 0) {
                     applyLivingKnockback(direction, livingentity, 0.4F, level.getRandom());
