@@ -1,6 +1,0 @@
-{
-  "parent": "spikyspikes:item/template_spike",
-  "textures": {
-    "particle": "minecraft:block/diamond_block"
-  }
-}

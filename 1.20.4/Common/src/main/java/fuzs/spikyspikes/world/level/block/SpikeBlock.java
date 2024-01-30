@@ -1,6 +1,8 @@
 package fuzs.spikyspikes.world.level.block;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fuzs.puzzleslib.api.core.v1.Proxy;
 import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
@@ -44,6 +46,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -51,6 +54,7 @@ import java.util.function.Function;
  */
 @SuppressWarnings("deprecation")
 public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<SpikeBlock> CODEC = spikeCodec(SpikeBlock::new);
     public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("0.0"), (p_41704_) -> {
         p_41704_.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     });
@@ -62,10 +66,25 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     public final SpikeMaterial spikeMaterial;
 
-    public SpikeBlock(SpikeMaterial spikeMaterial, Properties p_49795_) {
-        super(p_49795_);
+    public SpikeBlock(SpikeMaterial spikeMaterial, Properties properties) {
+        super(properties);
         this.spikeMaterial = spikeMaterial;
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, Boolean.FALSE).setValue(FACING, Direction.UP));
+    }
+
+    protected static <T extends SpikeBlock> MapCodec<T> spikeCodec(BiFunction<SpikeMaterial, Properties, T> factory) {
+        return RecordCodecBuilder.mapCodec((instance) -> {
+            return instance.group(SpikeMaterial.CODEC.fieldOf("material").forGetter(SpikeBlock::getSpikeMaterial), propertiesCodec()).apply(instance, factory);
+        });
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    public SpikeMaterial getSpikeMaterial() {
+        return this.spikeMaterial;
     }
 
     private static VoxelShape makeVisualShape(Direction direction) {
@@ -235,7 +254,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState p_49825_) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState p_49825_) {
         ItemStack stack = super.getCloneItemStack(level, pos, p_49825_);
         if (this.spikeMaterial.acceptsEnchantments()) {
             if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {

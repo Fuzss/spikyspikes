@@ -1,11 +1,12 @@
 package fuzs.spikyspikes;
 
 import fuzs.puzzleslib.api.config.v3.ConfigHolder;
+import fuzs.puzzleslib.api.core.v1.ContentRegistrationFlags;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.api.core.v1.context.CreativeModeTabContext;
 import fuzs.puzzleslib.api.core.v1.context.FuelBurnTimesContext;
 import fuzs.puzzleslib.api.event.v1.entity.living.LootingLevelCallback;
-import fuzs.puzzleslib.api.event.v1.entity.player.AnvilUpdateCallback;
+import fuzs.puzzleslib.api.event.v1.entity.player.AnvilEvents;
 import fuzs.puzzleslib.api.item.v2.CreativeModeTabConfigurator;
 import fuzs.spikyspikes.config.ServerConfig;
 import fuzs.spikyspikes.handler.SpikeEventHandler;
@@ -30,24 +31,29 @@ public class SpikySpikes implements ModConstructor {
 
     private static void registerHandlers() {
         LootingLevelCallback.EVENT.register(SpikeEventHandler::onLootingLevel);
-        AnvilUpdateCallback.EVENT.register(SpikeEventHandler::onAnvilUpdate);
+        AnvilEvents.UPDATE.register(SpikeEventHandler::onAnvilUpdate);
     }
 
     @Override
     public void onRegisterFuelBurnTimes(FuelBurnTimesContext context) {
-        context.registerFuel(300, ModRegistry.WOODEN_SPIKE_BLOCK.get());
+        context.registerFuel(300, ModRegistry.WOODEN_SPIKE_BLOCK.value());
     }
 
     @Override
     public void onRegisterCreativeModeTabs(CreativeModeTabContext context) {
-        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(ModRegistry.DIAMOND_SPIKE_ITEM.get())).displayItems((itemDisplayParameters, output) -> {
-            output.accept(ModRegistry.WOODEN_SPIKE_ITEM.get());
-            output.accept(ModRegistry.STONE_SPIKE_ITEM.get());
-            output.accept(ModRegistry.IRON_SPIKE_ITEM.get());
-            output.accept(ModRegistry.GOLDEN_SPIKE_ITEM.get());
-            output.accept(ModRegistry.DIAMOND_SPIKE_ITEM.get());
-            output.accept(ModRegistry.NETHERITE_SPIKE_ITEM.get());
+        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(ModRegistry.DIAMOND_SPIKE_ITEM.value())).displayItems((itemDisplayParameters, output) -> {
+            output.accept(ModRegistry.WOODEN_SPIKE_ITEM.value());
+            output.accept(ModRegistry.STONE_SPIKE_ITEM.value());
+            output.accept(ModRegistry.IRON_SPIKE_ITEM.value());
+            output.accept(ModRegistry.GOLDEN_SPIKE_ITEM.value());
+            output.accept(ModRegistry.DIAMOND_SPIKE_ITEM.value());
+            output.accept(ModRegistry.NETHERITE_SPIKE_ITEM.value());
         }));
+    }
+
+    @Override
+    public ContentRegistrationFlags[] getContentRegistrationFlags() {
+        return new ContentRegistrationFlags[]{ContentRegistrationFlags.COPY_TAG_RECIPES};
     }
 
     public static ResourceLocation id(String path) {

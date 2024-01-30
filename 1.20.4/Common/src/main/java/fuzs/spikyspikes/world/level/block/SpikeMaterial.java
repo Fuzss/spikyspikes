@@ -3,23 +3,28 @@ package fuzs.spikyspikes.world.level.block;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.config.ServerConfig;
 import net.minecraft.ChatFormatting;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 import java.util.function.DoubleSupplier;
 
-public enum SpikeMaterial {
-    WOOD(0, () -> SpikySpikes.CONFIG.get(ServerConfig.class).woodenSpikeDamage), 
-    STONE(1, () -> SpikySpikes.CONFIG.get(ServerConfig.class).stoneSpikeDamage), 
-    IRON(2, () -> SpikySpikes.CONFIG.get(ServerConfig.class).ironSpikeDamage), 
-    GOLD(3, () -> SpikySpikes.CONFIG.get(ServerConfig.class).goldenSpikeDamage), 
-    DIAMOND(4, () -> SpikySpikes.CONFIG.get(ServerConfig.class).diamondSpikeDamage), 
-    NETHERITE(5, () -> SpikySpikes.CONFIG.get(ServerConfig.class).netheriteSpikeDamage);
+public enum SpikeMaterial implements StringRepresentable {
+    WOOD("wood", 0, () -> SpikySpikes.CONFIG.get(ServerConfig.class).woodenSpikeDamage),
+    STONE("stone", 1, () -> SpikySpikes.CONFIG.get(ServerConfig.class).stoneSpikeDamage),
+    IRON("iron", 2, () -> SpikySpikes.CONFIG.get(ServerConfig.class).ironSpikeDamage),
+    GOLD("gold", 3, () -> SpikySpikes.CONFIG.get(ServerConfig.class).goldenSpikeDamage),
+    DIAMOND("diamond", 4, () -> SpikySpikes.CONFIG.get(ServerConfig.class).diamondSpikeDamage),
+    NETHERITE("netherite", 5, () -> SpikySpikes.CONFIG.get(ServerConfig.class).netheriteSpikeDamage);
 
+    public static final StringRepresentable.EnumCodec<SpikeMaterial> CODEC = StringRepresentable.fromEnum(SpikeMaterial::values);
+
+    private final String materialName;
     private final int materialTier;
     private final DoubleSupplier damageAmount;
 
-    SpikeMaterial(int materialTier, DoubleSupplier damageAmount) {
+    SpikeMaterial(String materialName, int materialTier, DoubleSupplier damageAmount) {
+        this.materialName = materialName;
         this.materialTier = materialTier;
         this.damageAmount = damageAmount;
     }
@@ -71,5 +76,10 @@ public enum SpikeMaterial {
 
     private boolean isAtLeast(SpikeMaterial material) {
         return this.materialTier >= material.materialTier;
+    }
+
+    @Override
+    public String getSerializedName() {
+        return this.materialName;
     }
 }

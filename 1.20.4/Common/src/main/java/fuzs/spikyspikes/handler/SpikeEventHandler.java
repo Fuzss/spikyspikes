@@ -1,9 +1,9 @@
 package fuzs.spikyspikes.handler;
 
+import fuzs.puzzleslib.api.core.v1.CommonAbstractions;
 import fuzs.puzzleslib.api.event.v1.core.EventResult;
 import fuzs.puzzleslib.api.event.v1.data.MutableInt;
 import fuzs.puzzleslib.api.event.v1.data.MutableValue;
-import fuzs.spikyspikes.core.CommonAbstractions;
 import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
 import fuzs.spikyspikes.world.item.SpikeItem;
 import net.minecraft.network.chat.Component;
@@ -32,6 +32,8 @@ import java.util.Map;
 public class SpikeEventHandler {
 
     public static EventResult onAnvilUpdate(ItemStack left, ItemStack right, MutableValue<ItemStack> output, String name, MutableInt cost, MutableInt materialCost, Player player) {
+        // use this custom hook for changing anvil behavior in addition to a mixin, so we can allow applying an enchantment
+        // to an entire item stack and not just individual items which would be ridiculously expensive both level and enchanted book wise
         if (left.getItem() instanceof SpikeItem spikeItem && spikeItem.acceptsEnchantments() && right.getItem() instanceof EnchantedBookItem) {
             if (!EnchantedBookItem.getEnchantments(right).isEmpty()) {
                 int i = 0;
@@ -51,15 +53,12 @@ public class SpikeEventHandler {
                         int i2 = map.getOrDefault(enchantment1, 0);
                         int j22 = map1.get(enchantment1);
                         int j2 = i2 == j22 ? j22 + 1 : Math.max(j22, i2);
-                        // this is meant to be a check for just the WEAPON enchantment category, but my Universal Enchants mod breaks this as it replaces all enchantment categories
-                        // so we attempt to filter out all weapon enchantments with the following line
-                        // (use elytra as it excludes mending, unbreaking and vanishing curse, and enchantments from other mods aren't likely compatible with swords)
-                        boolean canEnchant = enchantment1.category.canEnchant(Items.DIAMOND_SWORD) && !enchantment1.category.canEnchant(Items.ELYTRA);
+                        boolean canEnchant = canEnchantSpike(enchantment1.category);
                         if (player.getAbilities().instabuild) {
                             canEnchant = true;
                         }
 
-                        for(Enchantment enchantment : map.keySet()) {
+                        for (Enchantment enchantment : map.keySet()) {
                             if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
                                 canEnchant = false;
                                 ++i;
@@ -108,7 +107,7 @@ public class SpikeEventHandler {
                     itemstack1.setHoverName(Component.literal(name));
                 }
 
-                if (!CommonAbstractions.INSTANCE.isStackBookEnchantable(itemstack1, right)) {
+                if (!CommonAbstractions.INSTANCE.isBookEnchantable(itemstack1, right)) {
                     itemstack1 = ItemStack.EMPTY;
                 }
 
@@ -144,6 +143,13 @@ public class SpikeEventHandler {
             }
         }
         return EventResult.PASS;
+    }
+
+    public static boolean canEnchantSpike(EnchantmentCategory category) {
+        // this is meant to be a check for just the WEAPON enchantment category, but my Universal Enchants mod breaks this as it replaces all enchantment categories,
+        // so we attempt to filter out all weapon enchantments with the following line
+        // (use elytra as it excludes mending, unbreaking and vanishing curse, and enchantments from other mods aren't likely compatible with swords)
+        return category.canEnchant(Items.DIAMOND_SWORD) && !category.canEnchant(Items.ELYTRA);
     }
 
     public static void onLootingLevel(LivingEntity entity, @Nullable DamageSource damageSource, fuzs.puzzleslib.api.event.v1.data.MutableInt lootingLevel) {

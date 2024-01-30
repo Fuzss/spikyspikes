@@ -1,0 +1,7 @@
+// 1.20.4	2024-01-30T11:00:09.027963	Block Loot Tables
+c7910f777ec74a8fdad54a4d92f6edb0206471a9 data/spikyspikes/loot_tables/blocks/diamond_spike.json
+e1e05fae5f1a9b08b276731d19742cee05e4059f data/spikyspikes/loot_tables/blocks/golden_spike.json
+cb93b654c1355218568dca39f7dc8f9090f5742a data/spikyspikes/loot_tables/blocks/iron_spike.json
+e8972d56fb24a9cfeae483fd06bd677f286c74f1 data/spikyspikes/loot_tables/blocks/netherite_spike.json
+f600e3da7c30102ae99d2ea244f062cbf92d0ef6 data/spikyspikes/loot_tables/blocks/stone_spike.json
+b5adc5ea295031c21d2d586c15f8d99c82f22915 data/spikyspikes/loot_tables/blocks/wooden_spike.json

@@ -29,6 +29,6 @@ public class SpikeItem extends BlockItem {
     }
 
     public boolean acceptsEnchantments() {
-        return ((SpikeBlock) this.getBlock()).spikeMaterial.acceptsEnchantments();
+        return ((SpikeBlock) this.getBlock()).getSpikeMaterial().acceptsEnchantments();
     }
 }

@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
+
 @Mixin(LootingEnchantFunction.class)
 public abstract class LootingEnchantFunctionMixin extends LootItemConditionalFunction {
     @Shadow
@@ -24,8 +26,8 @@ public abstract class LootingEnchantFunctionMixin extends LootItemConditionalFun
     @Final
     int limit;
 
-    protected LootingEnchantFunctionMixin(LootItemCondition[] p_80678_) {
-        super(p_80678_);
+    protected LootingEnchantFunctionMixin(List<LootItemCondition> predicates) {
+        super(predicates);
     }
 
     @Inject(method = "run", at = @At("HEAD"), cancellable = true)

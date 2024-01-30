@@ -38,7 +38,7 @@ public class SpikeBlockEntity extends BlockEntity {
     private int repairCost;
 
     public SpikeBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
-        super(ModRegistry.SPIKE_BLOCK_ENTITY_TYPE.get(), p_155229_, p_155230_);
+        super(ModRegistry.SPIKE_BLOCK_ENTITY_TYPE.value(), p_155229_, p_155230_);
     }
 
     public static ListTag serializeEnchantments(Map<Enchantment, Integer> p_44866_) {

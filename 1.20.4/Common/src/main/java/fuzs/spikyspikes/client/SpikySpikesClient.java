@@ -17,14 +17,14 @@ public class SpikySpikesClient implements ClientModConstructor {
 
     @Override
     public void onRegisterBlockEntityRenderers(BlockEntityRenderersContext context) {
-        context.registerBlockEntityRenderer(ModRegistry.SPIKE_BLOCK_ENTITY_TYPE.get(), context1 -> new SpikeRenderer());
+        context.registerBlockEntityRenderer(ModRegistry.SPIKE_BLOCK_ENTITY_TYPE.value(), SpikeRenderer::new);
     }
 
     @Override
     public void onRegisterBuiltinModelItemRenderers(BuiltinModelItemRendererContext context) {
         context.registerItemRenderer((ItemStack stack, ItemDisplayContext mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) -> {
             SpikeBlock block = (SpikeBlock) ((BlockItem) stack.getItem()).getBlock();
-            SpikeRenderer.renderSpike(Direction.UP, block.spikeMaterial, matrices, vertexConsumers, light, overlay, true, stack.hasFoil());
-        }, ModRegistry.WOODEN_SPIKE_ITEM.get(), ModRegistry.STONE_SPIKE_ITEM.get(), ModRegistry.IRON_SPIKE_ITEM.get(), ModRegistry.GOLDEN_SPIKE_ITEM.get(), ModRegistry.DIAMOND_SPIKE_ITEM.get(), ModRegistry.NETHERITE_SPIKE_ITEM.get());
+            SpikeRenderer.renderSpike(Direction.UP, block.getSpikeMaterial(), matrices, vertexConsumers, light, overlay, true, stack.hasFoil());
+        }, ModRegistry.WOODEN_SPIKE_ITEM.value(), ModRegistry.STONE_SPIKE_ITEM.value(), ModRegistry.IRON_SPIKE_ITEM.value(), ModRegistry.GOLDEN_SPIKE_ITEM.value(), ModRegistry.DIAMOND_SPIKE_ITEM.value(), ModRegistry.NETHERITE_SPIKE_ITEM.value());
     }
 }
