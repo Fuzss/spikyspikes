@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:smooth_stone"
+    },
+    "S": {
+      "item": "minecraft:stone_sword"
+    }
+  },
+  "pattern": [
+    " S ",
+    "S#S",
+    "###"
+  ],
+  "result": {
+    "count": 3,
+    "item": "spikyspikes:stone_spike"
+  },
+  "show_notification": true
+}
