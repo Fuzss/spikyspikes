@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:iron_ingot"
+    },
+    "@": {
+      "item": "minecraft:iron_block"
+    },
+    "S": {
+      "item": "minecraft:iron_sword"
+    }
+  },
+  "pattern": [
+    " S ",
+    "S#S",
+    "#@#"
+  ],
+  "result": {
+    "count": 3,
+    "item": "spikyspikes:iron_spike"
+  }
+}
