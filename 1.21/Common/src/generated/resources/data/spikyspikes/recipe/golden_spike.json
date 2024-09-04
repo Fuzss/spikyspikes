@@ -3,19 +3,22 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "minecraft:smooth_stone"
+      "item": "minecraft:gold_ingot"
+    },
+    "@": {
+      "item": "minecraft:gold_block"
     },
     "S": {
-      "item": "minecraft:stone_sword"
+      "item": "minecraft:golden_sword"
     }
   },
   "pattern": [
     " S ",
     "S#S",
-    "###"
+    "#@#"
   ],
   "result": {
     "count": 3,
-    "item": "spikyspikes:stone_spike"
+    "id": "spikyspikes:golden_spike"
   }
 }

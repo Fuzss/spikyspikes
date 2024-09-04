@@ -3,22 +3,19 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "minecraft:gold_ingot"
-    },
-    "@": {
-      "item": "minecraft:gold_block"
+      "tag": "minecraft:logs_that_burn"
     },
     "S": {
-      "item": "minecraft:golden_sword"
+      "item": "minecraft:wooden_sword"
     }
   },
   "pattern": [
     " S ",
     "S#S",
-    "#@#"
+    "###"
   ],
   "result": {
     "count": 3,
-    "item": "spikyspikes:golden_spike"
+    "id": "spikyspikes:wooden_spike"
   }
 }

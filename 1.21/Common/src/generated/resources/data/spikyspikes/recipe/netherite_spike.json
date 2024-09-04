@@ -1,5 +1,5 @@
 {
-  "type": "spikyspikes:copy_tag_shapeless_recipe",
+  "type": "spikyspikes:copy_components_shapeless_recipe",
   "category": "misc",
   "copy_from": {
     "item": "spikyspikes:diamond_spike"
@@ -13,6 +13,7 @@
     }
   ],
   "result": {
-    "item": "spikyspikes:netherite_spike"
+    "count": 1,
+    "id": "spikyspikes:netherite_spike"
   }
 }

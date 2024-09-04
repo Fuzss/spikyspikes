@@ -17,7 +17,7 @@ public enum SpikeMaterial implements StringRepresentable {
     DIAMOND("diamond", 4, () -> SpikySpikes.CONFIG.get(ServerConfig.class).diamondSpikeDamage),
     NETHERITE("netherite", 5, () -> SpikySpikes.CONFIG.get(ServerConfig.class).netheriteSpikeDamage);
 
-    public static final StringRepresentable.EnumCodec<SpikeMaterial> CODEC = StringRepresentable.fromEnum(SpikeMaterial::values);
+    public static final StringRepresentable.StringRepresentableCodec<SpikeMaterial> CODEC = StringRepresentable.fromEnum(SpikeMaterial::values);
 
     private final String materialName;
     private final int materialTier;

@@ -3,13 +3,13 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "minecraft:diamond"
+      "item": "minecraft:iron_ingot"
     },
     "@": {
-      "item": "minecraft:diamond_block"
+      "item": "minecraft:iron_block"
     },
     "S": {
-      "item": "minecraft:diamond_sword"
+      "item": "minecraft:iron_sword"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 3,
-    "item": "spikyspikes:diamond_spike"
+    "id": "spikyspikes:iron_spike"
   }
 }

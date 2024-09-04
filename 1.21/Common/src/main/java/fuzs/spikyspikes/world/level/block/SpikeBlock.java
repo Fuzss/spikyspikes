@@ -14,15 +14,18 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,13 +53,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * code for facing copied from {@link AmethystClusterBlock}
+ * Code for facing copied from {@link AmethystClusterBlock}.
  */
-@SuppressWarnings("deprecation")
 public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final MapCodec<SpikeBlock> CODEC = spikeCodec(SpikeBlock::new);
-    public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("0.0"), (p_41704_) -> {
-        p_41704_.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+    public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("0.0"), (DecimalFormat decimalFormat) -> {
+        decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     });
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
@@ -110,27 +112,27 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
-        return SHAPE_BY_DIRECTION.get(p_60555_.getValue(FACING));
+    public VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos blockPos, CollisionContext context) {
+        return SHAPE_BY_DIRECTION.get(blockState.getValue(FACING));
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState p_52357_, BlockGetter p_52358_, BlockPos p_52359_, CollisionContext p_52360_) {
-        return COLLISION_SHAPE_BY_DIRECTION.get(p_52357_.getValue(FACING));
+    public VoxelShape getCollisionShape(BlockState blockState, BlockGetter level, BlockPos blockPos, CollisionContext context) {
+        return COLLISION_SHAPE_BY_DIRECTION.get(blockState.getValue(FACING));
     }
 
     @Override
-    public VoxelShape getVisualShape(BlockState p_60479_, BlockGetter p_60480_, BlockPos p_60481_, CollisionContext p_60482_) {
-        return this.getShape(p_60479_, p_60480_, p_60481_, p_60482_);
+    public VoxelShape getVisualShape(BlockState blockState, BlockGetter level, BlockPos blockPos, CollisionContext context) {
+        return this.getShape(blockState, level, blockPos, context);
     }
 
     @Override
-    public VoxelShape getInteractionShape(BlockState p_60547_, BlockGetter p_60548_, BlockPos p_60549_) {
-        return INTERACTION_SHAPE_BY_DIRECTION.get(p_60547_.getValue(FACING));
+    public VoxelShape getInteractionShape(BlockState blockState, BlockGetter level, BlockPos blockPos) {
+        return INTERACTION_SHAPE_BY_DIRECTION.get(blockState.getValue(FACING));
     }
 
     @Override
-    public VoxelShape getBlockSupportShape(BlockState p_60581_, BlockGetter p_60582_, BlockPos p_60583_) {
+    public VoxelShape getBlockSupportShape(BlockState blockState, BlockGetter level, BlockPos blockPos) {
         return Shapes.empty();
     }
 
@@ -146,11 +148,11 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public BlockState updateShape(BlockState p_152036_, Direction p_152037_, BlockState p_152038_, LevelAccessor p_152039_, BlockPos p_152040_, BlockPos p_152041_) {
-        if (p_152036_.getValue(WATERLOGGED)) {
-            p_152039_.scheduleTick(p_152040_, Fluids.WATER, Fluids.WATER.getTickDelay(p_152039_));
+    public BlockState updateShape(BlockState blockState, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos blockPos, BlockPos neighborPos) {
+        if (blockState.getValue(WATERLOGGED)) {
+            level.scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        return p_152037_ == p_152036_.getValue(FACING).getOpposite() && !p_152036_.canSurvive(p_152039_, p_152040_) ? Blocks.AIR.defaultBlockState() : super.updateShape(p_152036_, p_152037_, p_152038_, p_152039_, p_152040_, p_152041_);
+        return direction == blockState.getValue(FACING).getOpposite() && !blockState.canSurvive(level, blockPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(blockState, direction, neighborState, level, blockPos, neighborPos);
     }
 
     @Override
@@ -170,40 +172,40 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public BlockState rotate(BlockState p_152033_, Rotation p_152034_) {
-        return p_152033_.setValue(FACING, p_152034_.rotate(p_152033_.getValue(FACING)));
+    public BlockState rotate(BlockState blockState, Rotation rotation) {
+        return blockState.setValue(FACING, rotation.rotate(blockState.getValue(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState p_152030_, Mirror p_152031_) {
-        return p_152030_.rotate(p_152031_.getRotation(p_152030_.getValue(FACING)));
+    public BlockState mirror(BlockState blockState, Mirror mirror) {
+        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)));
     }
 
     @Override
-    public FluidState getFluidState(BlockState p_152045_) {
-        return p_152045_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152045_);
+    public FluidState getFluidState(BlockState blockState) {
+        return blockState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(blockState);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_152043_) {
-        p_152043_.add(WATERLOGGED, FACING);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(WATERLOGGED, FACING);
     }
 
     @Override
-    public boolean isPathfindable(BlockState p_60475_, BlockGetter p_60476_, BlockPos p_60477_, PathComputationType p_60478_) {
+    public boolean isPathfindable(BlockState blockState, PathComputationType pathComputationType) {
         return false;
     }
 
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity p_51151_) {
-        if (!level.isClientSide && p_51151_ instanceof LivingEntity entity && entity.isAlive()) {
-            if (!(entity instanceof Player player) || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (!level.isClientSide && entity instanceof LivingEntity livingEntity && livingEntity.isAlive()) {
+            if (!(livingEntity instanceof Player player) || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
                 SpikeMaterial material = this.spikeMaterial;
-                if ((material.dealsFinalBlow() || entity.getHealth() > material.damageAmount()) && (material.hurtsPlayers() || !(entity instanceof Player))) {
+                if ((material.dealsFinalBlow() || livingEntity.getHealth() > material.damageAmount()) && (material.hurtsPlayers() || !(livingEntity instanceof Player))) {
                     if (material.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                            SpikeBlockEntity.attackPlayerLike(level, pos, level.getBlockState(pos), blockEntity, entity, material);
+                            SpikeBlockEntity.attack((ServerLevel) level, pos, level.getBlockState(pos), blockEntity, livingEntity, material);
                         }
                     } else {
                         // cancelling drops via forge event works too, but also cancels equipment drops (e.g. saddles, not spawned equipment) which is not good
@@ -211,14 +213,14 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(false, level.getServer());
                         }
-                        entity.hurt(LootingDamageSource.source(level, ModRegistry.SPIKE_DAMAGE_TYPE, 0), material.damageAmount());
+                        livingEntity.hurt(LootingDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, level, pos, 0), material.damageAmount());
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(doMobLoot, level.getServer());
                         }
                         // similar to zombified piglins, so we don't have to use a fake player just to get xp
-                        if (!entity.isAlive() && material.dropsJustExperience()) {
-                            entity.setLastHurtByPlayer(null);
-                            ((LivingEntityAccessor) entity).spikyspikes$dropExperience();
+                        if (!livingEntity.isAlive() && material.dropsJustExperience()) {
+                            livingEntity.setLastHurtByPlayer(null);
+                            ((LivingEntityAccessor) livingEntity).spikyspikes$dropExperience(null);
                         }
                     }
                 }
@@ -233,34 +235,33 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public void setPlacedBy(Level p_55179_, BlockPos p_55180_, BlockState p_55181_, @Nullable LivingEntity p_55182_, ItemStack stack) {
-        super.setPlacedBy(p_55179_, p_55180_, p_55181_, p_55182_, stack);
-        if (p_55179_.getBlockEntity(p_55180_) instanceof SpikeBlockEntity blockEntity) {
-            Map<Enchantment, Integer> enchantments = EnchantmentHelper.deserializeEnchantments(stack.getEnchantmentTags());
-            blockEntity.setEnchantmentData(enchantments, stack.getBaseRepairCost());
-        }
-    }
-
-    @Override
-    public void appendHoverText(ItemStack p_56193_, @Nullable BlockGetter p_56194_, List<Component> tooltip, TooltipFlag p_56196_) {
-        super.appendHoverText(p_56193_, p_56194_, tooltip, p_56196_);
-        if (p_56194_ == null) return;
-        if (!Proxy.INSTANCE.hasShiftDown()) {
-            tooltip.add(Component.translatable("item.spikyspikes.spike.tooltip.more", Component.translatable("item.spikyspikes.spike.tooltip.shift").withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY));
-        } else {
-            tooltip.add(Component.translatable(this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("item.spikyspikes.spike.tooltip.damage", Component.translatable("item.spikyspikes.spike.tooltip.hearts", Component.literal(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(this.spikeMaterial.damageAmount() / 2.0F)))).withStyle(this.spikeMaterial.tooltipStyle())).withStyle(ChatFormatting.GOLD));
-        }
-    }
-
-    @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState p_49825_) {
-        ItemStack stack = super.getCloneItemStack(level, pos, p_49825_);
-        if (this.spikeMaterial.acceptsEnchantments()) {
-            if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                stack.setTag(blockEntity.saveWithoutMetadata());
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(itemStack, context, tooltipComponents, tooltipFlag);
+        if (context != Item.TooltipContext.EMPTY) {
+            if (!Proxy.INSTANCE.hasShiftDown()) {
+                tooltipComponents.add(Component.translatable("item.spikyspikes.spike.tooltip.more",
+                        Component.translatable("item.spikyspikes.spike.tooltip.shift").withStyle(ChatFormatting.YELLOW)
+                ).withStyle(ChatFormatting.GRAY));
+            } else {
+                tooltipComponents.addAll(Proxy.INSTANCE.splitTooltipLines(Component.translatable(this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY)));
+                tooltipComponents.add(Component.translatable("item.spikyspikes.spike.tooltip.damage",
+                        Component.translatable("item.spikyspikes.spike.tooltip.hearts", Component.literal(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(this.spikeMaterial.damageAmount() / 2.0F))))
+                                .withStyle(this.spikeMaterial.tooltipStyle())
+                ).withStyle(ChatFormatting.GOLD));
             }
         }
-        return stack;
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState) {
+        ItemStack itemStack = super.getCloneItemStack(level, pos, blockState);
+        if (this.spikeMaterial.acceptsEnchantments()) {
+            if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
+                CompoundTag compoundTag = blockEntity.saveWithoutMetadata(level.registryAccess());
+                itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag));
+            }
+        }
+
+        return itemStack;
     }
 }

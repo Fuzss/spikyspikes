@@ -10,15 +10,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * trick stolen from Darkhax's <a href="https://github.com/Darkhax-Minecraft/Bookshelf/blob/1.18.2/Common/src/main/java/net/darkhax/bookshelf/mixin/loot/MixinLootItemKilledByPlayerCondition.java">Bookshelf library</a>
- * <p>avoids having to use a fake player when aiming for player only drops without an actual player
+ * Trick stolen from Darkhax's <a
+ * href="https://github.com/Darkhax-Minecraft/Bookshelf/blob/1.18.2/Common/src/main/java/net/darkhax/bookshelf/mixin/loot/MixinLootItemKilledByPlayerCondition.java">Bookshelf
+ * library</a>.
+ * <p>
+ * Avoids having to use a fake player when aiming for player only drops without an actual player.
  */
 @Mixin(LootItemKilledByPlayerCondition.class)
-public abstract class LootItemKilledByPlayerConditionMixin {
+abstract class LootItemKilledByPlayerConditionMixin {
 
     @Inject(method = "test", at = @At("HEAD"), cancellable = true)
-    public void test$inject$head(LootContext context, CallbackInfoReturnable<Boolean> callback) {
-        if (context != null && context.hasParam(LootContextParams.DAMAGE_SOURCE) && context.getParam(LootContextParams.DAMAGE_SOURCE) instanceof LootingDamageSource) {
+    public void test(LootContext context, CallbackInfoReturnable<Boolean> callback) {
+        if (context.getParamOrNull(LootContextParams.DAMAGE_SOURCE) instanceof LootingDamageSource) {
             callback.setReturnValue(true);
         }
     }

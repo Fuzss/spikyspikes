@@ -13,19 +13,7 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:copy_nbt",
-              "ops": [
-                {
-                  "op": "replace",
-                  "source": "Enchantments",
-                  "target": "Enchantments"
-                },
-                {
-                  "op": "replace",
-                  "source": "RepairCost",
-                  "target": "RepairCost"
-                }
-              ],
+              "function": "minecraft:copy_components",
               "source": "block_entity"
             }
           ],

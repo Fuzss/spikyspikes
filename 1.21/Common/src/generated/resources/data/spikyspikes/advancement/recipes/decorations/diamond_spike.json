@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_golden_sword": {
+    "has_diamond_sword": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:golden_sword"
-            ]
+            "items": "minecraft:diamond_sword"
           }
         ]
       },
@@ -15,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "spikyspikes:golden_spike"
+        "recipe": "spikyspikes:diamond_spike"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -23,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_golden_sword"
+      "has_diamond_sword"
     ]
   ],
   "rewards": {
     "recipes": [
-      "spikyspikes:golden_spike"
+      "spikyspikes:diamond_spike"
     ]
   }
 }

@@ -22,10 +22,10 @@ public class SpikeItem extends BlockItem {
     @Nullable
     @Override
     protected BlockState getPlacementState(BlockPlaceContext context) {
-        BlockState state = this.getBlock().getStateForPlacement(context);
+        BlockState blockState = this.getBlock().getStateForPlacement(context);
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        return state != null && level.isUnobstructed(state, pos, CollisionContext.empty()) ? state : null;
+        return blockState != null && level.isUnobstructed(blockState, pos, CollisionContext.empty()) ? blockState : null;
     }
 
     public boolean acceptsEnchantments() {

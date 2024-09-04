@@ -1,7 +1,5 @@
 package fuzs.spikyspikes.client.model.geom;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
@@ -11,24 +9,27 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 public class ShapeModelPart {
 
-    public static PureModelPart pyramid(float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, boolean fullBrightness) {
+    public static ModelPartCopy pyramid(float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, boolean fullBrightness) {
         return pyramid(0, 0, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, 16.0F, 16.0F, fullBrightness);
     }
 
-    public static PureModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
+    public static ModelPartCopy pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
         return pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, 0.0F, 0.0F, 0.0F, false, texWidthScaled, texHeightScaled, fullBrightness);
     }
 
-    public static PureModelPart pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
-        return new PureModelPart(ImmutableList.of(new ShapeModelPart.Pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texWidthScaled, texHeightScaled, fullBrightness)), ImmutableMap.of());
+    public static ModelPartCopy pyramid(int texCoordU, int texCoordV, float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texWidthScaled, float texHeightScaled, boolean fullBrightness) {
+        return new ModelPartCopy(
+                List.of(new ShapeModelPart.Pyramid(texCoordU, texCoordV, minX, minY, minZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texWidthScaled, texHeightScaled, fullBrightness)), Collections.emptyMap());
     }
     
     static class Pyramid extends ModelPart.Cube {
-        private final ShapeModelPart.Polygon[] polygons;
+        private final ModelPart.Polygon[] polygons;
         public final float minX;
         public final float minY;
         public final float minZ;
@@ -44,7 +45,7 @@ public class ShapeModelPart {
             this.maxX = minX + dimensionX;
             this.maxY = minY + dimensionY;
             this.maxZ = minZ + dimensionZ;
-            this.polygons = new ShapeModelPart.Polygon[5];
+            this.polygons = new ModelPart.Polygon[5];
             float maxX = minX + dimensionX;
             float maxY = minY + dimensionY;
             float maxZ = minZ + dimensionZ;
@@ -63,90 +64,40 @@ public class ShapeModelPart {
                 minX = f3;
             }
 
-            ShapeModelPart.Vertex modelpart$vertex7 = new ShapeModelPart.Vertex(minX, minY, minZ, 0.0F, 0.0F);
-            ShapeModelPart.Vertex modelpart$vertex = new ShapeModelPart.Vertex(maxX, minY, minZ, 0.0F, 8.0F);
-            ShapeModelPart.Vertex modelpart$vertex1 = new ShapeModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 8.0F);
-            ShapeModelPart.Vertex modelpart$vertex2 = new ShapeModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 0.0F);
-            ShapeModelPart.Vertex modelpart$vertex3 = new ShapeModelPart.Vertex(minX, minY, maxZ, 0.0F, 0.0F);
-            ShapeModelPart.Vertex modelpart$vertex4 = new ShapeModelPart.Vertex(maxX, minY, maxZ, 0.0F, 8.0F);
-            ShapeModelPart.Vertex modelpart$vertex5 = new ShapeModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 8.0F);
-            ShapeModelPart.Vertex modelpart$vertex6 = new ShapeModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 0.0F);
-            this.polygons[2] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex3, modelpart$vertex7, modelpart$vertex}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, Direction.DOWN);
-            this.polygons[1] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex7, modelpart$vertex3, modelpart$vertex6, modelpart$vertex2}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.WEST);
-            this.polygons[3] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex, modelpart$vertex7, modelpart$vertex2, modelpart$vertex1}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.NORTH);
-            this.polygons[0] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex, modelpart$vertex1, modelpart$vertex5}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.EAST);
-            this.polygons[4] = new ShapeModelPart.Polygon(new ShapeModelPart.Vertex[]{modelpart$vertex3, modelpart$vertex4, modelpart$vertex5, modelpart$vertex6}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.SOUTH);
+            ModelPart.Vertex modelpart$vertex7 = new ModelPart.Vertex(minX, minY, minZ, 0.0F, 0.0F);
+            ModelPart.Vertex modelpart$vertex = new ModelPart.Vertex(maxX, minY, minZ, 0.0F, 8.0F);
+            ModelPart.Vertex modelpart$vertex1 = new ModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 8.0F);
+            ModelPart.Vertex modelpart$vertex2 = new ModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 0.0F);
+            ModelPart.Vertex modelpart$vertex3 = new ModelPart.Vertex(minX, minY, maxZ, 0.0F, 0.0F);
+            ModelPart.Vertex modelpart$vertex4 = new ModelPart.Vertex(maxX, minY, maxZ, 0.0F, 8.0F);
+            ModelPart.Vertex modelpart$vertex5 = new ModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 8.0F);
+            ModelPart.Vertex modelpart$vertex6 = new ModelPart.Vertex(centerX, maxY, centerZ, 8.0F, 0.0F);
+            this.polygons[2] = new ModelPart.Polygon(new ModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex3, modelpart$vertex7, modelpart$vertex}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, Direction.DOWN);
+            this.polygons[1] = new ModelPart.Polygon(new ModelPart.Vertex[]{modelpart$vertex7, modelpart$vertex3, modelpart$vertex6, modelpart$vertex2}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.WEST);
+            this.polygons[3] = new ModelPart.Polygon(new ModelPart.Vertex[]{modelpart$vertex, modelpart$vertex7, modelpart$vertex2, modelpart$vertex1}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.NORTH);
+            this.polygons[0] = new ModelPart.Polygon(new ModelPart.Vertex[]{modelpart$vertex4, modelpart$vertex, modelpart$vertex1, modelpart$vertex5}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.EAST);
+            this.polygons[4] = new ModelPart.Polygon(new ModelPart.Vertex[]{modelpart$vertex3, modelpart$vertex4, modelpart$vertex5, modelpart$vertex6}, texCoordU + dimensionX, texCoordV + dimensionZ, texCoordU, texCoordV, texWidthScaled, texHeightScaled, mirror, fullBrightness ? Direction.UP : Direction.SOUTH);
         }
 
         @Override
-        public void compile(PoseStack.Pose p_171333_, VertexConsumer p_171334_, int p_171335_, int p_171336_, float p_171337_, float p_171338_, float p_171339_, float p_171340_) {
-            Matrix4f matrix4f = p_171333_.pose();
-            Matrix3f matrix3f = p_171333_.normal();
+        public void compile(PoseStack.Pose pose, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+            Matrix4f matrix4f = pose.pose();
+            Matrix3f matrix3f = pose.normal();
             
-            for (Polygon modelpart$polygon : this.polygons) {
-                Vector3f vector3f = matrix3f.transform(new Vector3f(modelpart$polygon.normal));
+            for (ModelPart.Polygon polygon : this.polygons) {
+                Vector3f vector3f = matrix3f.transform(new Vector3f(polygon.normal));
                 float f = vector3f.x();
                 float f1 = vector3f.y();
                 float f2 = vector3f.z();
 
-                for (Vertex modelpart$vertex : modelpart$polygon.vertices) {
-                    float f3 = modelpart$vertex.pos.x() / 16.0F;
-                    float f4 = modelpart$vertex.pos.y() / 16.0F;
-                    float f5 = modelpart$vertex.pos.z() / 16.0F;
+                for (ModelPart.Vertex vertex : polygon.vertices) {
+                    float f3 = vertex.pos.x() / 16.0F;
+                    float f4 = vertex.pos.y() / 16.0F;
+                    float f5 = vertex.pos.z() / 16.0F;
                     Vector4f vector4f = matrix4f.transform(new Vector4f(f3, f4, f5, 1.0F));
-                    p_171334_.vertex(vector4f.x(), vector4f.y(), vector4f.z(), p_171337_, p_171338_, p_171339_, p_171340_, modelpart$vertex.u, modelpart$vertex.v, p_171336_, p_171335_, f, f1, f2);
+                    buffer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u, vertex.v, packedOverlay, packedLight, f, f1, f2);
                 }
             }
-        }
-    }
-    
-    static class Polygon {
-        public final ShapeModelPart.Vertex[] vertices;
-        public final Vector3f normal;
-
-        public Polygon(ShapeModelPart.Vertex[] p_104362_, float p_104363_, float p_104364_, float p_104365_, float p_104366_, float p_104367_, float p_104368_, boolean p_104369_, Direction p_104370_) {
-            this.vertices = p_104362_;
-            float f = 0.0F / p_104367_;
-            float f1 = 0.0F / p_104368_;
-            p_104362_[0] = p_104362_[0].remap(p_104365_ / p_104367_ - f, p_104364_ / p_104368_ + f1);
-            p_104362_[1] = p_104362_[1].remap(p_104363_ / p_104367_ + f, p_104364_ / p_104368_ + f1);
-            p_104362_[2] = p_104362_[2].remap(p_104363_ / p_104367_ + f, p_104366_ / p_104368_ - f1);
-            p_104362_[3] = p_104362_[3].remap(p_104365_ / p_104367_ - f, p_104366_ / p_104368_ - f1);
-            if (p_104369_) {
-                int i = p_104362_.length;
-
-                for(int j = 0; j < i / 2; ++j) {
-                    ShapeModelPart.Vertex modelpart$vertex = p_104362_[j];
-                    p_104362_[j] = p_104362_[i - 1 - j];
-                    p_104362_[i - 1 - j] = modelpart$vertex;
-                }
-            }
-
-            this.normal = p_104370_.step();
-            if (p_104369_) {
-                this.normal.mul(-1.0F, 1.0F, 1.0F);
-            }
-
-        }
-    }
-
-    static class Vertex {
-        public final Vector3f pos;
-        public final float u;
-        public final float v;
-
-        public Vertex(float x, float y, float z, float u, float v) {
-            this(new Vector3f(x, y, z), u, v);
-        }
-
-        public ShapeModelPart.Vertex remap(float u, float v) {
-            return new ShapeModelPart.Vertex(this.pos, u, v);
-        }
-
-        public Vertex(Vector3f pos, float u, float v) {
-            this.pos = pos;
-            this.u = u;
-            this.v = v;
         }
     }
 }

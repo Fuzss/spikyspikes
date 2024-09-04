@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_diamond_sword": {
+    "has_netherite_ingot": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:diamond_sword"
-            ]
+            "items": "minecraft:netherite_ingot"
           }
         ]
       },
@@ -15,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "spikyspikes:diamond_spike"
+        "recipe": "spikyspikes:netherite_spike"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -23,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_diamond_sword"
+      "has_netherite_ingot"
     ]
   ],
   "rewards": {
     "recipes": [
-      "spikyspikes:diamond_spike"
+      "spikyspikes:netherite_spike"
     ]
   }
 }

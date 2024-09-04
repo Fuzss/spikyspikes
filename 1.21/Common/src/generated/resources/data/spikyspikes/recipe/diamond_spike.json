@@ -3,19 +3,22 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "minecraft:logs_that_burn"
+      "item": "minecraft:diamond"
+    },
+    "@": {
+      "item": "minecraft:diamond_block"
     },
     "S": {
-      "item": "minecraft:wooden_sword"
+      "item": "minecraft:diamond_sword"
     }
   },
   "pattern": [
     " S ",
     "S#S",
-    "###"
+    "#@#"
   ],
   "result": {
     "count": 3,
-    "item": "spikyspikes:wooden_spike"
+    "id": "spikyspikes:diamond_spike"
   }
 }
