@@ -1,6 +1,6 @@
 package fuzs.spikyspikes.mixin;
 
-import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
+import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
@@ -21,7 +21,8 @@ abstract class LootItemKilledByPlayerConditionMixin {
 
     @Inject(method = "test", at = @At("HEAD"), cancellable = true)
     public void test(LootContext context, CallbackInfoReturnable<Boolean> callback) {
-        if (context.getParamOrNull(LootContextParams.DAMAGE_SOURCE) instanceof LootingDamageSource) {
+        if (context.getParamOrNull(LootContextParams.DAMAGE_SOURCE) instanceof SpikeDamageSource spikeDamageSource &&
+                spikeDamageSource.dropPlayerLoot()) {
             callback.setReturnValue(true);
         }
     }

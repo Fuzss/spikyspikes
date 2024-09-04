@@ -6,11 +6,10 @@ import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.api.core.v1.context.CreativeModeTabContext;
 import fuzs.puzzleslib.api.core.v1.context.FuelBurnTimesContext;
 import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
-import fuzs.puzzleslib.api.event.v1.entity.living.ComputeLootingLevelCallback;
-import fuzs.puzzleslib.api.event.v1.entity.player.AnvilEvents;
+import fuzs.puzzleslib.api.event.v1.entity.living.ComputeEnchantedLootBonusCallback;
 import fuzs.puzzleslib.api.item.v2.CreativeModeTabConfigurator;
 import fuzs.spikyspikes.config.ServerConfig;
-import fuzs.spikyspikes.handler.SpikeEventHandler;
+import fuzs.spikyspikes.handler.SpikeLootingHandler;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -31,8 +30,7 @@ public class SpikySpikes implements ModConstructor {
     }
 
     private static void registerEventHandlers() {
-//        ComputeLootingLevelCallback.EVENT.register(SpikeEventHandler::onLootingLevel);
-        AnvilEvents.UPDATE.register(SpikeEventHandler::onAnvilUpdate);
+        ComputeEnchantedLootBonusCallback.EVENT.register(SpikeLootingHandler::onComputeEnchantedLootBonus);
     }
 
     @Override

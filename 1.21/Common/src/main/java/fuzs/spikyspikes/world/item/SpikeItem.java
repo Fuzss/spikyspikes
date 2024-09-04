@@ -2,8 +2,11 @@ package fuzs.spikyspikes.world.item;
 
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,11 +27,39 @@ public class SpikeItem extends BlockItem {
     protected BlockState getPlacementState(BlockPlaceContext context) {
         BlockState blockState = this.getBlock().getStateForPlacement(context);
         Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        return blockState != null && level.isUnobstructed(blockState, pos, CollisionContext.empty()) ? blockState : null;
+        BlockPos blockPos = context.getClickedPos();
+        return blockState != null && level.isUnobstructed(blockState, blockPos, CollisionContext.empty()) ? blockState :
+                null;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        if (this.acceptsEnchantments()) {
+            return stack.getCount() == 1;
+        } else {
+            return super.isEnchantable(stack);
+        }
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        if (this.acceptsEnchantments()) {
+            return 1;
+        } else {
+            return super.getEnchantmentValue();
+        }
+    }
+
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        if (this.acceptsEnchantments()) {
+            return !stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
+        } else {
+            return super.isFoil(stack);
+        }
     }
 
     public boolean acceptsEnchantments() {
-        return ((SpikeBlock) this.getBlock()).getSpikeMaterial().acceptsEnchantments();
+        return ((SpikeBlock) this.getBlock()).getSpikeMaterial().dropsPlayerLoot();
     }
 }

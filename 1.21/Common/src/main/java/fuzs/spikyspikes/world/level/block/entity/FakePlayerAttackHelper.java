@@ -2,7 +2,7 @@ package fuzs.spikyspikes.world.level.block.entity;
 
 import fuzs.puzzleslib.api.init.v3.registry.LookupHelper;
 import fuzs.spikyspikes.init.ModRegistry;
-import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
+import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -40,9 +40,7 @@ public final class FakePlayerAttackHelper {
 
         if (entity.isAttackable()) {
 
-            int lootingLevel = itemEnchantments.getLevel(
-                    LookupHelper.lookup(level, Registries.ENCHANTMENT, Enchantments.LOOTING));
-            DamageSource damageSource = LootingDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, level, pos, lootingLevel);
+            DamageSource damageSource = SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, level, pos, itemEnchantments);
             float enchantedDamage = BlockEnchantmentHelper.modifyDamage(level, entity, damageSource, attackDamage,
                     itemEnchantments
             ) - attackDamage;
