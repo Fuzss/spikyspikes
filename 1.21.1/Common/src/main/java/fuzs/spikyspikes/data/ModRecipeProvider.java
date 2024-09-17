@@ -2,7 +2,7 @@ package fuzs.spikyspikes.data;
 
 import fuzs.puzzleslib.api.data.v2.AbstractRecipeProvider;
 import fuzs.puzzleslib.api.data.v2.core.DataProviderContext;
-import fuzs.puzzleslib.api.data.v2.recipes.CopyTagShapelessRecipeBuilder;
+import fuzs.puzzleslib.api.data.v2.recipes.CopyComponentsShapelessRecipeBuilder;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -61,7 +61,7 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern("#@#")
                 .unlockedBy(getHasName(Items.DIAMOND_SWORD), has(Items.DIAMOND_SWORD))
                 .save(recipeOutput);
-        CopyTagShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, ModRegistry.NETHERITE_SPIKE_ITEM.value())
+        CopyComponentsShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, ModRegistry.NETHERITE_SPIKE_ITEM.value())
                 .requires(ModRegistry.DIAMOND_SPIKE_ITEM.value())
                 .requires(Items.NETHERITE_INGOT)
                 .copyFrom(ModRegistry.DIAMOND_SPIKE_ITEM.value())
