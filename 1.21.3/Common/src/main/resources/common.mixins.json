@@ -5,6 +5,7 @@
   "package": "${modGroup}.mixin",
   "mixins": [
     "EnchantmentHelperMixin",
+    "ItemStackMixin",
     "LootItemKilledByPlayerConditionMixin",
     "accessor.LivingEntityAccessor",
     "accessor.VoxelShapeAccessor"

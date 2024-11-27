@@ -7,7 +7,7 @@ import fuzs.spikyspikes.data.ModBlockLootProvider;
 import fuzs.spikyspikes.data.ModBlockTagProvider;
 import fuzs.spikyspikes.data.ModItemTagProvider;
 import fuzs.spikyspikes.data.ModRecipeProvider;
-import fuzs.spikyspikes.neoforge.data.ModDamageTypeProvider;
+import fuzs.spikyspikes.data.ModDamageTypeProvider;
 import fuzs.spikyspikes.neoforge.init.NeoForgeModRegistry;
 import net.neoforged.fml.common.Mod;
 
@@ -15,10 +15,13 @@ import net.neoforged.fml.common.Mod;
 public class SpikySpikesNeoForge {
 
     public SpikySpikesNeoForge() {
-        NeoForgeModRegistry.touch();
+        NeoForgeModRegistry.bootstrap();
         ModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikes::new);
-        DataProviderHelper.registerDataProviders(SpikySpikes.MOD_ID, ModBlockLootProvider::new,
-                ModBlockTagProvider::new, ModItemTagProvider::new, ModDamageTypeProvider::new, ModRecipeProvider::new
-        );
+        DataProviderHelper.registerDataProviders(SpikySpikes.MOD_ID,
+                ModBlockLootProvider::new,
+                ModBlockTagProvider::new,
+                ModItemTagProvider::new,
+                ModDamageTypeProvider::new,
+                ModRecipeProvider::new);
     }
 }

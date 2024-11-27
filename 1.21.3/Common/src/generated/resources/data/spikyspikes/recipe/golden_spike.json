@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:gold_ingot"
-    },
-    "@": {
-      "item": "minecraft:gold_block"
-    },
-    "S": {
-      "item": "minecraft:golden_sword"
-    }
+    "#": "minecraft:gold_ingot",
+    "@": "minecraft:gold_block",
+    "S": "minecraft:golden_sword"
   },
   "pattern": [
     " S ",

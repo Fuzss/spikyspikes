@@ -33,24 +33,6 @@ public class SpikeItem extends BlockItem {
     }
 
     @Override
-    public boolean isEnchantable(ItemStack stack) {
-        if (this.acceptsEnchantments()) {
-            return stack.getCount() == 1;
-        } else {
-            return super.isEnchantable(stack);
-        }
-    }
-
-    @Override
-    public int getEnchantmentValue() {
-        if (this.acceptsEnchantments()) {
-            return 1;
-        } else {
-            return super.getEnchantmentValue();
-        }
-    }
-
-    @Override
     public boolean isFoil(ItemStack stack) {
         if (this.acceptsEnchantments()) {
             return !stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();

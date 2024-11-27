@@ -9,50 +9,58 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 
 public class NeoForgeModRegistry {
-    static final RegistryManager REGISTRY = RegistryManager.from(SpikySpikes.MOD_ID);
-    public static final Holder.Reference<Block> WOODEN_SPIKE_BLOCK = REGISTRY.registerBlock("wooden_spike",
-            () -> new NeoForgeSpikeBlock(SpikeMaterial.WOOD,
-                    BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD)
-            )
-    );
-    public static final Holder.Reference<Block> STONE_SPIKE_BLOCK = REGISTRY.registerBlock("stone_spike",
-            () -> new NeoForgeSpikeBlock(SpikeMaterial.STONE, BlockBehaviour.Properties.of()
+    static final RegistryManager REGISTRIES = RegistryManager.from(SpikySpikes.MOD_ID);
+    public static final Holder.Reference<Block> WOODEN_SPIKE_BLOCK = REGISTRIES.registerBlock("wooden_spike",
+            (BlockBehaviour.Properties properties) -> new NeoForgeSpikeBlock(SpikeMaterial.WOOD, properties),
+            () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(2.0F, 3.0F)
+                    .sound(SoundType.WOOD)
+                    .pushReaction(PushReaction.DESTROY));
+    public static final Holder.Reference<Block> STONE_SPIKE_BLOCK = REGISTRIES.registerBlock("stone_spike",
+            (BlockBehaviour.Properties properties) -> new NeoForgeSpikeBlock(SpikeMaterial.STONE, properties),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .requiresCorrectToolForDrops()
-                    .strength(2.0F, 6.0F))
-    );
-    public static final Holder.Reference<Block> IRON_SPIKE_BLOCK = REGISTRY.registerBlock("iron_spike",
-            () -> new NeoForgeSpikeBlock(SpikeMaterial.IRON, BlockBehaviour.Properties.of()
+                    .strength(2.0F, 6.0F)
+                    .pushReaction(PushReaction.DESTROY));
+    public static final Holder.Reference<Block> IRON_SPIKE_BLOCK = REGISTRIES.registerBlock("iron_spike",
+            (BlockBehaviour.Properties properties) -> new NeoForgeSpikeBlock(SpikeMaterial.IRON, properties),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
-                    .sound(SoundType.METAL))
-    );
-    public static final Holder.Reference<Block> GOLDEN_SPIKE_BLOCK = REGISTRY.registerBlock("golden_spike",
-            () -> new NeoForgeSpikeBlock(SpikeMaterial.GOLD, BlockBehaviour.Properties.of()
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.DESTROY));
+    public static final Holder.Reference<Block> GOLDEN_SPIKE_BLOCK = REGISTRIES.registerBlock("golden_spike",
+            (BlockBehaviour.Properties properties) -> new NeoForgeSpikeBlock(SpikeMaterial.GOLD, properties),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.GOLD)
                     .requiresCorrectToolForDrops()
                     .strength(3.0F, 6.0F)
-                    .sound(SoundType.METAL))
-    );
-    public static final Holder.Reference<Block> DIAMOND_SPIKE_BLOCK = REGISTRY.registerBlock("diamond_spike",
-            () -> new NeoForgeSpikeBlock(SpikeMaterial.DIAMOND, BlockBehaviour.Properties.of()
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.DESTROY));
+    public static final Holder.Reference<Block> DIAMOND_SPIKE_BLOCK = REGISTRIES.registerBlock("diamond_spike",
+            (BlockBehaviour.Properties properties) -> new NeoForgeSpikeBlock(SpikeMaterial.DIAMOND, properties),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.DIAMOND)
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
-                    .sound(SoundType.METAL))
-    );
-    public static final Holder.Reference<Block> NETHERITE_SPIKE_BLOCK = REGISTRY.registerBlock("netherite_spike",
-            () -> new NeoForgeSpikeBlock(SpikeMaterial.NETHERITE, BlockBehaviour.Properties.of()
+                    .sound(SoundType.METAL)
+                    .pushReaction(PushReaction.DESTROY));
+    public static final Holder.Reference<Block> NETHERITE_SPIKE_BLOCK = REGISTRIES.registerBlock("netherite_spike",
+            (BlockBehaviour.Properties properties) -> new NeoForgeSpikeBlock(SpikeMaterial.NETHERITE, properties),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BLACK)
                     .requiresCorrectToolForDrops()
                     .strength(50.0F, 1200.0F)
-                    .sound(SoundType.NETHERITE_BLOCK))
-    );
+                    .sound(SoundType.NETHERITE_BLOCK)
+                    .pushReaction(PushReaction.DESTROY));
 
-    public static void touch() {
+    public static void bootstrap() {
         // NO-OP
     }
 }

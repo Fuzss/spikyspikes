@@ -36,12 +36,12 @@ public final class FakePlayerAttackHelper {
     /**
      * Adapted from {@link Player#attack}, most importantly removing all the knockback and sounds, also most particles.
      */
-    public static void attack(Entity entity, ServerLevel level, BlockPos pos, Direction direction, float attackDamage, ItemEnchantments itemEnchantments, boolean hurtPlayers) {
+    public static void attack(Entity entity, ServerLevel serverLevel, BlockPos pos, Direction direction, float attackDamage, ItemEnchantments itemEnchantments, boolean hurtPlayers) {
 
         if (entity.isAttackable()) {
 
-            DamageSource damageSource = SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, level, pos, itemEnchantments);
-            float enchantedDamage = BlockEnchantmentHelper.modifyDamage(level, entity, damageSource, attackDamage,
+            DamageSource damageSource = SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, serverLevel, pos, itemEnchantments);
+            float enchantedDamage = BlockEnchantmentHelper.modifyDamage(serverLevel, entity, damageSource, attackDamage,
                     itemEnchantments
             ) - attackDamage;
 
@@ -58,23 +58,23 @@ public final class FakePlayerAttackHelper {
                     entity.igniteForSeconds(1);
                 }
 
-                if (hurt(entity, attackDamage, damageSource)) {
+                if (hurt(serverLevel, entity, attackDamage, damageSource)) {
 
                     float attackKnockback = (float) BlockEnchantmentHelper.getAttributeValue(
                             Attributes.ATTACK_KNOCKBACK, itemEnchantments);
-                    attackKnockback = BlockEnchantmentHelper.modifyKnockback(level, entity, damageSource,
+                    attackKnockback = BlockEnchantmentHelper.modifyKnockback(serverLevel, entity, damageSource,
                             attackKnockback, itemEnchantments
                     );
-                    knockback(entity, attackKnockback * 0.5F, direction, level.getRandom());
+                    knockback(entity, attackKnockback * 0.5F, direction, serverLevel.getRandom());
 
-                    sweepAttack(entity, attackDamage, level, pos, direction, damageSource, hurtPlayers,
+                    sweepAttack(entity, attackDamage, serverLevel, pos, direction, damageSource, hurtPlayers,
                             itemEnchantments
                     );
 
-                    BlockEnchantmentHelper.doPostAttackEffects(level, entity, damageSource, itemEnchantments);
+                    BlockEnchantmentHelper.doPostAttackEffects(serverLevel, entity, damageSource, itemEnchantments);
 
                     if (enchantedDamage > 0.0F) {
-                        level.getChunkSource().broadcastAndSend(entity,
+                        serverLevel.getChunkSource().broadcastAndSend(entity,
                                 new ClientboundAnimatePacket(entity, ClientboundAnimatePacket.MAGIC_CRITICAL_HIT)
                         );
                     }
@@ -93,9 +93,7 @@ public final class FakePlayerAttackHelper {
         }
         if (knockbackStrength > 0.0) {
             Vec3 deltaMovement = entity.getDeltaMovement();
-            Vec3 normalVec = new Vec3(direction.getNormal().getX(), direction.getNormal().getY(),
-                    direction.getNormal().getZ()
-            );
+            Vec3 normalVec = direction.getUnitVec3();
             int axisStep = direction.getOpposite().getAxisDirection().getStep();
             Vec3 offsetVec = new Vec3(axisStep, axisStep, axisStep).add(normalVec).multiply(random.nextGaussian(),
                     random.nextGaussian(), random.nextGaussian()
@@ -108,7 +106,7 @@ public final class FakePlayerAttackHelper {
         }
     }
 
-    public static boolean hurt(Entity entity, float attackDamage, DamageSource damageSource) {
+    public static boolean hurt(ServerLevel serverLevel, Entity entity, float attackDamage, DamageSource damageSource) {
 
         Vec3 oldMovement = entity.getDeltaMovement();
 
@@ -118,7 +116,7 @@ public final class FakePlayerAttackHelper {
             mob.setTarget(null);
         }
 
-        if (entity.hurt(damageSource, attackDamage)) {
+        if (entity.hurtServer(serverLevel, damageSource, attackDamage)) {
 
             // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
             entity.setDeltaMovement(oldMovement);

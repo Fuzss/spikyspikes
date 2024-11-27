@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:diamond"
-    },
-    "@": {
-      "item": "minecraft:diamond_block"
-    },
-    "S": {
-      "item": "minecraft:diamond_sword"
-    }
+    "#": "minecraft:diamond",
+    "@": "minecraft:diamond_block",
+    "S": "minecraft:diamond_sword"
   },
   "pattern": [
     " S ",

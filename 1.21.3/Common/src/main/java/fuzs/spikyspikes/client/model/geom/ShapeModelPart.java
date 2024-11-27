@@ -85,17 +85,17 @@ public class ShapeModelPart {
             Matrix3f matrix3f = pose.normal();
             
             for (ModelPart.Polygon polygon : this.polygons) {
-                Vector3f vector3f = matrix3f.transform(new Vector3f(polygon.normal));
+                Vector3f vector3f = matrix3f.transform(new Vector3f(polygon.normal()));
                 float f = vector3f.x();
                 float f1 = vector3f.y();
                 float f2 = vector3f.z();
 
-                for (ModelPart.Vertex vertex : polygon.vertices) {
-                    float f3 = vertex.pos.x() / 16.0F;
-                    float f4 = vertex.pos.y() / 16.0F;
-                    float f5 = vertex.pos.z() / 16.0F;
+                for (ModelPart.Vertex vertex : polygon.vertices()) {
+                    float f3 = vertex.pos().x() / 16.0F;
+                    float f4 = vertex.pos().y() / 16.0F;
+                    float f5 = vertex.pos().z() / 16.0F;
                     Vector4f vector4f = matrix4f.transform(new Vector4f(f3, f4, f5, 1.0F));
-                    buffer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u, vertex.v, packedOverlay, packedLight, f, f1, f2);
+                    buffer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(), packedOverlay, packedLight, f, f1, f2);
                 }
             }
         }

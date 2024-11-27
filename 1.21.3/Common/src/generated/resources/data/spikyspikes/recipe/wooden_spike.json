@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "tag": "minecraft:logs_that_burn"
-    },
-    "S": {
-      "item": "minecraft:wooden_sword"
-    }
+    "#": "#minecraft:logs_that_burn",
+    "S": "minecraft:wooden_sword"
   },
   "pattern": [
     " S ",
