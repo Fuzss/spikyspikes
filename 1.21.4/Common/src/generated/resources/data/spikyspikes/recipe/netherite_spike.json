@@ -1,0 +1,13 @@
+{
+  "type": "spikyspikes:crafting_transmute_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "spikyspikes:diamond_spike",
+    "minecraft:netherite_ingot"
+  ],
+  "input": "spikyspikes:diamond_spike",
+  "result": {
+    "count": 1,
+    "id": "spikyspikes:netherite_spike"
+  }
+}
