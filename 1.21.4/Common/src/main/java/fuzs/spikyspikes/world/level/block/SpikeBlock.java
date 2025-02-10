@@ -71,7 +71,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(),
                     direction -> makeCollisionShape(direction, true)));
 
-    public final SpikeMaterial spikeMaterial;
+    private final SpikeMaterial spikeMaterial;
 
     public SpikeBlock(SpikeMaterial spikeMaterial, Properties properties) {
         super(properties);
@@ -300,8 +300,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState) {
-        ItemStack itemStack = super.getCloneItemStack(level, pos, blockState);
+    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+        ItemStack itemStack = super.getCloneItemStack(level, pos, state, includeData);
         if (this.spikeMaterial.dropsPlayerLoot() && level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
             itemStack.applyComponents(blockEntity.collectComponents());
         }

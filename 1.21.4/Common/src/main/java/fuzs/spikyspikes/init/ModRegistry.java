@@ -1,6 +1,7 @@
 package fuzs.spikyspikes.init;
 
 import fuzs.puzzleslib.api.init.v3.registry.RegistryManager;
+import fuzs.puzzleslib.api.init.v3.registry.TransmuteRecipeHelper;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.world.item.SpikeItem;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
@@ -10,6 +11,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Block;
@@ -93,6 +95,8 @@ public class ModRegistry {
             SpikeItem::new,
             () -> new Item.Properties().component(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY)
                     .enchantable(1));
+    public static final Holder.Reference<CreativeModeTab> CREATIVE_MODE_TAB = REGISTRIES.registerCreativeModeTab(
+            DIAMOND_SPIKE_ITEM);
     public static final Holder.Reference<BlockEntityType<SpikeBlockEntity>> SPIKE_BLOCK_ENTITY_TYPE = REGISTRIES.registerBlockEntityType(
             "spike",
             SpikeBlockEntity::new,
@@ -105,6 +109,6 @@ public class ModRegistry {
     public static final ResourceKey<DamageType> SPIKE_DAMAGE_TYPE = REGISTRIES.registerDamageType("spike");
 
     public static void bootstrap() {
-        // NO-OP
+        TransmuteRecipeHelper.registerTransmuteRecipeSerializers(REGISTRIES);
     }
 }

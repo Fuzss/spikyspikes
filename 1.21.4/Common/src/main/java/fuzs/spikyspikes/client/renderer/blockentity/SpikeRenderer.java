@@ -14,10 +14,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -62,7 +62,7 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity> {
     }
 
     private static void registerMaterial(SpikeMaterial spikeMaterial, ResourceLocation resourceLocation, BiConsumer<SpikeMaterial, Material> registrar) {
-        registrar.accept(spikeMaterial, new Material(InventoryMenu.BLOCK_ATLAS, resourceLocation));
+        registrar.accept(spikeMaterial, new Material(TextureAtlas.LOCATION_BLOCKS, resourceLocation));
     }
 
     @Override

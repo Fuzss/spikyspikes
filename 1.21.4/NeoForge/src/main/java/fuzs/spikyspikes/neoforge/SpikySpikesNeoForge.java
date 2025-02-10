@@ -4,10 +4,10 @@ import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.neoforge.api.data.v2.core.DataProviderHelper;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.data.ModBlockLootProvider;
-import fuzs.spikyspikes.data.ModBlockTagProvider;
-import fuzs.spikyspikes.data.ModItemTagProvider;
+import fuzs.spikyspikes.data.tags.ModBlockTagProvider;
+import fuzs.spikyspikes.data.tags.ModItemTagProvider;
 import fuzs.spikyspikes.data.ModRecipeProvider;
-import fuzs.spikyspikes.data.ModDamageTypeProvider;
+import fuzs.spikyspikes.data.ModDatapackRegistriesProvider;
 import fuzs.spikyspikes.neoforge.init.NeoForgeModRegistry;
 import net.neoforged.fml.common.Mod;
 
@@ -21,7 +21,7 @@ public class SpikySpikesNeoForge {
                 ModBlockLootProvider::new,
                 ModBlockTagProvider::new,
                 ModItemTagProvider::new,
-                ModDamageTypeProvider::new,
+                ModDatapackRegistriesProvider::new,
                 ModRecipeProvider::new);
     }
 }

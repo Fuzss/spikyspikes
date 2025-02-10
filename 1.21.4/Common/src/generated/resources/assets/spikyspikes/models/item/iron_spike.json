@@ -1,3 +1,6 @@
 {
-  "parent": "spikyspikes:item/template_spike"
+  "parent": "spikyspikes:item/template_spike",
+  "textures": {
+    "particle": "minecraft:block/iron_block"
+  }
 }

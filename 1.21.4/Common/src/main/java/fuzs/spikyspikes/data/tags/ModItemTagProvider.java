@@ -1,4 +1,4 @@
-package fuzs.spikyspikes.data;
+package fuzs.spikyspikes.data.tags;
 
 import fuzs.puzzleslib.api.data.v2.core.DataProviderContext;
 import fuzs.puzzleslib.api.data.v2.tags.AbstractTagProvider;
@@ -16,11 +16,9 @@ public class ModItemTagProvider extends AbstractTagProvider<Item> {
 
     @Override
     public void addTags(HolderLookup.Provider provider) {
-        this.add(ItemTags.SWORD_ENCHANTABLE).add(ModRegistry.DIAMOND_SPIKE_ITEM.value(),
-                ModRegistry.NETHERITE_SPIKE_ITEM.value()
-        );
-        this.add(ItemTags.SHARP_WEAPON_ENCHANTABLE).add(ModRegistry.DIAMOND_SPIKE_ITEM.value(),
-                ModRegistry.NETHERITE_SPIKE_ITEM.value()
-        );
+        this.tag(ItemTags.SWORD_ENCHANTABLE)
+                .add(ModRegistry.DIAMOND_SPIKE_ITEM.value(), ModRegistry.NETHERITE_SPIKE_ITEM.value());
+        this.tag(ItemTags.SHARP_WEAPON_ENCHANTABLE)
+                .add(ModRegistry.DIAMOND_SPIKE_ITEM.value(), ModRegistry.NETHERITE_SPIKE_ITEM.value());
     }
 }
