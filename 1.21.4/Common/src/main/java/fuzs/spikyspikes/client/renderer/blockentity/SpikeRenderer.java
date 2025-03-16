@@ -136,6 +136,11 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity> {
         }
     }
 
+    @Override
+    public int getViewDistance() {
+        return 256;
+    }
+
     @Deprecated
     public static void renderSpike(Direction direction, SpikeMaterial spikeMaterial, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, boolean inventoryRendering, boolean isFoil) {
         // from shulker box renderer

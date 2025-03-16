@@ -171,6 +171,12 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
+    protected VoxelShape getOcclusionShape(BlockState state) {
+        // block entity renderer won't render when far away, shouldn't occlude other block faces then
+        return this.getRenderShape(state) != RenderShape.INVISIBLE ? super.getOcclusionShape(state) : Shapes.empty();
+    }
+
+    @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         Direction direction = state.getValue(FACING);
         BlockPos otherPos = pos.relative(direction.getOpposite());
