@@ -1,4 +1,4 @@
-// 1.21.4	2025-02-10T11:43:08.305015	Recipes
+// 1.21.4	2025-03-16T11:38:47.327668	Recipes
 87c3785e19e2918b5da09bf059b3d288da132044 data/spikyspikes/advancement/recipes/decorations/diamond_spike.json
 60d749d3c7001ff7ca0740bcaebd57f7491c8487 data/spikyspikes/advancement/recipes/decorations/golden_spike.json
 37b6dce8d100c7ba3640893338decc33454e2579 data/spikyspikes/advancement/recipes/decorations/iron_spike.json
@@ -8,6 +8,6 @@ bf6c0a08bcc83ae970e0a5b1eee57662e422dac7 data/spikyspikes/advancement/recipes/de
 69a4a741c3d3e5d20179b657126d6b817f4b67e3 data/spikyspikes/recipe/diamond_spike.json
 9127ce42d81ecd06d41e56670b56ee01d1c408e5 data/spikyspikes/recipe/golden_spike.json
 3d894674cef0bf74b0d41d8ae8ab19e12b156a50 data/spikyspikes/recipe/iron_spike.json
-f7fef66bcadcdff9ff7465b8265da5fec92b61a2 data/spikyspikes/recipe/netherite_spike.json
+17c850fe7d1d6eb2bb4568a9d6c3826d1e1bd5cf data/spikyspikes/recipe/netherite_spike.json
 08322108192bd90f66762a34ff35c8e06f447ca4 data/spikyspikes/recipe/stone_spike.json
 c94ff3e724e76911b39b27ac0dc5d658c01c0286 data/spikyspikes/recipe/wooden_spike.json

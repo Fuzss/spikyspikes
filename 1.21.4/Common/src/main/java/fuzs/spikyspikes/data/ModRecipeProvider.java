@@ -2,15 +2,14 @@ package fuzs.spikyspikes.data;
 
 import fuzs.puzzleslib.api.data.v2.AbstractRecipeProvider;
 import fuzs.puzzleslib.api.data.v2.core.DataProviderContext;
-import fuzs.puzzleslib.api.data.v2.recipes.TransmuteShapelessRecipeBuilder;
-import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.init.ModRegistry;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.TransmuteRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class ModRecipeProvider extends AbstractRecipeProvider {
 
@@ -63,14 +62,10 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                 .pattern("#@#")
                 .unlockedBy(getHasName(Items.DIAMOND_SWORD), this.has(Items.DIAMOND_SWORD))
                 .save(recipeOutput);
-        RecipeSerializer<?> recipeSerializer = TransmuteShapelessRecipeBuilder.getRecipeSerializer(SpikySpikes.MOD_ID);
-        TransmuteShapelessRecipeBuilder.shapeless(recipeSerializer,
-                        this.items(),
-                        RecipeCategory.DECORATIONS,
+        TransmuteRecipeBuilder.transmute(RecipeCategory.DECORATIONS,
+                        Ingredient.of(ModRegistry.DIAMOND_SPIKE_ITEM.value()),
+                        Ingredient.of(Items.NETHERITE_INGOT),
                         ModRegistry.NETHERITE_SPIKE_ITEM.value())
-                .requires(ModRegistry.DIAMOND_SPIKE_ITEM.value())
-                .requires(Items.NETHERITE_INGOT)
-                .input(ModRegistry.DIAMOND_SPIKE_ITEM.value())
                 .unlockedBy(getHasName(Items.NETHERITE_INGOT), this.has(Items.NETHERITE_INGOT))
                 .save(recipeOutput);
     }
