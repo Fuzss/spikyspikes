@@ -1,5 +1,6 @@
 {
+  "parent": "minecraft:block/block",
   "textures": {
-    "particle": "minecraft:block/oak_planks"
+    "particle": "minecraft:block/stripped_oak_log"
   }
 }

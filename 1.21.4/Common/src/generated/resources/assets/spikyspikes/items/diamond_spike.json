@@ -1,7 +1,7 @@
 {
   "model": {
     "type": "minecraft:special",
-    "base": "spikyspikes:item/diamond_spike",
+    "base": "spikyspikes:block/diamond_spike",
     "model": {
       "type": "spikyspikes:spike",
       "spike_material": "diamond"

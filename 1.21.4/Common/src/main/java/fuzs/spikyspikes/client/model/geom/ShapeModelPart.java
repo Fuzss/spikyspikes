@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+@Deprecated
 public class ShapeModelPart {
 
     public static ModelPartCopy pyramid(float minX, float minY, float minZ, float dimensionX, float dimensionY, float dimensionZ, boolean fullBrightness) {

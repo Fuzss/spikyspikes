@@ -1,7 +1,7 @@
 {
   "model": {
     "type": "minecraft:special",
-    "base": "spikyspikes:item/wooden_spike",
+    "base": "spikyspikes:block/wooden_spike",
     "model": {
       "type": "spikyspikes:spike",
       "spike_material": "wood"

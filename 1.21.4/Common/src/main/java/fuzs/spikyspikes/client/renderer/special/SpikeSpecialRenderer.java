@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 
+@Deprecated
 public class SpikeSpecialRenderer implements NoDataSpecialModelRenderer {
     private final SpikeMaterial spikeMaterial;
 

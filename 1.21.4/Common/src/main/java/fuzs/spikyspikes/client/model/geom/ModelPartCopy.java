@@ -13,6 +13,7 @@ import java.util.Map;
  * <p>
  * Thanks to tr9zw and their Skin Layers 3D mod for the idea!
  */
+@Deprecated
 public final class ModelPartCopy {
     public float x;
     public float y;

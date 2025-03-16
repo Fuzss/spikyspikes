@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fuzs.puzzleslib.api.core.v1.Proxy;
+import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
@@ -14,9 +15,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +28,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -61,6 +66,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             });
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty ENCHANTED = BooleanProperty.create("enchanted");
     private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
             .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(),
                     SpikeBlock::makeVisualShape));
@@ -78,7 +84,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         this.spikeMaterial = spikeMaterial;
         this.registerDefaultState(this.defaultBlockState()
                 .setValue(WATERLOGGED, Boolean.FALSE)
-                .setValue(FACING, Direction.UP));
+                .setValue(FACING, Direction.UP)
+                .setValue(ENCHANTED, Boolean.FALSE));
     }
 
     protected static <T extends SpikeBlock> MapCodec<T> spikeCodec(BiFunction<SpikeMaterial, Properties, T> factory) {
@@ -95,6 +102,11 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     public SpikeMaterial getSpikeMaterial() {
         return this.spikeMaterial;
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return state.getValue(ENCHANTED) ? RenderShape.INVISIBLE : RenderShape.MODEL;
     }
 
     private static VoxelShape makeVisualShape(Direction direction) {
@@ -190,14 +202,17 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        BlockState state = this.defaultBlockState()
-                .setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
+        BlockPos blockPos = context.getClickedPos();
+        BlockState blockState = this.defaultBlockState()
+                .setValue(WATERLOGGED, level.getFluidState(blockPos).getType() == Fluids.WATER)
+                .setValue(ENCHANTED,
+                        !context.getItemInHand()
+                                .getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY)
+                                .isEmpty());
         for (Direction direction : context.getNearestLookingDirections()) {
-            Direction opposite = direction.getOpposite();
-            state = state.setValue(FACING, opposite);
-            if (state.canSurvive(level, pos)) {
-                return state;
+            blockState = blockState.setValue(FACING, direction.getOpposite());
+            if (blockState.canSurvive(level, blockPos)) {
+                return blockState;
             }
         }
         return null;
@@ -220,7 +235,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(WATERLOGGED, FACING);
+        builder.add(WATERLOGGED, FACING, ENCHANTED);
     }
 
     @Override
@@ -284,14 +299,14 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         super.appendHoverText(itemStack, context, tooltipComponents, tooltipFlag);
         if (context != Item.TooltipContext.EMPTY) {
             if (!Proxy.INSTANCE.hasShiftDown()) {
-                tooltipComponents.add(Component.translatable("item.spikyspikes.spike.tooltip.more",
-                                Component.translatable("item.spikyspikes.spike.tooltip.shift").withStyle(ChatFormatting.YELLOW))
-                        .withStyle(ChatFormatting.GRAY));
+                tooltipComponents.add(Component.translatable(SpikeBlock.TooltipComponent.MORE.getTranslationKey(),
+                        Component.translatable(TooltipComponent.SHIFT.getTranslationKey())
+                                .withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY));
             } else {
                 tooltipComponents.addAll(Proxy.INSTANCE.splitTooltipLines(Component.translatable(
                         this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY)));
-                tooltipComponents.add(Component.translatable("item.spikyspikes.spike.tooltip.damage",
-                        Component.translatable("item.spikyspikes.spike.tooltip.hearts",
+                tooltipComponents.add(Component.translatable(TooltipComponent.DAMAGE.getTranslationKey(),
+                        Component.translatable(TooltipComponent.HEARTS.getTranslationKey(),
                                         Component.literal(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(
                                                 this.spikeMaterial.damageAmount() / 2.0F))))
                                 .withStyle(this.spikeMaterial.getTooltipStyle())).withStyle(ChatFormatting.GOLD));
@@ -307,5 +322,22 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         }
 
         return itemStack;
+    }
+
+    public enum TooltipComponent implements StringRepresentable {
+        MORE,
+        SHIFT,
+        DAMAGE,
+        HEARTS;
+
+        public String getTranslationKey() {
+            return Util.makeDescriptionId(Registries.elementsDirPath(Registries.ITEM), SpikySpikes.id("spike")) +
+                    ".tooltip." + this.getSerializedName();
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
     }
 }

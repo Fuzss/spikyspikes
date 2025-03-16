@@ -1,7 +1,7 @@
 {
   "model": {
     "type": "minecraft:special",
-    "base": "spikyspikes:item/netherite_spike",
+    "base": "spikyspikes:block/netherite_spike",
     "model": {
       "type": "spikyspikes:spike",
       "spike_material": "netherite"

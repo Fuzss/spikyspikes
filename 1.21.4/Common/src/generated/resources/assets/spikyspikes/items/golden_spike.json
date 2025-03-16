@@ -1,7 +1,7 @@
 {
   "model": {
     "type": "minecraft:special",
-    "base": "spikyspikes:item/golden_spike",
+    "base": "spikyspikes:block/golden_spike",
     "model": {
       "type": "spikyspikes:spike",
       "spike_material": "gold"

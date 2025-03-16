@@ -10,8 +10,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.List;
 
-public class CustomOutlineShape extends ExtensibleVoxelShape {
+public class CustomOutlineShape extends VoxelShape {
     private final VoxelShape collisionShape;
+    private final VoxelShape particleShape;
     private final VoxelShape outlineShapeBase;
     private final List<Vec3[]> outlineShapeEdges;
 
@@ -20,8 +21,9 @@ public class CustomOutlineShape extends ExtensibleVoxelShape {
     }
 
     public CustomOutlineShape(VoxelShape collisionShape, VoxelShape outlineShapeBase, Vec3... outlineShapeEdges) {
-        super(collisionShape);
+        super(((VoxelShapeAccessor) collisionShape).spikyspikes$getShape());
         this.collisionShape = collisionShape;
+        this.particleShape = collisionShape.singleEncompassing();
         this.outlineShapeBase = outlineShapeBase;
         this.outlineShapeEdges = this.createOutlineList(outlineShapeEdges);
     }
@@ -37,7 +39,7 @@ public class CustomOutlineShape extends ExtensibleVoxelShape {
 
     @Override
     public DoubleList getCoords(Direction.Axis axis) {
-        return ((VoxelShapeAccessor) this.collisionShape).spikyspikes$getCoords(axis);
+        return this.collisionShape.getCoords(axis);
     }
 
     @Override
@@ -46,5 +48,9 @@ public class CustomOutlineShape extends ExtensibleVoxelShape {
         for (Vec3[] edge : this.outlineShapeEdges) {
             boxConsumer.consume(edge[0].x, edge[0].y, edge[0].z, edge[1].x, edge[1].y, edge[1].z);
         }
+    }
+
+    public void forAllParticleBoxes(Shapes.DoubleLineConsumer doubleLineConsumer) {
+        this.particleShape.forAllBoxes(doubleLineConsumer);
     }
 }
