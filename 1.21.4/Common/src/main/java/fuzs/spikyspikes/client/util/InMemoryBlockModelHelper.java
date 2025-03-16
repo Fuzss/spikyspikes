@@ -3,6 +3,7 @@ package fuzs.spikyspikes.client.util;
 import fuzs.spikyspikes.services.ClientAbstractions;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -34,23 +35,18 @@ public final class InMemoryBlockModelHelper {
     }
 
     public static UnbakedModel createCubeModel(BlockModel blockModel, Map<Direction, ResourceLocation> textureMappings) {
-        if (textureMappings.size() != Direction.values().length) {
-            throw new IllegalStateException("model is missing textures");
-        } else if (!blockModel.getElements().isEmpty()) {
-            throw new IllegalStateException("model elements is not empty");
-        } else {
-            TextureSlots.Data.Builder builder = copyTextureSlots(blockModel.getTextureSlots());
-            for (Map.Entry<Direction, ResourceLocation> entry : textureMappings.entrySet()) {
-                builder.addTexture(entry.getKey().getSerializedName(),
-                        new Material(TextureAtlas.LOCATION_BLOCKS, entry.getValue()));
-            }
-            return new BlockModel(blockModel.getParentLocation(),
-                    Collections.singletonList(createCubeElement()),
-                    builder.build(),
-                    false,
-                    UnbakedModel.GuiLight.FRONT,
-                    blockModel.getTransforms());
+        TextureSlots.Data.Builder builder = copyTextureSlots(blockModel.getTextureSlots());
+        for (Direction direction : Direction.values()) {
+            builder.addTexture(direction.getSerializedName(),
+                    new Material(TextureAtlas.LOCATION_BLOCKS,
+                            textureMappings.getOrDefault(direction, MissingTextureAtlasSprite.getLocation())));
         }
+        return new BlockModel(blockModel.getParentLocation(),
+                Collections.singletonList(createCubeElement()),
+                builder.build(),
+                false,
+                UnbakedModel.GuiLight.FRONT,
+                blockModel.getTransforms());
     }
 
     private static BlockElement createCubeElement() {

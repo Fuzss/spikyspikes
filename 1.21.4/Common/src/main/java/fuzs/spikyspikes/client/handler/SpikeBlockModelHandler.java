@@ -57,8 +57,8 @@ public class SpikeBlockModelHandler {
     }
 
     public static EventResultHolder<UnbakedModel> onLoadModel(ResourceLocation resourceLocation, @Nullable UnbakedModel unbakedModel) {
-        if (unbakedModel instanceof BlockModel blockModel &&
-                SPIKE_BLOCK_TEXTURE_MAPPINGS.containsKey(resourceLocation)) {
+        if (unbakedModel instanceof BlockModel blockModel && blockModel.getElements() != null &&
+                blockModel.getElements().isEmpty() && SPIKE_BLOCK_TEXTURE_MAPPINGS.containsKey(resourceLocation)) {
             UnbakedModel newUnbakedModel = InMemoryBlockModelHelper.createCubeModel(blockModel,
                     SPIKE_BLOCK_TEXTURE_MAPPINGS.get(resourceLocation));
             newUnbakedModel = ClientAbstractions.INSTANCE.createForwardingUnbakedModel(newUnbakedModel,
