@@ -1,6 +1,11 @@
 {
-  "parent": "minecraft:block/block",
+  "parent": "spikyspikes:block/spike",
   "textures": {
-    "particle": "minecraft:block/netherite_block"
+    "down": "minecraft:block/netherite_block",
+    "east": "minecraft:block/netherite_block",
+    "north": "minecraft:block/netherite_block",
+    "particle": "minecraft:block/netherite_block",
+    "south": "minecraft:block/netherite_block",
+    "west": "minecraft:block/netherite_block"
   }
 }

@@ -1,4 +1,4 @@
-// 1.21.4	2025-03-16T08:58:18.622593	Model Definitions
+// 1.21.4	2025-03-16T16:32:20.981368	Model Definitions
 4d1f903e9dfbc0413f7a3546aad1cfa08f6b4b8a assets/spikyspikes/blockstates/diamond_spike.json
 f02d7a99b45afdd19963c4fd099d8ba96a716fbe assets/spikyspikes/blockstates/golden_spike.json
 4e38f2d7752933102ae215845ae7a751b789310c assets/spikyspikes/blockstates/iron_spike.json
@@ -11,9 +11,9 @@ ae68ba295b50e616261234748e8fbc4340f63c63 assets/spikyspikes/items/iron_spike.jso
 7bc602c19c1b9504b4887e502f7ea2057f3710b7 assets/spikyspikes/items/netherite_spike.json
 aa074b09ec506e076995d821b26240d233907af9 assets/spikyspikes/items/stone_spike.json
 46f237f5a548242f3e0e9adbbd165aedfeacd980 assets/spikyspikes/items/wooden_spike.json
-a0ecdca6296b2493ca2b8e977a31b6d6939b2aee assets/spikyspikes/models/block/diamond_spike.json
-2e6e68f8e4b1eea14655c61a6b4957348bdb0bb8 assets/spikyspikes/models/block/golden_spike.json
-70761608bd974750106b9b07b5ada13fa5e7dff4 assets/spikyspikes/models/block/iron_spike.json
-d581aa88e9a7b7c85b76ad5de135f1adc5701c2b assets/spikyspikes/models/block/netherite_spike.json
-c167636b27b56f810d80d61a56e70f2441487e5d assets/spikyspikes/models/block/stone_spike.json
-c905f2b909688589f6e5863cdb4d8221deb571cf assets/spikyspikes/models/block/wooden_spike.json
+19269c3f3685a391250d75e4786461dc76e89819 assets/spikyspikes/models/block/diamond_spike.json
+a45d6dcef8b5eb028c70ed6c1af34bb97a3d3fd1 assets/spikyspikes/models/block/golden_spike.json
+2c3bb22e0da16881964364ef3eeb5b0a886096d3 assets/spikyspikes/models/block/iron_spike.json
+a21e4e8b7be8599a1b15c54681435b1106b25cac assets/spikyspikes/models/block/netherite_spike.json
+a0519a5590728effea9d3a7a6f75c23bf7cd3df9 assets/spikyspikes/models/block/stone_spike.json
+1b71284730eb309e178becdd4b46ad6155cf495e assets/spikyspikes/models/block/wooden_spike.json

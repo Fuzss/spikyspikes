@@ -1,6 +1,11 @@
 {
-  "parent": "minecraft:block/block",
+  "parent": "spikyspikes:block/spike",
   "textures": {
-    "particle": "minecraft:block/iron_block"
+    "down": "minecraft:block/iron_block",
+    "east": "minecraft:block/iron_block",
+    "north": "minecraft:block/iron_block",
+    "particle": "minecraft:block/iron_block",
+    "south": "minecraft:block/iron_block",
+    "west": "minecraft:block/iron_block"
   }
 }
