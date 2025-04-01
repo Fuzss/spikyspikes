@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "spikyspikes:block/iron_spike",
+    "model": {
+      "type": "spikyspikes:spike",
+      "spike_material": "iron"
+    }
+  }
+}
