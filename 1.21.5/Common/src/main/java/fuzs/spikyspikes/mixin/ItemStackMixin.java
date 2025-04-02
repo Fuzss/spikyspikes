@@ -17,7 +17,7 @@ abstract class ItemStackMixin implements DataComponentHolder {
 
     @Inject(method = "isEnchantable", at = @At("TAIL"), cancellable = true)
     public void isEnchantable(CallbackInfoReturnable<Boolean> callback) {
-        if (this.getItem() instanceof SpikeItem spikeItem && spikeItem.acceptsEnchantments()) {
+        if (this.getItem() instanceof SpikeItem spikeItem && spikeItem.getSpikeMaterial().dropsPlayerLoot()) {
             ItemEnchantments itemEnchantments = this.get(DataComponents.STORED_ENCHANTMENTS);
             callback.setReturnValue(itemEnchantments != null && itemEnchantments.isEmpty());
         }

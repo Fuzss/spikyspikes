@@ -3,30 +3,22 @@ package fuzs.spikyspikes.world.level.block;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import fuzs.puzzleslib.api.core.v1.Proxy;
-import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import fuzs.spikyspikes.world.phys.shapes.CustomOutlineShape;
 import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.*;
@@ -46,11 +38,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -60,10 +48,6 @@ import java.util.function.Function;
  */
 public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final MapCodec<SpikeBlock> CODEC = spikeCodec(SpikeBlock::new);
-    public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("0.0"),
-            (DecimalFormat decimalFormat) -> {
-                decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-            });
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ENCHANTED = BooleanProperty.create("enchanted");
@@ -250,7 +234,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    protected void entityInside(BlockState blockState, Level level, BlockPos blockPos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier) {
         if (level instanceof ServerLevel serverLevel && entity instanceof LivingEntity livingEntity &&
                 livingEntity.isAlive()) {
             if (!(livingEntity instanceof Player player) ||
@@ -260,10 +244,10 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         (this.spikeMaterial.hurtsPlayers() || !(livingEntity instanceof Player))) {
                     if (this.spikeMaterial.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
-                        if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
+                        if (level.getBlockEntity(blockPos) instanceof SpikeBlockEntity blockEntity) {
                             SpikeBlockEntity.attack((ServerLevel) level,
-                                    pos,
-                                    level.getBlockState(pos),
+                                    blockPos,
+                                    level.getBlockState(blockPos),
                                     blockEntity,
                                     livingEntity,
                                     this.spikeMaterial);
@@ -275,7 +259,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                             serverLevel.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(false, level.getServer());
                         }
                         livingEntity.hurtServer(serverLevel,
-                                SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, level, pos),
+                                SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, level, blockPos),
                                 this.spikeMaterial.damageAmount());
                         if (!this.spikeMaterial.dropsMobLoot()) {
                             serverLevel.getGameRules()
@@ -284,7 +268,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         }
                         // similar to zombified piglins, so we don't have to use a fake player just to get xp
                         if (!livingEntity.isAlive() && this.spikeMaterial.dropsExperience()) {
-                            livingEntity.setLastHurtByPlayer(null);
+                            livingEntity.lastHurtByPlayer = null;
                             ((LivingEntityAccessor) livingEntity).spikyspikes$dropExperience(serverLevel, null);
                             livingEntity.skipDropExperience();
                         }
@@ -301,26 +285,6 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(itemStack, context, tooltipComponents, tooltipFlag);
-        if (context != Item.TooltipContext.EMPTY) {
-            if (!Proxy.INSTANCE.hasShiftDown()) {
-                tooltipComponents.add(Component.translatable(SpikeBlock.TooltipComponent.MORE.getTranslationKey(),
-                        Component.translatable(TooltipComponent.SHIFT.getTranslationKey())
-                                .withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY));
-            } else {
-                tooltipComponents.addAll(Proxy.INSTANCE.splitTooltipLines(Component.translatable(
-                        this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY)));
-                tooltipComponents.add(Component.translatable(TooltipComponent.DAMAGE.getTranslationKey(),
-                        Component.translatable(TooltipComponent.HEARTS.getTranslationKey(),
-                                        Component.literal(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(
-                                                this.spikeMaterial.damageAmount() / 2.0F))))
-                                .withStyle(this.spikeMaterial.getTooltipStyle())).withStyle(ChatFormatting.GOLD));
-            }
-        }
-    }
-
-    @Override
     protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
         ItemStack itemStack = super.getCloneItemStack(level, pos, state, includeData);
         if (this.spikeMaterial.dropsPlayerLoot() && level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
@@ -328,22 +292,5 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         }
 
         return itemStack;
-    }
-
-    public enum TooltipComponent implements StringRepresentable {
-        MORE,
-        SHIFT,
-        DAMAGE,
-        HEARTS;
-
-        public String getTranslationKey() {
-            return Util.makeDescriptionId(Registries.elementsDirPath(Registries.ITEM), SpikySpikes.id("spike")) +
-                    ".tooltip." + this.getSerializedName();
-        }
-
-        @Override
-        public String getSerializedName() {
-            return this.name().toLowerCase(Locale.ROOT);
-        }
     }
 }

@@ -1,8 +1,8 @@
 package fuzs.spikyspikes.init;
 
 import fuzs.puzzleslib.api.data.v2.AbstractDatapackRegistriesProvider;
+import fuzs.puzzleslib.api.init.v3.registry.ContentRegistrationHelper;
 import fuzs.puzzleslib.api.init.v3.registry.RegistryManager;
-import fuzs.puzzleslib.api.init.v3.registry.TransmuteRecipeHelper;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.world.item.SpikeItem;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
@@ -118,7 +118,7 @@ public class ModRegistry {
     public static final ResourceKey<DamageType> SPIKE_DAMAGE_TYPE = REGISTRIES.registerDamageType("spike");
 
     public static void bootstrap() {
-        TransmuteRecipeHelper.registerTransmuteRecipeSerializers(REGISTRIES);
+        ContentRegistrationHelper.registerTransmuteRecipeSerializers(REGISTRIES);
     }
 
     static void bootstrapDamageTypes(BootstrapContext<DamageType> context) {

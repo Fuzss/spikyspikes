@@ -1,10 +1,6 @@
 {
   "model": {
-    "type": "minecraft:special",
-    "base": "spikyspikes:block/stone_spike",
-    "model": {
-      "type": "spikyspikes:spike",
-      "spike_material": "stone"
-    }
+    "type": "minecraft:model",
+    "model": "spikyspikes:block/stone_spike"
   }
 }

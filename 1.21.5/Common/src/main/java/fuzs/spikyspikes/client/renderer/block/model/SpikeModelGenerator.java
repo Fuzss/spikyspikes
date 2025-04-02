@@ -1,8 +1,8 @@
 package fuzs.spikyspikes.client.renderer.block.model;
 
+import com.mojang.math.Quadrant;
+import fuzs.puzzleslib.api.client.renderer.v1.model.QuadUtils;
 import fuzs.spikyspikes.SpikySpikes;
-import fuzs.spikyspikes.client.util.QuadUtils;
-import fuzs.spikyspikes.services.ClientAbstractions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.Util;
@@ -13,10 +13,13 @@ import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -28,61 +31,60 @@ public class SpikeModelGenerator implements UnbakedModel {
     private static final List<BlockElement> ELEMENTS = Collections.singletonList(createCubeElement());
 
     @Override
-    public TextureSlots.Data getTextureSlots() {
+    public TextureSlots.Data textureSlots() {
         // the upper face is only removed after baking and will log a missing texture warning if not present
         return TEXTURE_SLOTS;
     }
 
     @Override
-    public BakedModel bake(TextureSlots textureSlots, ModelBaker baker, ModelState modelState, boolean hasAmbientOcclusion, boolean useBlockLight, ItemTransforms transforms) {
-        BakedModel bakedModel = SimpleBakedModel.bakeElements(ELEMENTS,
-                textureSlots,
-                baker.sprites(),
-                modelState,
-                hasAmbientOcclusion,
-                useBlockLight,
-                true,
-                transforms);
-        return this.modifyBakedModel(bakedModel, modelState, this::finalizeBakedQuad);
-    }
-
-    @Override
-    public void resolveDependencies(Resolver resolver) {
-        // NO-OP
+    public UnbakedGeometry geometry() {
+        return (TextureSlots textureSlots, ModelBaker modelBaker, ModelState modelState, ModelDebugName modelDebugName) -> {
+            QuadCollection quadCollection = SimpleUnbakedGeometry.bake(ELEMENTS,
+                    textureSlots,
+                    modelBaker.sprites(),
+                    modelState,
+                    modelDebugName);
+            return this.modifyBakedModel(quadCollection, modelState, this::finalizeBakedQuad);
+        };
     }
 
     private static BlockElement createCubeElement() {
-        BlockFaceUV blockFaceUV = new BlockFaceUV(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0);
+        BlockElementFace.UVs blockFaceUV = new BlockElementFace.UVs(0.0F, 0.0F, 16.0F, 16.0F);
         Map<Direction, BlockElementFace> map = new EnumMap<>(Direction.class);
         for (Direction direction : Direction.values()) {
-            map.put(direction, new BlockElementFace(direction, -1, direction.getSerializedName(), blockFaceUV));
+            map.put(direction,
+                    new BlockElementFace(direction, -1, direction.getSerializedName(), blockFaceUV, Quadrant.R0));
         }
         return new BlockElement(new Vector3f(0.0F, 0.0F, 0.0F), new Vector3f(16.0F, 16.0F, 16.0F), map);
     }
 
-    private BakedModel modifyBakedModel(BakedModel bakedModel, ModelState modelState, BakedQuadFinalizer bakedQuadFinalizer) {
+    private QuadCollection modifyBakedModel(QuadCollection quadCollection, ModelState modelState, BakedQuadFinalizer bakedQuadFinalizer) {
         Map<Direction, BakedQuad> bakedQuadMap = Util.makeEnumMap(Direction.class,
-                (Direction direction) -> bakedModel.getQuads(null, direction, RandomSource.create()).getFirst());
-        Map<Direction, List<BakedQuad>> bakedQuadsMap = Util.make(new HashMap<>(Util.makeEnumMap(Direction.class,
-                        (Direction direction) -> new ArrayList<>())),
-                (Map<Direction, List<BakedQuad>> map) -> map.put(null,
-                        new ArrayList<>(bakedModel.getQuads(null, null, RandomSource.create()))));
+                (Direction direction) -> quadCollection.getQuads(direction).getFirst());
+        QuadCollection.Builder builder = new QuadCollection.Builder();
+        for (BakedQuad bakedQuad : quadCollection.getQuads(null)) {
+            builder.addUnculledFace(bakedQuad);
+        }
         Function<Direction, Direction> directionRotator = Util.memoize((Direction direction) -> {
-            return Direction.rotate(modelState.getRotation().getMatrix(), direction);
+            return Direction.rotate(modelState.transformation().getMatrix(), direction);
         });
         for (Map.Entry<Direction, BakedQuad> entry : bakedQuadMap.entrySet()) {
-            bakedQuadFinalizer.finalizeBakedQuad(Direction.rotate(modelState.getRotation().getMatrix().invert(),
+            bakedQuadFinalizer.finalizeBakedQuad(Direction.rotate(modelState.transformation().getMatrixCopy().invert(),
                             entry.getKey()),
                     entry.getValue(),
                     directionRotator::apply,
-                    (Direction direction, BakedQuad bakedQuad) -> {
-                        bakedQuadsMap.get(direction).add(bakedQuad);
+                    (@Nullable Direction direction, BakedQuad bakedQuad) -> {
+                        if (direction != null) {
+                            builder.addCulledFace(direction, bakedQuad);
+                        } else {
+                            builder.addUnculledFace(bakedQuad);
+                        }
                     });
         }
-        return ClientAbstractions.INSTANCE.createForwardingBakedModel(bakedModel, bakedQuadsMap);
+        return builder.build();
     }
 
-    protected void finalizeBakedQuad(Direction direction, BakedQuad bakedQuad, UnaryOperator<Direction> directionRotator, BiConsumer<Direction, BakedQuad> bakedQuadConsumer) {
+    protected void finalizeBakedQuad(Direction direction, BakedQuad bakedQuad, UnaryOperator<Direction> directionRotator, BiConsumer<@Nullable Direction, BakedQuad> bakedQuadConsumer) {
         if (direction != Direction.UP) {
             bakedQuad = QuadUtils.copy(bakedQuad);
             if (direction.getAxis().isHorizontal()) {
@@ -153,6 +155,6 @@ public class SpikeModelGenerator implements UnbakedModel {
     @FunctionalInterface
     public interface BakedQuadFinalizer {
 
-        void finalizeBakedQuad(Direction direction, BakedQuad bakedQuad, UnaryOperator<Direction> directionRotator, BiConsumer<Direction, BakedQuad> bakedQuadConsumer);
+        void finalizeBakedQuad(Direction direction, BakedQuad bakedQuad, UnaryOperator<Direction> directionRotator, BiConsumer<@Nullable Direction, BakedQuad> bakedQuadConsumer);
     }
 }

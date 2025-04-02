@@ -3,5 +3,7 @@
   "category": "misc",
   "input": "spikyspikes:diamond_spike",
   "material": "minecraft:netherite_ingot",
-  "result": "spikyspikes:netherite_spike"
+  "result": {
+    "id": "spikyspikes:netherite_spike"
+  }
 }

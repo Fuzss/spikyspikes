@@ -16,7 +16,7 @@ abstract class EnchantmentHelperMixin {
 
     @Inject(method = "getComponentType", at = @At("HEAD"), cancellable = true)
     private static void getComponentType(ItemStack itemStack, CallbackInfoReturnable<DataComponentType<ItemEnchantments>> callback) {
-        if (itemStack.getItem() instanceof SpikeItem item && item.acceptsEnchantments()) {
+        if (itemStack.getItem() instanceof SpikeItem item && item.getSpikeMaterial().dropsPlayerLoot()) {
             callback.setReturnValue(DataComponents.STORED_ENCHANTMENTS);
         }
     }

@@ -112,7 +112,7 @@ public final class FakePlayerAttackHelper {
 
         if (entity instanceof Mob mob) {
             mob.setLastHurtByMob(null);
-            mob.setLastHurtByPlayer(null);
+            mob.lastHurtByPlayer = null;
             mob.setTarget(null);
         }
 

@@ -5,15 +5,13 @@ import fuzs.puzzleslib.api.client.data.v2.models.ModelLocationHelper;
 import fuzs.puzzleslib.api.client.data.v2.models.ModelTemplateHelper;
 import fuzs.puzzleslib.api.data.v2.core.DataProviderContext;
 import fuzs.spikyspikes.SpikySpikes;
-import fuzs.spikyspikes.client.renderer.special.SpikeSpecialRenderer;
+import fuzs.spikyspikes.client.renderer.block.model.SpikeModelGenerator;
 import fuzs.spikyspikes.init.ModRegistry;
-import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -34,6 +32,13 @@ public class ModModelProvider extends AbstractModelProvider {
 
     @Override
     public void addBlockModels(BlockModelGenerators blockModelGenerators) {
+        // currently implemented via Mixin calling ModelDiscovery::addSpecialModel
+        if (false) {
+            ModelTemplates.create()
+                    .create(SpikeModelGenerator.BUILTIN_SPIKE_MODEL,
+                            new TextureMapping(),
+                            blockModelGenerators.modelOutput);
+        }
         this.createSpikeBlock(ModRegistry.WOODEN_SPIKE_BLOCK.value(),
                 ModelLocationHelper.getBlockTexture(Blocks.STRIPPED_OAK_LOG),
                 ModelLocationHelper.getBlockTexture(Blocks.STRIPPED_OAK_LOG, "_top"),
@@ -61,10 +66,7 @@ public class ModModelProvider extends AbstractModelProvider {
                 textureMapping,
                 blockModelGenerators.modelOutput);
         blockModelGenerators.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(spikeBlock,
-                resourceLocation).with(blockModelGenerators.createColumnWithFacing()));
-        // TODO remove this so the item model can use the block model once the custom model is supported for NeoForge
-        ItemModel.Unbaked unbaked = ItemModelUtils.specialModel(resourceLocation,
-                new SpikeSpecialRenderer.Unbaked(((SpikeBlock) spikeBlock).getSpikeMaterial()));
-        blockModelGenerators.itemModelOutput.accept(spikeBlock.asItem(), unbaked);
+                        BlockModelGenerators.plainVariant(resourceLocation))
+                .with(BlockModelGenerators.ROTATIONS_COLUMN_WITH_FACING));
     }
 }

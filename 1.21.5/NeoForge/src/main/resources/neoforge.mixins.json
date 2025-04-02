@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "client.ModelManagerNeoForgeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

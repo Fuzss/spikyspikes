@@ -4,7 +4,7 @@ import fuzs.puzzleslib.api.client.data.v2.AbstractLanguageProvider;
 import fuzs.puzzleslib.api.data.v2.core.DataProviderContext;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.init.ModRegistry;
-import fuzs.spikyspikes.world.level.block.SpikeBlock;
+import fuzs.spikyspikes.world.item.SpikeItem;
 
 public class ModLanguageProvider extends AbstractLanguageProvider {
 
@@ -21,10 +21,10 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         builder.add(ModRegistry.GOLDEN_SPIKE_BLOCK.value(), "Golden Spike");
         builder.add(ModRegistry.DIAMOND_SPIKE_BLOCK.value(), "Diamond Spike");
         builder.add(ModRegistry.NETHERITE_SPIKE_BLOCK.value(), "Netherite Spike");
-        builder.add(SpikeBlock.TooltipComponent.MORE.getTranslationKey(), "Hold %s for more information");
-        builder.add(SpikeBlock.TooltipComponent.SHIFT.getTranslationKey(), "Shift");
-        builder.add(SpikeBlock.TooltipComponent.DAMAGE.getTranslationKey(), "Damage: %s");
-        builder.add(SpikeBlock.TooltipComponent.HEARTS.getTranslationKey(), "%s Heart(s)");
+        builder.add(SpikeItem.TooltipComponent.MORE.getTranslationKey(), "Hold %s for more information");
+        builder.add(SpikeItem.TooltipComponent.SHIFT.getTranslationKey(), "Shift");
+        builder.add(SpikeItem.TooltipComponent.DAMAGE.getTranslationKey(), "Damage: %s");
+        builder.add(SpikeItem.TooltipComponent.HEARTS.getTranslationKey(), "%s Heart(s)");
         builder.add(ModRegistry.WOODEN_SPIKE_BLOCK.value(),
                 "description",
                 "Slowly damages mobs, but does not deal a killing blow.");
