@@ -1,14 +1,20 @@
 package fuzs.spikyspikes.neoforge.client;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import fuzs.puzzleslib.neoforge.api.data.v2.core.DataProviderHelper;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.client.SpikySpikesClient;
+import fuzs.spikyspikes.client.renderer.block.model.SpikeModelGenerator;
 import fuzs.spikyspikes.data.client.ModLanguageProvider;
 import fuzs.spikyspikes.data.client.ModModelProvider;
 import fuzs.spikyspikes.util.DestroyEffectsHelper;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.resources.model.UnbakedGeometry;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
@@ -18,19 +24,40 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.model.DelegateUnbakedModel;
 
 @Mod(value = SpikySpikes.MOD_ID, dist = Dist.CLIENT)
-public class SpikySpikesForgeClient {
+public class SpikySpikesNeoForgeClient {
 
-    public SpikySpikesForgeClient(ModContainer modContainer) {
+    public SpikySpikesNeoForgeClient(ModContainer modContainer) {
         ClientModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikesClient::new);
         DataProviderHelper.registerDataProviders(SpikySpikes.MOD_ID, ModLanguageProvider::new, ModModelProvider::new);
-//        registerLoadingHandlers(modContainer.getEventBus());
+        registerLoadingHandlers(modContainer.getEventBus());
     }
 
     private static void registerLoadingHandlers(IEventBus eventBus) {
+        eventBus.addListener((final ModelEvent.RegisterLoaders evt) -> {
+            evt.register(SpikeModelGenerator.BUILTIN_SPIKE_MODEL,
+                    (JsonObject jsonObject, JsonDeserializationContext context) -> {
+                        // https://docs.neoforged.net/docs/resources/client/models/modelloaders/#reusing-the-default-model-loader
+                        jsonObject.remove("loader");
+                        UnbakedModel unbakedModel = context.deserialize(jsonObject, UnbakedModel.class);
+                        return new DelegateUnbakedModel(unbakedModel) {
+                            @Override
+                            public TextureSlots.Data textureSlots() {
+                                return SpikeModelGenerator.TEXTURE_SLOTS;
+                            }
+
+                            @Override
+                            public UnbakedGeometry geometry() {
+                                return SpikeModelGenerator::bake;
+                            }
+                        };
+                    });
+        });
         eventBus.addListener((final RegisterClientExtensionsEvent evt) -> {
             for (Block block : BuiltInRegistries.BLOCK) {
                 if (block instanceof SpikeBlock) {

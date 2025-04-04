@@ -26,26 +26,21 @@ import java.util.function.UnaryOperator;
 
 public class SpikeModelGenerator implements UnbakedModel {
     public static final ResourceLocation BUILTIN_SPIKE_MODEL = SpikySpikes.id("builtin/spike");
-    private static final TextureSlots.Data TEXTURE_SLOTS = new TextureSlots.Data.Builder().addTexture(Direction.UP.getSerializedName(),
+    /**
+     * The upper face is only removed after baking and will log a missing texture warning if not present.
+     */
+    public static final TextureSlots.Data TEXTURE_SLOTS = new TextureSlots.Data.Builder().addTexture(Direction.UP.getSerializedName(),
             new Material(TextureAtlas.LOCATION_BLOCKS, MissingTextureAtlasSprite.getLocation())).build();
     private static final List<BlockElement> ELEMENTS = Collections.singletonList(createCubeElement());
 
     @Override
     public TextureSlots.Data textureSlots() {
-        // the upper face is only removed after baking and will log a missing texture warning if not present
         return TEXTURE_SLOTS;
     }
 
     @Override
     public UnbakedGeometry geometry() {
-        return (TextureSlots textureSlots, ModelBaker modelBaker, ModelState modelState, ModelDebugName modelDebugName) -> {
-            QuadCollection quadCollection = SimpleUnbakedGeometry.bake(ELEMENTS,
-                    textureSlots,
-                    modelBaker.sprites(),
-                    modelState,
-                    modelDebugName);
-            return this.modifyBakedModel(quadCollection, modelState, this::finalizeBakedQuad);
-        };
+        return SpikeModelGenerator::bake;
     }
 
     private static BlockElement createCubeElement() {
@@ -58,7 +53,16 @@ public class SpikeModelGenerator implements UnbakedModel {
         return new BlockElement(new Vector3f(0.0F, 0.0F, 0.0F), new Vector3f(16.0F, 16.0F, 16.0F), map);
     }
 
-    private QuadCollection modifyBakedModel(QuadCollection quadCollection, ModelState modelState, BakedQuadFinalizer bakedQuadFinalizer) {
+    public static QuadCollection bake(TextureSlots textureSlots, ModelBaker modelBaker, ModelState modelState, ModelDebugName modelDebugName) {
+        QuadCollection quadCollection = SimpleUnbakedGeometry.bake(ELEMENTS,
+                textureSlots,
+                modelBaker.sprites(),
+                modelState,
+                modelDebugName);
+        return modifyBakedModel(quadCollection, modelState, SpikeModelGenerator::finalizeBakedQuad);
+    }
+
+    private static QuadCollection modifyBakedModel(QuadCollection quadCollection, ModelState modelState, BakedQuadFinalizer bakedQuadFinalizer) {
         Map<Direction, BakedQuad> bakedQuadMap = Util.makeEnumMap(Direction.class,
                 (Direction direction) -> quadCollection.getQuads(direction).getFirst());
         QuadCollection.Builder builder = new QuadCollection.Builder();
@@ -84,7 +88,7 @@ public class SpikeModelGenerator implements UnbakedModel {
         return builder.build();
     }
 
-    protected void finalizeBakedQuad(Direction direction, BakedQuad bakedQuad, UnaryOperator<Direction> directionRotator, BiConsumer<@Nullable Direction, BakedQuad> bakedQuadConsumer) {
+    private static void finalizeBakedQuad(Direction direction, BakedQuad bakedQuad, UnaryOperator<Direction> directionRotator, BiConsumer<@Nullable Direction, BakedQuad> bakedQuadConsumer) {
         if (direction != Direction.UP) {
             bakedQuad = QuadUtils.copy(bakedQuad);
             if (direction.getAxis().isHorizontal()) {
