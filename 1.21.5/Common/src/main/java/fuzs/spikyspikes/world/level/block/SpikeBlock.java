@@ -9,9 +9,11 @@ import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import fuzs.spikyspikes.world.phys.shapes.CustomOutlineShape;
 import fuzs.spikyspikes.world.phys.shapes.VoxelUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -292,5 +294,9 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         }
 
         return itemStack;
+    }
+
+    public Component getDescriptionComponent() {
+        return Component.translatable(this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY);
     }
 }

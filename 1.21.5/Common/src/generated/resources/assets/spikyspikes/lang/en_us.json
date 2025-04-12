@@ -13,9 +13,8 @@
   "block.spikyspikes.wooden_spike.description": "Slowly damages mobs, but does not deal a killing blow.",
   "death.attack.spike": "%1$s now rests in a less spiky world",
   "death.attack.spike.player": "%1$s oversaw a spike trying to flee from %2$s",
+  "item.spikyspikes.spike.tooltip.additional": "Hold %s for more information",
   "item.spikyspikes.spike.tooltip.damage": "Damage: %s",
-  "item.spikyspikes.spike.tooltip.hearts": "%s Heart(s)",
-  "item.spikyspikes.spike.tooltip.more": "Hold %s for more information",
   "item.spikyspikes.spike.tooltip.shift": "Shift",
   "itemGroup.spikyspikes.main": "Spiky Spikes"
 }

@@ -3,6 +3,8 @@ package fuzs.spikyspikes.world.level.block;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.config.ServerConfig;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 
 import java.util.function.DoubleSupplier;
@@ -32,12 +34,11 @@ public enum SpikeMaterial implements StringRepresentable {
         return (float) this.damageAmount.getAsDouble();
     }
 
-    public ChatFormatting getTooltipStyle() {
-        return switch ((Double) this.damageAmount.getAsDouble()) {
-            case Double d when d >= 8.0 -> ChatFormatting.GREEN;
-            case Double d when d >= 4.0 -> ChatFormatting.AQUA;
-            default -> ChatFormatting.RED;
-        };
+    public Component getDamageComponent() {
+        float damagedAmount = this.damageAmount();
+        String s = "\u2665".repeat(Math.max(0, Mth.floor(damagedAmount / 2.0F))) +
+                "\u2661".repeat(Math.max(0, Mth.floor(damagedAmount % 2.0F)));
+        return Component.literal(s).withStyle(ChatFormatting.RED);
     }
 
     public boolean dealsFinalBlow() {
