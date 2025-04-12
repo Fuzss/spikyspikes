@@ -44,8 +44,7 @@ public class SpikySpikesNeoForgeClient {
                     (JsonObject jsonObject, JsonDeserializationContext context) -> {
                         // https://docs.neoforged.net/docs/resources/client/models/modelloaders/#reusing-the-default-model-loader
                         jsonObject.remove("loader");
-                        UnbakedModel unbakedModel = context.deserialize(jsonObject, UnbakedModel.class);
-                        return new DelegateUnbakedModel(unbakedModel) {
+                        return new DelegateUnbakedModel(context.deserialize(jsonObject, UnbakedModel.class)) {
                             @Override
                             public TextureSlots.Data textureSlots() {
                                 return SpikeModelGenerator.TEXTURE_SLOTS;

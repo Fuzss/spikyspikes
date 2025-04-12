@@ -22,12 +22,7 @@ public class SpikySpikesFabricClient implements ClientModInitializer {
                 (JsonObject jsonObject, JsonDeserializationContext context) -> {
                     // https://docs.neoforged.net/docs/resources/client/models/modelloaders/#reusing-the-default-model-loader
                     jsonObject.remove("fabric:type");
-                    UnbakedModel unbakedModel = context.deserialize(jsonObject, UnbakedModel.class);
-                    return new WrapperUnbakedModel() {
-                        {
-                            this.wrapped = unbakedModel;
-                        }
-
+                    return new WrapperUnbakedModel(context.deserialize(jsonObject, UnbakedModel.class)) {
                         @Override
                         public TextureSlots.Data textureSlots() {
                             return SpikeModelGenerator.TEXTURE_SLOTS;
