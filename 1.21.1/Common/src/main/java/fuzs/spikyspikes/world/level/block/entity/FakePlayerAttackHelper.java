@@ -2,6 +2,7 @@ package fuzs.spikyspikes.world.level.block.entity;
 
 import fuzs.puzzleslib.api.init.v3.registry.LookupHelper;
 import fuzs.spikyspikes.init.ModRegistry;
+import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -114,7 +115,7 @@ public final class FakePlayerAttackHelper {
 
         if (entity instanceof Mob mob) {
             mob.setLastHurtByMob(null);
-            mob.setLastHurtByPlayer(null);
+            ((LivingEntityAccessor) mob).spikyspikes$setLastHurtByPlayerTime(100);
             mob.setTarget(null);
         }
 

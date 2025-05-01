@@ -2,6 +2,7 @@ package fuzs.spikyspikes.world.level.block.entity;
 
 import com.google.common.collect.Maps;
 import fuzs.spikyspikes.init.ModRegistry;
+import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.LootingDamageSource;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import fuzs.spikyspikes.world.level.block.SpikeMaterial;
@@ -131,7 +132,7 @@ public class SpikeBlockEntity extends BlockEntity {
     private static boolean hurtPlayerLike(Level level, Entity entity, float attackDamage, int looting) {
         if (entity instanceof Mob mob) {
             mob.setLastHurtByMob(null);
-            mob.setLastHurtByPlayer(null);
+            ((LivingEntityAccessor) mob).spikyspikes$setLastHurtByPlayerTime(100);
             mob.setTarget(null);
         }
         return entity.hurt(LootingDamageSource.source(level, ModRegistry.SPIKE_DAMAGE_TYPE, looting), attackDamage);

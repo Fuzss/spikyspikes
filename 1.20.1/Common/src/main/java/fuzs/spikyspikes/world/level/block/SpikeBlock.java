@@ -198,8 +198,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         }
                         // similar to zombified piglins, so we don't have to use a fake player just to get xp
                         if (!entity.isAlive() && material.dropsJustExperience()) {
-                            entity.setLastHurtByPlayer(null);
-                            ((LivingEntityAccessor) entity).spikyspikes$dropExperience();
+                            ((LivingEntityAccessor) entity).spikyspikes$setLastHurtByPlayerTime(100);
+                            ((LivingEntityAccessor) entity).spikyspikes$callDropExperience();
                         }
                     }
                 }
