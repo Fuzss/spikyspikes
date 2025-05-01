@@ -14,10 +14,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
@@ -40,10 +37,15 @@ public final class FakePlayerAttackHelper {
 
         if (entity.isAttackable()) {
 
-            DamageSource damageSource = SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, serverLevel, pos, itemEnchantments);
-            float enchantedDamage = BlockEnchantmentHelper.modifyDamage(serverLevel, entity, damageSource, attackDamage,
-                    itemEnchantments
-            ) - attackDamage;
+            DamageSource damageSource = SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE,
+                    serverLevel,
+                    pos,
+                    itemEnchantments);
+            float enchantedDamage = BlockEnchantmentHelper.modifyDamage(serverLevel,
+                    entity,
+                    damageSource,
+                    attackDamage,
+                    itemEnchantments) - attackDamage;
 
             if (attackDamage > 0.0F || enchantedDamage > 0.0F) {
 
@@ -52,7 +54,8 @@ public final class FakePlayerAttackHelper {
                 // workaround so that items from instant kills are still smelted
                 boolean setOnFire = false;
                 if (entity instanceof LivingEntity &&
-                        itemEnchantments.keySet().stream().anyMatch(holder -> holder.is(EnchantmentTags.SMELTS_LOOT)) && !entity.isOnFire()) {
+                        itemEnchantments.keySet().stream().anyMatch(holder -> holder.is(EnchantmentTags.SMELTS_LOOT)) &&
+                        !entity.isOnFire()) {
 
                     setOnFire = true;
                     entity.igniteForSeconds(1);
@@ -60,23 +63,31 @@ public final class FakePlayerAttackHelper {
 
                 if (hurt(serverLevel, entity, attackDamage, damageSource)) {
 
-                    float attackKnockback = (float) BlockEnchantmentHelper.getAttributeValue(
-                            Attributes.ATTACK_KNOCKBACK, itemEnchantments);
-                    attackKnockback = BlockEnchantmentHelper.modifyKnockback(serverLevel, entity, damageSource,
-                            attackKnockback, itemEnchantments
-                    );
+                    float attackKnockback = (float) BlockEnchantmentHelper.getAttributeValue(Attributes.ATTACK_KNOCKBACK,
+                            itemEnchantments);
+                    attackKnockback = BlockEnchantmentHelper.modifyKnockback(serverLevel,
+                            entity,
+                            damageSource,
+                            attackKnockback,
+                            itemEnchantments);
                     knockback(entity, attackKnockback * 0.5F, direction, serverLevel.getRandom());
 
-                    sweepAttack(entity, attackDamage, serverLevel, pos, direction, damageSource, hurtPlayers,
-                            itemEnchantments
-                    );
+                    sweepAttack(entity,
+                            attackDamage,
+                            serverLevel,
+                            pos,
+                            direction,
+                            damageSource,
+                            hurtPlayers,
+                            itemEnchantments);
 
                     BlockEnchantmentHelper.doPostAttackEffects(serverLevel, entity, damageSource, itemEnchantments);
 
                     if (enchantedDamage > 0.0F) {
-                        serverLevel.getChunkSource().broadcastAndSend(entity,
-                                new ClientboundAnimatePacket(entity, ClientboundAnimatePacket.MAGIC_CRITICAL_HIT)
-                        );
+                        serverLevel.getChunkSource()
+                                .broadcastAndSend(entity,
+                                        new ClientboundAnimatePacket(entity,
+                                                ClientboundAnimatePacket.MAGIC_CRITICAL_HIT));
                     }
                 } else if (setOnFire) {
 
@@ -95,13 +106,12 @@ public final class FakePlayerAttackHelper {
             Vec3 deltaMovement = entity.getDeltaMovement();
             Vec3 normalVec = direction.getUnitVec3();
             int axisStep = direction.getOpposite().getAxisDirection().getStep();
-            Vec3 offsetVec = new Vec3(axisStep, axisStep, axisStep).add(normalVec).multiply(random.nextGaussian(),
-                    random.nextGaussian(), random.nextGaussian()
-            );
+            Vec3 offsetVec = new Vec3(axisStep, axisStep, axisStep).add(normalVec)
+                    .multiply(random.nextGaussian(), random.nextGaussian(), random.nextGaussian());
             Vec3 knockbackVec = normalVec.add(offsetVec).normalize().scale(knockbackStrength);
             entity.setDeltaMovement(deltaMovement.x / 2.0 + knockbackVec.x,
-                    Math.min(0.4, deltaMovement.y / 2.0 + knockbackVec.y), deltaMovement.z / 2.0 + knockbackVec.z
-            );
+                    Math.min(0.4, deltaMovement.y / 2.0 + knockbackVec.y),
+                    deltaMovement.z / 2.0 + knockbackVec.z);
             entity.hasImpulse = true;
         }
     }
@@ -112,7 +122,7 @@ public final class FakePlayerAttackHelper {
 
         if (entity instanceof Mob mob) {
             mob.setLastHurtByMob(null);
-            mob.lastHurtByPlayer = null;
+            mob.setLastHurtByPlayer((EntityReference<Player>) null, 100);
             mob.setTarget(null);
         }
 
@@ -130,27 +140,29 @@ public final class FakePlayerAttackHelper {
     public static void sweepAttack(Entity entity, float attackDamage, ServerLevel level, BlockPos pos, Direction direction, DamageSource damageSource, boolean hurtPlayers, ItemEnchantments itemEnchantments) {
 
         double sweepingDamageRatio = BlockEnchantmentHelper.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO,
-                itemEnchantments
-        );
+                itemEnchantments);
         if (sweepingDamageRatio != Attributes.SWEEPING_DAMAGE_RATIO.value().getDefaultValue()) {
 
             float sweepingDamage = 1.0F + (float) sweepingDamageRatio * attackDamage;
-            Predicate<? super LivingEntity> filter = hurtPlayers ? EntitySelector.NO_SPECTATORS : Predicate.not(
-                    Player.class::isInstance);
+            Predicate<? super LivingEntity> filter =
+                    hurtPlayers ? EntitySelector.NO_SPECTATORS : Predicate.not(Player.class::isInstance);
             for (LivingEntity livingEntity : level.getEntitiesOfClass(LivingEntity.class,
-                    entity.getBoundingBox().inflate(1.0D, 0.25D, 1.0D), filter
-            )) {
+                    entity.getBoundingBox().inflate(1.0D, 0.25D, 1.0D),
+                    filter)) {
                 if (livingEntity != entity &&
                         (!(livingEntity instanceof ArmorStand) || !((ArmorStand) livingEntity).isMarker()) &&
                         pos.distToCenterSqr(livingEntity.position()) < 9.0D) {
 
-                    float hurtAmount = BlockEnchantmentHelper.modifyDamage(level, livingEntity, damageSource,
-                            sweepingDamage, itemEnchantments
-                    );
+                    float hurtAmount = BlockEnchantmentHelper.modifyDamage(level,
+                            livingEntity,
+                            damageSource,
+                            sweepingDamage,
+                            itemEnchantments);
 
                     // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
-                    if (itemEnchantments.getLevel(
-                            LookupHelper.lookup(level, Registries.ENCHANTMENT, Enchantments.KNOCKBACK)) > 0) {
+                    if (itemEnchantments.getLevel(LookupHelper.lookup(level,
+                            Registries.ENCHANTMENT,
+                            Enchantments.KNOCKBACK)) > 0) {
                         knockback(livingEntity, 0.4F, direction, level.getRandom());
                     }
 
@@ -160,12 +172,23 @@ public final class FakePlayerAttackHelper {
             }
 
             BlockPos onFrontPos = pos.relative(direction);
-            level.playSound(null, onFrontPos.getX() + 0.5, onFrontPos.getY() + 0.5, onFrontPos.getZ() + 0.5,
-                    SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.BLOCKS, 1.0F, 1.0F
-            );
-            level.sendParticles(ParticleTypes.SWEEP_ATTACK, onFrontPos.getX() + 0.5, onFrontPos.getY() + 0.5,
-                    onFrontPos.getZ() + 0.5, 0, 0.0, 0.0, 0.0, 0.0
-            );
+            level.playSound(null,
+                    onFrontPos.getX() + 0.5,
+                    onFrontPos.getY() + 0.5,
+                    onFrontPos.getZ() + 0.5,
+                    SoundEvents.PLAYER_ATTACK_SWEEP,
+                    SoundSource.BLOCKS,
+                    1.0F,
+                    1.0F);
+            level.sendParticles(ParticleTypes.SWEEP_ATTACK,
+                    onFrontPos.getX() + 0.5,
+                    onFrontPos.getY() + 0.5,
+                    onFrontPos.getZ() + 0.5,
+                    0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0);
         }
     }
 }

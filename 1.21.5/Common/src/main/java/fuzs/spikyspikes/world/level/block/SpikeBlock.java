@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -270,7 +271,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         }
                         // similar to zombified piglins, so we don't have to use a fake player just to get xp
                         if (!livingEntity.isAlive() && this.spikeMaterial.dropsExperience()) {
-                            livingEntity.lastHurtByPlayer = null;
+                            livingEntity.setLastHurtByPlayer((EntityReference<Player>) null, 100);
                             ((LivingEntityAccessor) livingEntity).spikyspikes$dropExperience(serverLevel, null);
                             livingEntity.skipDropExperience();
                         }
