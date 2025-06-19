@@ -8,25 +8,32 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
 public class SpikeTooltipHelper {
 
-    public static void appendHoverText(SpikeBlock spikeBlock, ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, Consumer<Component> tooltipLineConsumer) {
+    public static List<Component> appendHoverText(SpikeBlock spikeBlock) {
+        List<Component> tooltipLines = new ArrayList<>();
         if (!Screen.hasShiftDown()) {
-            tooltipLineConsumer.accept(Component.translatable(SpikeTooltipHelper.TooltipComponent.ADDITIONAL.getTranslationKey(),
+            tooltipLines.add(Component.translatable(SpikeTooltipHelper.TooltipComponent.ADDITIONAL.getTranslationKey(),
                     Component.translatable(SpikeTooltipHelper.TooltipComponent.SHIFT.getTranslationKey())
                             .withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY));
         } else {
-            tooltipLineConsumer.accept(spikeBlock.getDescriptionComponent());
-            tooltipLineConsumer.accept(Component.translatable(SpikeTooltipHelper.TooltipComponent.DAMAGE.getTranslationKey(),
+            tooltipLines.add(spikeBlock.getDescriptionComponent());
+            tooltipLines.add(Component.translatable(SpikeTooltipHelper.TooltipComponent.DAMAGE.getTranslationKey(),
                     spikeBlock.getSpikeMaterial().getDamageComponent()).withStyle(ChatFormatting.GOLD));
         }
+        return tooltipLines;
     }
 
     public enum TooltipComponent implements StringRepresentable {
@@ -35,8 +42,8 @@ public class SpikeTooltipHelper {
         DAMAGE;
 
         public String getTranslationKey() {
-            return Util.makeDescriptionId(Registries.elementsDirPath(Registries.ITEM), SpikySpikes.id("spike")) +
-                    ".tooltip." + this.getSerializedName();
+            return Util.makeDescriptionId(Registries.elementsDirPath(Registries.ITEM), SpikySpikes.id("spike"))
+                    + ".tooltip." + this.getSerializedName();
         }
 
         @Override

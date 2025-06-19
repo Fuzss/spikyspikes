@@ -10,13 +10,14 @@ import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class SpikeBlockEntity extends BlockEntity {
     public static final String ENCHANTMENTS_TAG = SpikySpikes.id("enchantments").toString();
@@ -40,26 +41,19 @@ public class SpikeBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        this.enchantments = ItemEnchantments.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE),
-                tag.get(ENCHANTMENTS_TAG)).resultOrPartial().orElse(ItemEnchantments.EMPTY);
-        if (tag.contains(REPAIR_COST_TAG)) {
-            this.repairCost = tag.getIntOr(REPAIR_COST_TAG, 0);
-        }
+    public void loadAdditional(ValueInput valueInput) {
+        super.loadAdditional(valueInput);
+        this.enchantments = valueInput.read(ENCHANTMENTS_TAG, ItemEnchantments.CODEC).orElse(ItemEnchantments.EMPTY);
+        this.repairCost = valueInput.getIntOr(REPAIR_COST_TAG, 0);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput valueOutput) {
+        super.saveAdditional(valueOutput);
         if (!this.enchantments.isEmpty()) {
-            tag.put(ENCHANTMENTS_TAG,
-                    ItemEnchantments.CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE),
-                            this.enchantments).getOrThrow());
+            valueOutput.store(ENCHANTMENTS_TAG, ItemEnchantments.CODEC, this.enchantments);
         }
-        if (this.repairCost != 0) {
-            tag.putInt(REPAIR_COST_TAG, this.repairCost);
-        }
+        valueOutput.putInt(REPAIR_COST_TAG, this.repairCost);
     }
 
     @Override
@@ -88,13 +82,9 @@ public class SpikeBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void removeComponentsFromTag(CompoundTag tag) {
-        super.removeComponentsFromTag(tag);
-        tag.remove(ENCHANTMENTS_TAG);
-        tag.remove(REPAIR_COST_TAG);
-    }
-
-    public boolean hasFoil() {
-        return this.enchantments != null && !this.enchantments.isEmpty();
+    public void removeComponentsFromTag(ValueOutput valueOutput) {
+        super.removeComponentsFromTag(valueOutput);
+        valueOutput.discard(ENCHANTMENTS_TAG);
+        valueOutput.discard(REPAIR_COST_TAG);
     }
 }

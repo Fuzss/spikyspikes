@@ -1,7 +1,6 @@
 package fuzs.spikyspikes.world.phys.shapes;
 
 import com.google.common.collect.Lists;
-import fuzs.spikyspikes.mixin.accessor.VoxelShapeAccessor;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +20,7 @@ public class CustomOutlineShape extends VoxelShape {
     }
 
     public CustomOutlineShape(VoxelShape collisionShape, VoxelShape outlineShapeBase, Vec3... outlineShapeEdges) {
-        super(((VoxelShapeAccessor) collisionShape).spikyspikes$getShape());
+        super(collisionShape.shape);
         this.collisionShape = collisionShape;
         this.particleShape = collisionShape.singleEncompassing();
         this.outlineShapeBase = outlineShapeBase;

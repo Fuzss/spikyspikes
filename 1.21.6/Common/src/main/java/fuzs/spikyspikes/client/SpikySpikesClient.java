@@ -12,7 +12,7 @@ public class SpikySpikesClient implements ClientModConstructor {
 
     @Override
     public void onClientSetup() {
-        ItemTooltipRegistry.registerItemTooltip(SpikeBlock.class, SpikeTooltipHelper::appendHoverText);
+        ItemTooltipRegistry.BLOCK.registerItemTooltipLines(SpikeBlock.class, SpikeTooltipHelper::appendHoverText);
     }
 
     @Override

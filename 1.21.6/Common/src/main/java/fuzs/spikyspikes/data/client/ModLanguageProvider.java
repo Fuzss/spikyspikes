@@ -34,9 +34,9 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         builder.add(((SpikeBlock) ModRegistry.GOLDEN_SPIKE_BLOCK.value()).getDescriptionComponent(),
                 "Killed mobs only drop experience without any loot.");
         builder.add(((SpikeBlock) ModRegistry.DIAMOND_SPIKE_BLOCK.value()).getDescriptionComponent(),
-                "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil.");
+                "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments.");
         builder.add(((SpikeBlock) ModRegistry.NETHERITE_SPIKE_BLOCK.value()).getDescriptionComponent(),
-                "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments via an anvil. Resistant to explosions and the wither boss. Does not damage players.");
+                "Killed mobs drop all loot like when killed by a player. Accepts most sword enchantments. Resistant to explosions and the wither boss. Does not damage players.");
         builder.addGenericDamageType(ModRegistry.SPIKE_DAMAGE_TYPE, "%1$s now rests in a less spiky world");
         builder.addPlayerDamageType(ModRegistry.SPIKE_DAMAGE_TYPE, "%1$s oversaw a spike trying to flee from %2$s");
     }

@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fuzs.spikyspikes.init.ModRegistry;
-import fuzs.spikyspikes.mixin.accessor.LivingEntityAccessor;
 import fuzs.spikyspikes.world.damagesource.SpikeDamageSource;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import fuzs.spikyspikes.world.phys.shapes.CustomOutlineShape;
@@ -179,16 +178,16 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         if (blockState.getValue(WATERLOGGED)) {
             scheduledTickAccess.scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(levelReader));
         }
-        return direction == blockState.getValue(FACING).getOpposite() &&
-                !this.canSurvive(blockState, levelReader, blockPos) ? Blocks.AIR.defaultBlockState() :
-                super.updateShape(blockState,
-                        levelReader,
-                        scheduledTickAccess,
-                        blockPos,
-                        direction,
-                        neighborBlockPos,
-                        neighborBlockState,
-                        randomSource);
+        return direction == blockState.getValue(FACING).getOpposite() && !this.canSurvive(blockState,
+                levelReader,
+                blockPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(blockState,
+                levelReader,
+                scheduledTickAccess,
+                blockPos,
+                direction,
+                neighborBlockPos,
+                neighborBlockState,
+                randomSource);
     }
 
     @Override
@@ -238,13 +237,13 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     protected void entityInside(BlockState blockState, Level level, BlockPos blockPos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier) {
-        if (level instanceof ServerLevel serverLevel && entity instanceof LivingEntity livingEntity &&
-                livingEntity.isAlive()) {
-            if (!(livingEntity instanceof Player player) ||
-                    !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
-                if ((this.spikeMaterial.dealsFinalBlow() ||
-                        livingEntity.getHealth() > this.spikeMaterial.damageAmount()) &&
-                        (this.spikeMaterial.hurtsPlayers() || !(livingEntity instanceof Player))) {
+        if (level instanceof ServerLevel serverLevel && entity instanceof LivingEntity livingEntity
+                && livingEntity.isAlive()) {
+            if (!(livingEntity instanceof Player player)
+                    || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
+                if ((this.spikeMaterial.dealsFinalBlow()
+                        || livingEntity.getHealth() > this.spikeMaterial.damageAmount()) && (
+                        this.spikeMaterial.hurtsPlayers() || !(livingEntity instanceof Player))) {
                     if (this.spikeMaterial.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(blockPos) instanceof SpikeBlockEntity blockEntity) {
@@ -272,7 +271,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         // similar to zombified piglins, so we don't have to use a fake player just to get xp
                         if (!livingEntity.isAlive() && this.spikeMaterial.dropsExperience()) {
                             livingEntity.setLastHurtByPlayer((EntityReference<Player>) null, 100);
-                            ((LivingEntityAccessor) livingEntity).spikyspikes$dropExperience(serverLevel, null);
+                            livingEntity.dropExperience(serverLevel, null);
                             livingEntity.skipDropExperience();
                         }
                     }
