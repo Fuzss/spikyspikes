@@ -1,0 +1,4 @@
+accessWidener   v2  named
+accessible  class   net/minecraft/client/renderer/block/model/TextureSlots$Reference
+accessible  class   net/minecraft/client/renderer/block/model/TextureSlots$Value
+transitive-accessible   method  net/minecraft/world/entity/LivingEntity setLastHurtByPlayer (Lnet/minecraft/world/entity/EntityReference;I)V

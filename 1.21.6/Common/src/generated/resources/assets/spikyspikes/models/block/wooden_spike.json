@@ -1,0 +1,11 @@
+{
+  "parent": "spikyspikes:block/spike",
+  "textures": {
+    "down": "minecraft:block/stripped_oak_log_top",
+    "east": "minecraft:block/stripped_oak_log",
+    "north": "minecraft:block/stripped_oak_log",
+    "particle": "minecraft:block/stripped_oak_log",
+    "south": "minecraft:block/stripped_oak_log",
+    "west": "minecraft:block/stripped_oak_log"
+  }
+}
