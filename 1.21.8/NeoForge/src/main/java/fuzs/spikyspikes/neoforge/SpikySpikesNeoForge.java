@@ -6,6 +6,7 @@ import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.data.ModBlockLootProvider;
 import fuzs.spikyspikes.data.ModRecipeProvider;
 import fuzs.spikyspikes.data.tags.ModBlockTagProvider;
+import fuzs.spikyspikes.data.tags.ModEntityTypeTagProvider;
 import fuzs.spikyspikes.data.tags.ModItemTagProvider;
 import fuzs.spikyspikes.init.ModRegistry;
 import fuzs.spikyspikes.neoforge.init.NeoForgeModRegistry;
@@ -22,6 +23,7 @@ public class SpikySpikesNeoForge {
                 ModBlockLootProvider::new,
                 ModBlockTagProvider::new,
                 ModItemTagProvider::new,
+                ModEntityTypeTagProvider::new,
                 ModRecipeProvider::new);
     }
 }

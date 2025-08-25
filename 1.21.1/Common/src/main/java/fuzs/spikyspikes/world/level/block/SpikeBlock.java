@@ -57,37 +57,33 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     public static final DecimalFormat TOOLTIP_DAMAGE_FORMAT = Util.make(new DecimalFormat("0.0"),
             (DecimalFormat decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-            }
-    );
+            });
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values()).collect(
-            Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(),
-                    SpikeBlock::makeVisualShape
-            ));
+    private static final Map<Direction, VoxelShape> SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
+            .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(),
+                    SpikeBlock::makeVisualShape));
     private static final Map<Direction, VoxelShape> COLLISION_SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
             .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(),
-                    direction -> makeCollisionShape(direction, false)
-            ));
+                    direction -> makeCollisionShape(direction, false)));
     private static final Map<Direction, VoxelShape> INTERACTION_SHAPE_BY_DIRECTION = Arrays.stream(Direction.values())
             .collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(),
-                    direction -> makeCollisionShape(direction, true)
-            ));
+                    direction -> makeCollisionShape(direction, true)));
 
     public final SpikeMaterial spikeMaterial;
 
     public SpikeBlock(SpikeMaterial spikeMaterial, Properties properties) {
         super(properties);
         this.spikeMaterial = spikeMaterial;
-        this.registerDefaultState(
-                this.defaultBlockState().setValue(WATERLOGGED, Boolean.FALSE).setValue(FACING, Direction.UP));
+        this.registerDefaultState(this.defaultBlockState()
+                .setValue(WATERLOGGED, Boolean.FALSE)
+                .setValue(FACING, Direction.UP));
     }
 
     protected static <T extends SpikeBlock> MapCodec<T> spikeCodec(BiFunction<SpikeMaterial, Properties, T> factory) {
         return RecordCodecBuilder.mapCodec((instance) -> {
             return instance.group(SpikeMaterial.CODEC.fieldOf("material").forGetter(SpikeBlock::getSpikeMaterial),
-                    propertiesCodec()
-            ).apply(instance, factory);
+                    propertiesCodec()).apply(instance, factory);
         });
     }
 
@@ -102,8 +98,21 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     private static VoxelShape makeVisualShape(Direction direction) {
         VoxelShape shape = makeStaircasePyramid(direction, 8, 2.0);
-        Vec3[] outlineVectors = VoxelUtils.makePyramidEdges(
-                VoxelUtils.makeVectors(0.0, 0.0, 0.0, 16.0, 0.0, 0.0, 16.0, 0.0, 16.0, 0.0, 0.0, 16.0, 8.0, 16.0, 8.0));
+        Vec3[] outlineVectors = VoxelUtils.makePyramidEdges(VoxelUtils.makeVectors(0.0,
+                0.0,
+                0.0,
+                16.0,
+                0.0,
+                0.0,
+                16.0,
+                0.0,
+                16.0,
+                0.0,
+                0.0,
+                16.0,
+                8.0,
+                16.0,
+                8.0));
         return new CustomOutlineShape(shape, VoxelUtils.scale(VoxelUtils.rotate(direction, outlineVectors)));
     }
 
@@ -165,9 +174,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
             level.scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
         return direction == blockState.getValue(FACING).getOpposite() && !blockState.canSurvive(level, blockPos) ?
-                Blocks.AIR.defaultBlockState() : super.updateShape(blockState, direction, neighborState, level,
-                blockPos, neighborPos
-        );
+                Blocks.AIR.defaultBlockState() :
+                super.updateShape(blockState, direction, neighborState, level, blockPos, neighborPos);
     }
 
     @Override
@@ -175,9 +183,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        BlockState state = this.defaultBlockState().setValue(WATERLOGGED,
-                level.getFluidState(pos).getType() == Fluids.WATER
-        );
+        BlockState state = this.defaultBlockState()
+                .setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
         for (Direction direction : context.getNearestLookingDirections()) {
             Direction opposite = direction.getOpposite();
             state = state.setValue(FACING, opposite);
@@ -215,18 +222,22 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (!level.isClientSide && entity instanceof LivingEntity livingEntity && livingEntity.isAlive()) {
-            if (!(livingEntity instanceof Player player) ||
-                    !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
-                if ((this.spikeMaterial.dealsFinalBlow() ||
-                        livingEntity.getHealth() > this.spikeMaterial.damageAmount()) &&
-                        (this.spikeMaterial.hurtsPlayers() || !(livingEntity instanceof Player))) {
+        if (!level.isClientSide && entity instanceof LivingEntity livingEntity && livingEntity.isAlive()
+                && !livingEntity.getType().is(ModRegistry.SPIKE_DAMAGE_IMMUNE_ENTITY_TYPE_TAG)) {
+            if (!(livingEntity instanceof Player player)
+                    || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
+                if ((this.spikeMaterial.dealsFinalBlow()
+                        || livingEntity.getHealth() > this.spikeMaterial.damageAmount()) && (
+                        this.spikeMaterial.hurtsPlayers() || !(livingEntity instanceof Player))) {
                     if (this.spikeMaterial.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                            SpikeBlockEntity.attack((ServerLevel) level, pos, level.getBlockState(pos), blockEntity,
-                                    livingEntity, this.spikeMaterial
-                            );
+                            SpikeBlockEntity.attack((ServerLevel) level,
+                                    pos,
+                                    level.getBlockState(pos),
+                                    blockEntity,
+                                    livingEntity,
+                                    this.spikeMaterial);
                         }
                     } else {
                         // cancelling drops via forge event works too, but also cancels equipment drops (e.g. saddles, not spawned equipment) which is not good
@@ -235,8 +246,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(false, level.getServer());
                         }
                         livingEntity.hurt(SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE, level, pos),
-                                this.spikeMaterial.damageAmount()
-                        );
+                                this.spikeMaterial.damageAmount());
                         if (!this.spikeMaterial.dropsMobLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(doMobLoot, level.getServer());
                         }
@@ -264,17 +274,16 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         if (context != Item.TooltipContext.EMPTY) {
             if (!Proxy.INSTANCE.hasShiftDown()) {
                 tooltipComponents.add(Component.translatable("item.spikyspikes.spike.tooltip.more",
-                        Component.translatable("item.spikyspikes.spike.tooltip.shift").withStyle(ChatFormatting.YELLOW)
-                ).withStyle(ChatFormatting.GRAY));
+                                Component.translatable("item.spikyspikes.spike.tooltip.shift").withStyle(ChatFormatting.YELLOW))
+                        .withStyle(ChatFormatting.GRAY));
             } else {
-                tooltipComponents.addAll(Proxy.INSTANCE.splitTooltipLines(
-                        Component.translatable(this.getDescriptionId() + ".description")
-                                .withStyle(ChatFormatting.GRAY)));
+                tooltipComponents.addAll(Proxy.INSTANCE.splitTooltipLines(Component.translatable(
+                        this.getDescriptionId() + ".description").withStyle(ChatFormatting.GRAY)));
                 tooltipComponents.add(Component.translatable("item.spikyspikes.spike.tooltip.damage",
-                        Component.translatable("item.spikyspikes.spike.tooltip.hearts", Component.literal(
-                                        String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(this.spikeMaterial.damageAmount() / 2.0F))))
-                                .withStyle(this.spikeMaterial.getTooltipStyle())
-                ).withStyle(ChatFormatting.GOLD));
+                        Component.translatable("item.spikyspikes.spike.tooltip.hearts",
+                                        Component.literal(String.valueOf(TOOLTIP_DAMAGE_FORMAT.format(
+                                                this.spikeMaterial.damageAmount() / 2.0F))))
+                                .withStyle(this.spikeMaterial.getTooltipStyle())).withStyle(ChatFormatting.GOLD));
             }
         }
     }
@@ -282,8 +291,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState) {
         ItemStack itemStack = super.getCloneItemStack(level, pos, blockState);
-        if (this.spikeMaterial.dropsPlayerLoot() && level.getBlockEntity(
-                pos) instanceof SpikeBlockEntity blockEntity) {
+        if (this.spikeMaterial.dropsPlayerLoot() && level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
             itemStack.applyComponents(blockEntity.collectComponents());
         }
 

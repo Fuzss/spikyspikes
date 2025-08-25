@@ -176,15 +176,16 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     }
 
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity p_51151_) {
-        if (!level.isClientSide && p_51151_ instanceof LivingEntity entity && entity.isAlive()) {
-            if (!(entity instanceof Player player) || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (!level.isClientSide && entity instanceof LivingEntity livingEntity && livingEntity.isAlive() && !livingEntity.getType()
+                .is(ModRegistry.SPIKE_DAMAGE_IMMUNE_ENTITY_TYPE_TAG)) {
+            if (!(livingEntity instanceof Player player) || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
                 SpikeMaterial material = this.spikeMaterial;
-                if ((material.dealsFinalBlow() || entity.getHealth() > material.damageAmount()) && (material.hurtsPlayers() || !(entity instanceof Player))) {
+                if ((material.dealsFinalBlow() || livingEntity.getHealth() > material.damageAmount()) && (material.hurtsPlayers() || !(livingEntity instanceof Player))) {
                     if (material.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(pos) instanceof SpikeBlockEntity blockEntity) {
-                            SpikeBlockEntity.attackPlayerLike(level, pos, level.getBlockState(pos), blockEntity, entity, material);
+                            SpikeBlockEntity.attackPlayerLike(level, pos, level.getBlockState(pos), blockEntity, livingEntity, material);
                         }
                     } else {
                         // cancelling drops via forge event works too, but also cancels equipment drops (e.g. saddles, not spawned equipment) which is not good
@@ -192,14 +193,14 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(false, level.getServer());
                         }
-                        entity.hurt(LootingDamageSource.source(level, ModRegistry.SPIKE_DAMAGE_TYPE, 0), material.damageAmount());
+                        livingEntity.hurt(LootingDamageSource.source(level, ModRegistry.SPIKE_DAMAGE_TYPE, 0), material.damageAmount());
                         if (!material.dropsLoot()) {
                             level.getGameRules().getRule(GameRules.RULE_DOMOBLOOT).set(doMobLoot, level.getServer());
                         }
                         // similar to zombified piglins, so we don't have to use a fake player just to get xp
-                        if (!entity.isAlive() && material.dropsJustExperience()) {
-                            ((LivingEntityAccessor) entity).spikyspikes$setLastHurtByPlayerTime(100);
-                            ((LivingEntityAccessor) entity).spikyspikes$callDropExperience();
+                        if (!livingEntity.isAlive() && material.dropsJustExperience()) {
+                            ((LivingEntityAccessor) livingEntity).spikyspikes$setLastHurtByPlayerTime(100);
+                            ((LivingEntityAccessor) livingEntity).spikyspikes$callDropExperience();
                         }
                     }
                 }

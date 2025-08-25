@@ -9,7 +9,9 @@ import fuzs.spikyspikes.world.level.block.SpikeBlock;
 import fuzs.spikyspikes.world.level.block.SpikeMaterial;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -35,6 +37,9 @@ public class ModRegistry {
     public static final RegistryReference<BlockEntityType<SpikeBlockEntity>> SPIKE_BLOCK_ENTITY_TYPE = REGISTRY.registerBlockEntityType("spike", () -> BlockEntityType.Builder.of(SpikeBlockEntity::new, WOODEN_SPIKE_BLOCK.get(), STONE_SPIKE_BLOCK.get(), IRON_SPIKE_BLOCK.get(), GOLDEN_SPIKE_BLOCK.get(), DIAMOND_SPIKE_BLOCK.get(), NETHERITE_SPIKE_BLOCK.get()));
 
     public static final ResourceKey<DamageType> SPIKE_DAMAGE_TYPE = REGISTRY.registerDamageType("spike");
+
+    public static final TagKey<EntityType<?>> SPIKE_DAMAGE_IMMUNE_ENTITY_TYPE_TAG = REGISTRY.registerEntityTypeTag(
+            "spike_damage_immune");
 
     public static void touch() {
 

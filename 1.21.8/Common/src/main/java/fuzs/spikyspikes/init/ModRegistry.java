@@ -3,6 +3,7 @@ package fuzs.spikyspikes.init;
 import fuzs.puzzleslib.api.data.v2.AbstractDatapackRegistriesProvider;
 import fuzs.puzzleslib.api.init.v3.registry.ContentRegistrationHelper;
 import fuzs.puzzleslib.api.init.v3.registry.RegistryManager;
+import fuzs.puzzleslib.api.init.v3.tags.TagFactory;
 import fuzs.spikyspikes.SpikySpikes;
 import fuzs.spikyspikes.world.item.SpikeItem;
 import fuzs.spikyspikes.world.level.block.SpikeBlock;
@@ -14,7 +15,9 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -116,6 +119,10 @@ public class ModRegistry {
                     DIAMOND_SPIKE_BLOCK.value(),
                     NETHERITE_SPIKE_BLOCK.value()));
     public static final ResourceKey<DamageType> SPIKE_DAMAGE_TYPE = REGISTRIES.registerDamageType("spike");
+
+    static final TagFactory TAGS = TagFactory.make(SpikySpikes.MOD_ID);
+    public static final TagKey<EntityType<?>> SPIKE_DAMAGE_IMMUNE_ENTITY_TYPE_TAG = TAGS.registerEntityTypeTag(
+            "spike_damage_immune");
 
     public static void bootstrap() {
         ContentRegistrationHelper.registerTransmuteRecipeSerializers(REGISTRIES);

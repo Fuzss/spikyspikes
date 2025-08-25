@@ -238,7 +238,8 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
     @Override
     protected void entityInside(BlockState blockState, Level level, BlockPos blockPos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier) {
         if (level instanceof ServerLevel serverLevel && entity instanceof LivingEntity livingEntity
-                && livingEntity.isAlive()) {
+                && livingEntity.isAlive() && !livingEntity.getType()
+                .is(ModRegistry.SPIKE_DAMAGE_IMMUNE_ENTITY_TYPE_TAG)) {
             if (!(livingEntity instanceof Player player)
                     || !player.getAbilities().instabuild && !player.getAbilities().invulnerable) {
                 if ((this.spikeMaterial.dealsFinalBlow()
@@ -247,7 +248,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                     if (this.spikeMaterial.dropsPlayerLoot()) {
                         // this is handled by the block entity as there used to be one player per placed spike (no longer using fake players though)
                         if (level.getBlockEntity(blockPos) instanceof SpikeBlockEntity blockEntity) {
-                            SpikeBlockEntity.attack((ServerLevel) level,
+                            SpikeBlockEntity.attack(serverLevel,
                                     blockPos,
                                     level.getBlockState(blockPos),
                                     blockEntity,

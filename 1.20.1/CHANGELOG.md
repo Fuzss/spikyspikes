@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v8.0.3-1.20.1] - 2025-08-25
+### Added
+- Add `spikypikes:spike_damage_immune` entity type tag
+
 ## [v8.0.2-1.20.1] - 2025-05-01
 ### Changed
 - Improve mod compatibility for spikes that yield experience drops
