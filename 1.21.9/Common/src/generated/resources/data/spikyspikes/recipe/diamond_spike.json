@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "minecraft:diamond",
+    "@": "minecraft:diamond_block",
+    "S": "minecraft:diamond_sword"
+  },
+  "pattern": [
+    " S ",
+    "S#S",
+    "#@#"
+  ],
+  "result": {
+    "count": 3,
+    "id": "spikyspikes:diamond_spike"
+  }
+}

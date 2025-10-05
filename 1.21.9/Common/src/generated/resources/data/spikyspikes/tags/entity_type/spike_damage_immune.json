@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:armor_stand",
+    {
+      "id": "betterend:end_fish",
+      "required": false
+    }
+  ]
+}
