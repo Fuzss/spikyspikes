@@ -34,9 +34,7 @@ public final class FakePlayerAttackHelper {
      * Adapted from {@link Player#attack}, most importantly removing all the knockback and sounds, also most particles.
      */
     public static void attack(Entity entity, ServerLevel serverLevel, BlockPos pos, Direction direction, float attackDamage, ItemEnchantments itemEnchantments, boolean hurtPlayers) {
-
         if (entity.isAttackable()) {
-
             DamageSource damageSource = SpikeDamageSource.source(ModRegistry.SPIKE_DAMAGE_TYPE,
                     serverLevel,
                     pos,
@@ -46,23 +44,18 @@ public final class FakePlayerAttackHelper {
                     damageSource,
                     attackDamage,
                     itemEnchantments) - attackDamage;
-
             if (attackDamage > 0.0F || enchantedDamage > 0.0F) {
-
                 attackDamage += enchantedDamage;
-
                 // workaround so that items from instant kills are still smelted
                 boolean setOnFire = false;
-                if (entity instanceof LivingEntity &&
-                        itemEnchantments.keySet().stream().anyMatch(holder -> holder.is(EnchantmentTags.SMELTS_LOOT)) &&
-                        !entity.isOnFire()) {
-
+                if (entity instanceof LivingEntity && itemEnchantments.keySet()
+                        .stream()
+                        .anyMatch(holder -> holder.is(EnchantmentTags.SMELTS_LOOT)) && !entity.isOnFire()) {
                     setOnFire = true;
                     entity.igniteForSeconds(1);
                 }
 
                 if (hurt(serverLevel, entity, attackDamage, damageSource)) {
-
                     float attackKnockback = (float) BlockEnchantmentHelper.getAttributeValue(Attributes.ATTACK_KNOCKBACK,
                             itemEnchantments);
                     attackKnockback = BlockEnchantmentHelper.modifyKnockback(serverLevel,
@@ -71,7 +64,6 @@ public final class FakePlayerAttackHelper {
                             attackKnockback,
                             itemEnchantments);
                     knockback(entity, attackKnockback * 0.5F, direction, serverLevel.getRandom());
-
                     sweepAttack(entity,
                             attackDamage,
                             serverLevel,
@@ -80,17 +72,14 @@ public final class FakePlayerAttackHelper {
                             damageSource,
                             hurtPlayers,
                             itemEnchantments);
-
                     BlockEnchantmentHelper.doPostAttackEffects(serverLevel, entity, damageSource, itemEnchantments);
-
                     if (enchantedDamage > 0.0F) {
                         serverLevel.getChunkSource()
-                                .broadcastAndSend(entity,
+                                .sendToTrackingPlayersAndSelf(entity,
                                         new ClientboundAnimatePacket(entity,
                                                 ClientboundAnimatePacket.MAGIC_CRITICAL_HIT));
                     }
                 } else if (setOnFire) {
-
                     entity.clearFire();
                 }
             }
@@ -98,10 +87,10 @@ public final class FakePlayerAttackHelper {
     }
 
     public static void knockback(Entity entity, double knockbackStrength, Direction direction, RandomSource random) {
-
         if (entity instanceof LivingEntity) {
             knockbackStrength *= 1.0 - ((LivingEntity) entity).getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
         }
+
         if (knockbackStrength > 0.0) {
             Vec3 deltaMovement = entity.getDeltaMovement();
             Vec3 normalVec = direction.getUnitVec3();
@@ -117,9 +106,7 @@ public final class FakePlayerAttackHelper {
     }
 
     public static boolean hurt(ServerLevel serverLevel, Entity entity, float attackDamage, DamageSource damageSource) {
-
         Vec3 oldMovement = entity.getDeltaMovement();
-
         if (entity instanceof Mob mob) {
             mob.setLastHurtByMob(null);
             mob.setLastHurtByPlayer((EntityReference<Player>) null, 100);
@@ -127,38 +114,32 @@ public final class FakePlayerAttackHelper {
         }
 
         if (entity.hurtServer(serverLevel, damageSource, attackDamage)) {
-
             // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
             entity.setDeltaMovement(oldMovement);
             return true;
         } else {
-
             return false;
         }
     }
 
     public static void sweepAttack(Entity entity, float attackDamage, ServerLevel level, BlockPos pos, Direction direction, DamageSource damageSource, boolean hurtPlayers, ItemEnchantments itemEnchantments) {
-
         double sweepingDamageRatio = BlockEnchantmentHelper.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO,
                 itemEnchantments);
         if (sweepingDamageRatio != Attributes.SWEEPING_DAMAGE_RATIO.value().getDefaultValue()) {
-
             float sweepingDamage = 1.0F + (float) sweepingDamageRatio * attackDamage;
             Predicate<? super LivingEntity> filter =
                     hurtPlayers ? EntitySelector.NO_SPECTATORS : Predicate.not(Player.class::isInstance);
             for (LivingEntity livingEntity : level.getEntitiesOfClass(LivingEntity.class,
                     entity.getBoundingBox().inflate(1.0D, 0.25D, 1.0D),
                     filter)) {
-                if (livingEntity != entity &&
-                        (!(livingEntity instanceof ArmorStand) || !((ArmorStand) livingEntity).isMarker()) &&
-                        pos.distToCenterSqr(livingEntity.position()) < 9.0D) {
-
+                if (livingEntity != entity && (!(livingEntity instanceof ArmorStand)
+                        || !((ArmorStand) livingEntity).isMarker())
+                        && pos.distToCenterSqr(livingEntity.position()) < 9.0D) {
                     float hurtAmount = BlockEnchantmentHelper.modifyDamage(level,
                             livingEntity,
                             damageSource,
                             sweepingDamage,
                             itemEnchantments);
-
                     // prevent any movement so entity simply stands still on spike (except when knockback enchantment is present)
                     if (itemEnchantments.getLevel(LookupHelper.lookup(level,
                             Registries.ENCHANTMENT,

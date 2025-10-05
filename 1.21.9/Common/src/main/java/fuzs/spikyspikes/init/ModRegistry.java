@@ -38,55 +38,27 @@ public class ModRegistry {
     public static final Holder.Reference<Block> WOODEN_SPIKE_BLOCK = REGISTRIES.whenOnFabricLike()
             .registerBlock("wooden_spike",
                     (BlockBehaviour.Properties properties) -> new SpikeBlock(SpikeMaterial.WOOD, properties),
-                    () -> BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.WOOD)
-                            .strength(2.0F, 3.0F)
-                            .sound(SoundType.WOOD)
-                            .pushReaction(PushReaction.DESTROY));
+                    ModRegistry::woodenSpikeProperties);
     public static final Holder.Reference<Block> STONE_SPIKE_BLOCK = REGISTRIES.whenOnFabricLike()
             .registerBlock("stone_spike",
                     (BlockBehaviour.Properties properties) -> new SpikeBlock(SpikeMaterial.STONE, properties),
-                    () -> BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.STONE)
-                            .requiresCorrectToolForDrops()
-                            .strength(2.0F, 6.0F)
-                            .pushReaction(PushReaction.DESTROY));
+                    ModRegistry::stoneSpikeProperties);
     public static final Holder.Reference<Block> IRON_SPIKE_BLOCK = REGISTRIES.whenOnFabricLike()
             .registerBlock("iron_spike",
                     (BlockBehaviour.Properties properties) -> new SpikeBlock(SpikeMaterial.IRON, properties),
-                    () -> BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.METAL)
-                            .requiresCorrectToolForDrops()
-                            .strength(5.0F, 6.0F)
-                            .sound(SoundType.METAL)
-                            .pushReaction(PushReaction.DESTROY));
+                    ModRegistry::ironSpikeProperties);
     public static final Holder.Reference<Block> GOLDEN_SPIKE_BLOCK = REGISTRIES.whenOnFabricLike()
             .registerBlock("golden_spike",
                     (BlockBehaviour.Properties properties) -> new SpikeBlock(SpikeMaterial.GOLD, properties),
-                    () -> BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.GOLD)
-                            .requiresCorrectToolForDrops()
-                            .strength(3.0F, 6.0F)
-                            .sound(SoundType.METAL)
-                            .pushReaction(PushReaction.DESTROY));
+                    ModRegistry::goldenSpikeProperties);
     public static final Holder.Reference<Block> DIAMOND_SPIKE_BLOCK = REGISTRIES.whenOnFabricLike()
             .registerBlock("diamond_spike",
                     (BlockBehaviour.Properties properties) -> new SpikeBlock(SpikeMaterial.DIAMOND, properties),
-                    () -> BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.DIAMOND)
-                            .requiresCorrectToolForDrops()
-                            .strength(5.0F, 6.0F)
-                            .sound(SoundType.METAL)
-                            .pushReaction(PushReaction.DESTROY));
+                    ModRegistry::diamondSpikeProperties);
     public static final Holder.Reference<Block> NETHERITE_SPIKE_BLOCK = REGISTRIES.whenOnFabricLike()
             .registerBlock("netherite_spike",
                     (BlockBehaviour.Properties properties) -> new SpikeBlock(SpikeMaterial.NETHERITE, properties),
-                    () -> BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.COLOR_BLACK)
-                            .requiresCorrectToolForDrops()
-                            .strength(50.0F, 1200.0F)
-                            .sound(SoundType.NETHERITE_BLOCK)
-                            .pushReaction(PushReaction.DESTROY));
+                    ModRegistry::netheriteSpikeProperties);
     public static final Holder.Reference<Item> WOODEN_SPIKE_ITEM = REGISTRIES.registerBlockItem(WOODEN_SPIKE_BLOCK,
             SpikeItem::new,
             Item.Properties::new);
@@ -119,8 +91,8 @@ public class ModRegistry {
                     DIAMOND_SPIKE_BLOCK.value(),
                     NETHERITE_SPIKE_BLOCK.value()));
     public static final ResourceKey<DamageType> SPIKE_DAMAGE_TYPE = REGISTRIES.registerDamageType("spike");
-
     static final TagFactory TAGS = TagFactory.make(SpikySpikes.MOD_ID);
+
     public static final TagKey<EntityType<?>> SPIKE_DAMAGE_IMMUNE_ENTITY_TYPE_TAG = TAGS.registerEntityTypeTag(
             "spike_damage_immune");
 
@@ -128,7 +100,59 @@ public class ModRegistry {
         ContentRegistrationHelper.registerTransmuteRecipeSerializers(REGISTRIES);
     }
 
-    static void bootstrapDamageTypes(BootstrapContext<DamageType> context) {
+    public static void bootstrapDamageTypes(BootstrapContext<DamageType> context) {
         AbstractDatapackRegistriesProvider.registerDamageType(context, SPIKE_DAMAGE_TYPE);
+    }
+
+    public static BlockBehaviour.Properties woodenSpikeProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.WOOD)
+                .strength(2.0F, 3.0F)
+                .sound(SoundType.WOOD)
+                .pushReaction(PushReaction.DESTROY);
+    }
+
+    public static BlockBehaviour.Properties stoneSpikeProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .requiresCorrectToolForDrops()
+                .strength(2.0F, 6.0F)
+                .pushReaction(PushReaction.DESTROY);
+    }
+
+    public static BlockBehaviour.Properties ironSpikeProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .requiresCorrectToolForDrops()
+                .strength(5.0F, 6.0F)
+                .sound(SoundType.METAL)
+                .pushReaction(PushReaction.DESTROY);
+    }
+
+    public static BlockBehaviour.Properties goldenSpikeProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.GOLD)
+                .requiresCorrectToolForDrops()
+                .strength(3.0F, 6.0F)
+                .sound(SoundType.METAL)
+                .pushReaction(PushReaction.DESTROY);
+    }
+
+    public static BlockBehaviour.Properties diamondSpikeProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.DIAMOND)
+                .requiresCorrectToolForDrops()
+                .strength(5.0F, 6.0F)
+                .sound(SoundType.METAL)
+                .pushReaction(PushReaction.DESTROY);
+    }
+
+    public static BlockBehaviour.Properties netheriteSpikeProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_BLACK)
+                .requiresCorrectToolForDrops()
+                .strength(50.0F, 1200.0F)
+                .sound(SoundType.NETHERITE_BLOCK)
+                .pushReaction(PushReaction.DESTROY);
     }
 }

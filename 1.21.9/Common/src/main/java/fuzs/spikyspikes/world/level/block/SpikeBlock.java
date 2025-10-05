@@ -90,10 +90,10 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
         return this.spikeMaterial;
     }
 
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return state.getValue(ENCHANTED) ? RenderShape.INVISIBLE : RenderShape.MODEL;
-    }
+//    @Override
+//    protected RenderShape getRenderShape(BlockState blockState) {
+//        return blockState.getValue(ENCHANTED) ? RenderShape.INVISIBLE : RenderShape.MODEL;
+//    }
 
     private static VoxelShape makeVisualShape(Direction direction) {
         VoxelShape shape = makeStaircasePyramid(direction, 8, 2.0);
@@ -207,6 +207,7 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
                 return blockState;
             }
         }
+
         return null;
     }
 

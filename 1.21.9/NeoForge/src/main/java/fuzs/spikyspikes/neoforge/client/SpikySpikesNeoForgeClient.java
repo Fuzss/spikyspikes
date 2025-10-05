@@ -34,13 +34,13 @@ public class SpikySpikesNeoForgeClient {
 
     public SpikySpikesNeoForgeClient(ModContainer modContainer) {
         ClientModConstructor.construct(SpikySpikes.MOD_ID, SpikySpikesClient::new);
-        DataProviderHelper.registerDataProviders(SpikySpikes.MOD_ID, ModLanguageProvider::new, ModModelProvider::new);
         registerLoadingHandlers(modContainer.getEventBus());
+        DataProviderHelper.registerDataProviders(SpikySpikes.MOD_ID, ModLanguageProvider::new, ModModelProvider::new);
     }
 
     private static void registerLoadingHandlers(IEventBus eventBus) {
-        eventBus.addListener((final ModelEvent.RegisterLoaders evt) -> {
-            evt.register(SpikeModelGenerator.BUILTIN_SPIKE_MODEL,
+        eventBus.addListener((final ModelEvent.RegisterLoaders event) -> {
+            event.register(SpikeModelGenerator.BUILTIN_SPIKE_MODEL,
                     (JsonObject jsonObject, JsonDeserializationContext context) -> {
                         // https://docs.neoforged.net/docs/resources/client/models/modelloaders/#reusing-the-default-model-loader
                         jsonObject.remove("loader");
@@ -57,16 +57,14 @@ public class SpikySpikesNeoForgeClient {
                         };
                     });
         });
-        eventBus.addListener((final RegisterClientExtensionsEvent evt) -> {
+        eventBus.addListener((final RegisterClientExtensionsEvent event) -> {
             for (Block block : BuiltInRegistries.BLOCK) {
                 if (block instanceof SpikeBlock) {
-                    evt.registerBlock(new IClientBlockExtensions() {
+                    event.registerBlock(new IClientBlockExtensions() {
                         @Override
                         public boolean addDestroyEffects(BlockState blockState, Level level, BlockPos blockPos, ParticleEngine particleEngine) {
-                            return DestroyEffectsHelper.addDestroyEffects(blockState,
-                                    level,
-                                    blockPos,
-                                    particleEngine) || IClientBlockExtensions.super.addDestroyEffects(blockState,
+                            return DestroyEffectsHelper.addDestroyEffects(blockState, level, blockPos, particleEngine)
+                                    || IClientBlockExtensions.super.addDestroyEffects(blockState,
                                     level,
                                     blockPos,
                                     particleEngine);

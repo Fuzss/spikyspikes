@@ -14,6 +14,10 @@
           "functions": [
             {
               "function": "minecraft:copy_components",
+              "include": [
+                "minecraft:stored_enchantments",
+                "minecraft:repair_cost"
+              ],
               "source": "block_entity"
             }
           ],
