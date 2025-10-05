@@ -58,6 +58,7 @@ public class VoxelUtils {
         if (corners.length == 0 || corners.length % 2 != 0) {
             throw new IllegalArgumentException("Incorrect number of provided corners");
         }
+
         VoxelShape shape = null;
         for (int i = 0; i < corners.length / 2; i++) {
             int index = 2 * i;
@@ -68,6 +69,7 @@ public class VoxelUtils {
                 shape = Shapes.or(shape, boxShape);
             }
         }
+
         return shape;
     }
 
@@ -85,11 +87,13 @@ public class VoxelUtils {
         if (values.length % 3 != 0) {
             throw new IllegalArgumentException("Unable to create proper number of vectors");
         }
+
         Vec3[] array = new Vec3[values.length / 3];
         for (int i = 0; i < array.length; i++) {
             int index = 3 * i;
             array[i] = new Vec3(values[index], values[index + 1], values[index + 2]);
         }
+
         return array;
     }
 
@@ -101,44 +105,12 @@ public class VoxelUtils {
         if (corners.length != 5) {
             throw new IllegalArgumentException("Constructing a pyramid requires 5 corners");
         }
+
         return new Vec3[]{
                 // bottom plate
-                corners[0], corners[1],
-                corners[1], corners[2],
-                corners[2], corners[3],
-                corners[3], corners[0],
+                corners[0], corners[1], corners[1], corners[2], corners[2], corners[3], corners[3], corners[0],
                 // connections between bottom and apex
-                corners[0], corners[4],
-                corners[1], corners[4],
-                corners[2], corners[4],
-                corners[3], corners[4]
-        };
-    }
-
-    /**
-     * @param corners 0-3 for bottom face, 4-7 for top face
-     * @return vectors as pairs representing the edges
-     */
-    public static Vec3[] makeCuboidEdges(Vec3[] corners) {
-        if (corners.length != 8) {
-            throw new IllegalArgumentException("Constructing a cuboid requires 8 corners");
-        }
-        return new Vec3[]{
-                // bottom face
-                corners[0], corners[1],
-                corners[1], corners[2],
-                corners[2], corners[3],
-                corners[3], corners[0],
-                // connections between bottom and top
-                corners[0], corners[4],
-                corners[1], corners[5],
-                corners[2], corners[6],
-                corners[3], corners[7],
-                // top face
-                corners[4], corners[5],
-                corners[5], corners[6],
-                corners[6], corners[7],
-                corners[7], corners[4]
+                corners[0], corners[4], corners[1], corners[4], corners[2], corners[4], corners[3], corners[4]
         };
     }
 }
