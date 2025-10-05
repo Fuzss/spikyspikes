@@ -31,10 +31,11 @@ import org.jetbrains.annotations.Nullable;
  * @see BlockRenderDispatcher#renderSingleBlock(BlockState, PoseStack, MultiBufferSource, int, int)
  */
 public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity, SpikeRenderState> {
-    private final BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
+    private final BlockRenderDispatcher blockRenderer;
     private final BlockColors blockColors;
 
     public SpikeRenderer(BlockEntityRendererProvider.Context context) {
+        this.blockRenderer = context.blockRenderDispatcher();
         this.blockColors = Minecraft.getInstance().getBlockColors();
     }
 
