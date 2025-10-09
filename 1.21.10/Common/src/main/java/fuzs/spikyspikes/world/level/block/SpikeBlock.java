@@ -48,7 +48,7 @@ import java.util.function.Function;
 /**
  * Code for facing copied from {@link AmethystClusterBlock}.
  */
-public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, EnchantmentGlintBlock {
     public static final MapCodec<SpikeBlock> CODEC = spikeCodec(SpikeBlock::new);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
@@ -92,7 +92,12 @@ public class SpikeBlock extends BaseEntityBlock implements SimpleWaterloggedBloc
 
     @Override
     protected RenderShape getRenderShape(BlockState blockState) {
-        return blockState.getValue(ENCHANTED) ? RenderShape.INVISIBLE : RenderShape.MODEL;
+        return this.hasFoil(blockState) ? RenderShape.INVISIBLE : RenderShape.MODEL;
+    }
+
+    @Override
+    public boolean hasFoil(BlockState blockState) {
+        return blockState.getValue(ENCHANTED);
     }
 
     private static VoxelShape makeVisualShape(Direction direction) {

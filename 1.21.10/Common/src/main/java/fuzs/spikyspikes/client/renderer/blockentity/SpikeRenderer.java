@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.SheetedDecalTextureGenerator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import fuzs.spikyspikes.client.renderer.blockentity.state.SpikeRenderState;
-import fuzs.spikyspikes.world.level.block.SpikeBlock;
+import fuzs.spikyspikes.world.level.block.EnchantmentGlintBlock;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -62,7 +62,8 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity, Spik
         // When the spike is enchanted, we set the render shape to invisible and handle everything via this block entity renderer.
         // Overlaying the glint on the block model baked into chunk geometry has issues with z-fighting which couldn't be solved.
         // Having the render shape as invisible has issues though and hides breaking particles and when rendering in a minecart, held by enderman, etc.
-        if (renderState.blockState.getOptionalValue(SpikeBlock.ENCHANTED).orElse(false)) {
+        if (renderState.blockState.getBlock() instanceof EnchantmentGlintBlock block
+                && block.hasFoil(renderState.blockState)) {
             submitNodeCollector.order(1)
                     .submitCustomGeometry(poseStack,
                             ItemBlockRenderTypes.getMovingBlockRenderType(renderState.blockState),
