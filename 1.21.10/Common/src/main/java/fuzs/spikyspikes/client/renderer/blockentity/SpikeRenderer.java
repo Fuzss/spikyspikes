@@ -8,15 +8,13 @@ import fuzs.spikyspikes.world.level.block.EnchantmentGlintBlock;
 import fuzs.spikyspikes.world.level.block.entity.SpikeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.CameraRenderState;
@@ -51,6 +49,8 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity, Spik
                 partialTick,
                 cameraPosition,
                 crumblingOverlay);
+        // This is not ideal, the tint index is defined by the block model, but it is the best we can do here without copying any methods.
+        // Also, none of the blocks we are using this for do define a custom block color, so does not really matter.
         renderState.blockColor = this.blockColors.getColor(renderState.blockState,
                 blockEntity.getLevel(),
                 blockEntity.getBlockPos(),
@@ -66,7 +66,7 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity, Spik
                 && block.hasFoil(renderState.blockState)) {
             submitNodeCollector.order(1)
                     .submitCustomGeometry(poseStack,
-                            ItemBlockRenderTypes.getMovingBlockRenderType(renderState.blockState),
+                            getBlockRenderType(renderState.blockState),
                             (PoseStack.Pose pose, VertexConsumer vertexConsumer) -> {
                                 this.renderSpike(pose,
                                         vertexConsumer,
@@ -79,7 +79,7 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity, Spik
                             getFoilRenderType(renderState.blockState),
                             (PoseStack.Pose pose, VertexConsumer vertexConsumer) -> {
                                 this.renderSpike(pose,
-                                        vertexConsumer,
+                                        new SheetedDecalTextureGenerator(vertexConsumer, pose, 0.0078125F),
                                         this.blockRenderer.getBlockModel(renderState.blockState),
                                         renderState.lightCoords,
                                         renderState.blockColor);
@@ -102,23 +102,39 @@ public class SpikeRenderer implements BlockEntityRenderer<SpikeBlockEntity, Spik
         }
     }
 
-    private void renderSpike(PoseStack.Pose pose, VertexConsumer vertexConsumer, BlockStateModel blockStateModel, int packedLight, int color) {
+    private void renderSpike(PoseStack.Pose pose, VertexConsumer vertexConsumer, BlockStateModel blockStateModel, int packedLight, int tintColor) {
         ModelBlockRenderer.renderModel(pose,
                 vertexConsumer,
                 blockStateModel,
-                ARGB.redFloat(color),
-                ARGB.greenFloat(color),
-                ARGB.blueFloat(color),
+                ARGB.redFloat(tintColor),
+                ARGB.greenFloat(tintColor),
+                ARGB.blueFloat(tintColor),
                 packedLight,
                 OverlayTexture.NO_OVERLAY);
     }
 
     /**
-     * Has to be {@link ItemBlockRenderTypes#getMovingBlockRenderType(BlockState)}, not
-     * {@link ItemBlockRenderTypes#getRenderType(BlockState)} for the render type otherwise used for the block model.
+     * @see ItemBlockRenderTypes#getRenderType(BlockState)
      */
+    public static RenderType getBlockRenderType(BlockState blockState) {
+        return getBlockRenderType(ItemBlockRenderTypes.getChunkRenderType(blockState));
+    }
+
+    /**
+     * @see ItemBlockRenderTypes#getRenderType(BlockState)
+     */
+    public static RenderType getBlockRenderType(ChunkSectionLayer chunkSectionLayer) {
+        if (chunkSectionLayer == ChunkSectionLayer.SOLID) {
+            return Sheets.solidBlockSheet();
+        } else if (chunkSectionLayer == ChunkSectionLayer.TRANSLUCENT) {
+            return Sheets.translucentItemSheet();
+        } else {
+            return Sheets.cutoutBlockSheet();
+        }
+    }
+
     public static RenderType getFoilRenderType(BlockState blockState) {
-        return getFoilRenderType(ItemBlockRenderTypes.getMovingBlockRenderType(blockState));
+        return getFoilRenderType(getBlockRenderType(blockState));
     }
 
     public static RenderType getFoilRenderType(RenderType renderType) {
